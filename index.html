@@ -1993,7 +1993,7 @@ async function callAI(systemPrompt, userPrompt, maxTokens){
   checkKey();
   const res = await fetchWithTimeout('/api/claude',{
     method:'POST', headers:apiHeaders(),
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens||800,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens||800,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})
   });
   const data=await res.json();
   if(data.error) throw new Error(data.error.message);
@@ -2098,7 +2098,7 @@ async function generateBriefing(){
     const res=await fetchWithTimeout('/api/claude',{
       method:'POST',
       headers:apiHeaders(),
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system,messages:[{role:'user',content:user}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,system,messages:[{role:'user',content:user}]})
     });
     const data=await res.json();
     if(data.error) throw new Error(data.error.message+' (type: '+data.error.type+')');
@@ -2167,7 +2167,7 @@ async function sendCouncil(){
       method:'POST',
       headers:apiHeaders(),
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:800,
         system:buildCouncilCtx(),
         messages:councilHistory.slice(-16)
@@ -3851,7 +3851,7 @@ async function sendGenericAI(boxId){
       method:'POST',
       headers:apiHeaders(),
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:600,
         system:cfg.system+`\n\nCurrent game context: Season: ${S.currentSeason}. Treasury: $${(S.treasury||500).toFixed(0)}. Record: ${S.wins||0}W/${S.losses||0}L. Band: ${S.men?S.men.filter(m=>!m.dead).length:5} men alive.`,
         messages:cfg.history.slice(-12)
@@ -4102,4 +4102,4 @@ document.getElementById('debrief-input').addEventListener('keydown',e=>{if(e.key
 </div>
 
 </body>
-</html>
+</html>                            
