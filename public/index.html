@@ -792,67 +792,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
-  <!-- ═══ Row 2: MES + Strait of Hormuz (sized like the maps row above) ═══ -->
-  <div style="margin-bottom:14px;border:1px solid var(--border3);background:#0a0d14;border-radius:3px;overflow:hidden;">
-    <!-- Header bar -->
-    <div style="background:#0d0900;border-bottom:1px solid var(--border3);padding:5px 12px;display:flex;align-items:center;justify-content:space-between;">
-      <span style="font-family:var(--fellsc);font-size:12px;color:var(--gold-m);letter-spacing:0.05em;">📊 Markets · Live Data</span>
-      <div style="display:flex;gap:14px;align-items:center;">
-        <a href="https://ninjatrader.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">NinjaTrader ↗</a>
-        <a href="https://www.hormuztracker.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">HormuzTracker ↗</a>
-      </div>
-    </div>
-
-    <!-- Two widgets side by side -->
-    <div style="display:flex;gap:0;">
-
-      <!-- Left: MES TradingView -->
-      <div style="flex:1;min-width:0;position:relative;border-right:1px solid var(--border3);">
-        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">📈 S&amp;P 500 (MES tracking) · OANDA:SPX500USD · 15min</div>
-        <div class="tradingview-widget-container" style="height:320px;width:100%;background:#131722;">
-          <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {
-            "autosize": true,
-            "symbol": "OANDA:SPX500USD",
-            "interval": "15",
-            "timezone": "America/Phoenix",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "enable_publishing": false,
-            "hide_top_toolbar": false,
-            "hide_legend": false,
-            "save_image": false,
-            "calendar": false,
-            "support_host": "https://www.tradingview.com"
-          }
-          </script>
-        </div>
-      </div>
-
-      <!-- Right: Strait of Hormuz tanker tracker -->
-      <div style="flex:1;min-width:0;position:relative;">
-        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">⚓ Strait of Hormuz · Live Tanker &amp; Oil Tracker</div>
-        <iframe
-          src="https://www.hormuztracker.com/"
-          style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
-          title="Strait of Hormuz live shipping tracker (HormuzTracker)"
-          loading="lazy"
-          allowfullscreen>
-        </iframe>
-      </div>
-
-    </div>
-
-    <!-- Footer -->
-    <div style="background:#0d0900;border-top:1px solid var(--border3);padding:4px 12px;font-family:var(--mono);font-size:9px;color:var(--ink4);display:flex;gap:20px;">
-      <span>S&amp;P 500 (MES futures track this) · Live vessel AIS · refreshes every minute</span>
-      <span style="margin-left:auto;color:var(--border3);">Click to expand either panel</span>
-    </div>
-
-  </div>
-
 
   <!-- RECRUIT TRACKER -->
   <!-- ══ RP + ROSTER SIDE BY SIDE ══ -->
@@ -992,6 +931,111 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
 
 
+  <!-- COUNCIL CHAMBER -->
+  <div class="parch-panel ai-panel">
+    <div class="p-inner">
+      <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
+      <div class="ai-msgs" id="council-msgs">
+        <div class="cm-entry cm-ai">
+          <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
+          <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
+        </div>
+      </div>
+      <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
+      <div class="ai-input-row" style="margin-top:5px;">
+        <div class="ai-input-wrap">
+          <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
+          <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
+        </div>
+        <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Row 2: MES + Strait of Hormuz (sized like the maps row above) ═══ -->
+  <div style="margin-bottom:14px;border:1px solid var(--border3);background:#0a0d14;border-radius:3px;overflow:hidden;">
+    <!-- Header bar -->
+    <div style="background:#0d0900;border-bottom:1px solid var(--border3);padding:5px 12px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:var(--fellsc);font-size:12px;color:var(--gold-m);letter-spacing:0.05em;">📊 Markets · Live Data</span>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <a href="https://ninjatrader.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">NinjaTrader ↗</a>
+        <a href="https://www.hormuztracker.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">HormuzTracker ↗</a>
+      </div>
+    </div>
+
+    <!-- Two widgets side by side -->
+    <div style="display:flex;gap:0;">
+
+      <!-- Left: MES TradingView -->
+      <div style="flex:1;min-width:0;position:relative;border-right:1px solid var(--border3);">
+        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">📈 S&amp;P 500 (MES tracking) · OANDA:SPX500USD · 15min</div>
+        <div class="tradingview-widget-container" style="height:320px;width:100%;background:#131722;">
+          <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+          {
+            "autosize": true,
+            "symbol": "OANDA:SPX500USD",
+            "interval": "15",
+            "timezone": "America/Phoenix",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "calendar": false,
+            "support_host": "https://www.tradingview.com"
+          }
+          </script>
+        </div>
+      </div>
+
+      <!-- Right: Strait of Hormuz tanker tracker -->
+      <div style="flex:1;min-width:0;position:relative;">
+        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">⚓ Strait of Hormuz · Live Tanker &amp; Oil Tracker</div>
+        <iframe
+          src="https://www.hormuztracker.com/"
+          style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
+          title="Strait of Hormuz live shipping tracker (HormuzTracker)"
+          loading="lazy"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#0d0900;border-top:1px solid var(--border3);padding:4px 12px;font-family:var(--mono);font-size:9px;color:var(--ink4);display:flex;gap:20px;">
+      <span>S&amp;P 500 (MES futures track this) · Live vessel AIS · refreshes every minute</span>
+      <span style="margin-left:auto;color:var(--border3);">Click to expand either panel</span>
+    </div>
+
+  </div>
+
+
+  <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
+  <div class="parch-panel ai-panel" style="border-color:#285080;">
+    <div class="p-inner">
+      <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
+      <div class="ai-msgs" id="scout-msgs" style="max-height:200px;">
+        <div class="cm-entry cm-ai">
+          <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
+          <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
+        </div>
+      </div>
+      <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
+      <div class="ai-input-row" style="margin-top:5px;">
+        <div class="ai-input-wrap">
+          <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
+          <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
+        </div>
+        <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BATTLE LOG FORM -->
   <div class="parch-panel log-panel">
     <div class="p-inner">
@@ -1027,48 +1071,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
-  <!-- COUNCIL CHAMBER -->
-  <div class="parch-panel ai-panel">
-    <div class="p-inner">
-      <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
-      <div class="ai-msgs" id="council-msgs">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
-          <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
-        </div>
-      </div>
-      <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
-          <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
-        </div>
-        <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
-  <div class="parch-panel ai-panel" style="border-color:#285080;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
-      <div class="ai-msgs" id="scout-msgs" style="max-height:200px;">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
-          <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
-        </div>
-      </div>
-      <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
-          <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
-        </div>
-        <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
-      </div>
-    </div>
-  </div>
 
   <!-- THE DEBRIEF — Post trade retrospect -->
   <div class="parch-panel ai-panel" style="border-color:#2a4a1a;">
