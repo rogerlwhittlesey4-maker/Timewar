@@ -966,8 +966,15 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <!-- ROW 1: SESSION CLOCK / COUNTERS / DAILY P&L -->
       <div id="t1-status-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin-bottom:12px;">
         <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
-          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">SESSION CLOCK (ET)</div>
-          <div id="t1-clock" style="font-size:22px;font-weight:700;color:#3a2818;font-family:var(--fell);">--:--:--</div>
+          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">SESSION CLOCK</div>
+          <div style="display:flex;justify-content:center;gap:10px;align-items:baseline;line-height:1.1;">
+            <div style="font-size:10px;color:var(--ink2);font-family:var(--fellsc);letter-spacing:0.06em;">ET</div>
+            <div id="t1-clock" style="font-size:18px;font-weight:700;color:#3a2818;font-family:var(--fell);">--:-- --</div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:10px;align-items:baseline;line-height:1.1;margin-top:2px;">
+            <div style="font-size:10px;color:var(--ink2);font-family:var(--fellsc);letter-spacing:0.06em;">MST</div>
+            <div id="t1-clock-mst" style="font-size:18px;font-weight:700;color:#3a2818;font-family:var(--fell);">--:-- --</div>
+          </div>
           <div id="t1-session-state" style="font-size:11px;color:var(--ink2);margin-top:2px;">—</div>
         </div>
         <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
@@ -4785,7 +4792,7 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
     const trade = {
       id: Date.now(),
       date: t1Today(),
-      time: new Date().toLocaleTimeString('en-US',{hour12:false,timeZone:'America/New_York'}),
+      time: new Date().toLocaleTimeString('en-US',{hour12:true,timeZone:'America/New_York'}),
       setup, dir, entry, stop, target, rr, outcome, pnl, notes
     };
     const all = t1Load();
@@ -4911,9 +4918,12 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
   // NYSE regular session 09:30–16:00 ET. Blackout = first 15 min (09:30–09:45) and last 15 min (15:45–16:00)
   function t1Tick(){
     const now = new Date();
-    const etStr = now.toLocaleTimeString('en-US',{hour12:false,timeZone:'America/New_York'});
+    const etStr = now.toLocaleTimeString('en-US',{hour12:true,timeZone:'America/New_York'});
+    const mstStr = now.toLocaleTimeString('en-US',{hour12:true,timeZone:'America/Phoenix'});
     const clock = document.getElementById('t1-clock');
     if(clock) clock.textContent = etStr;
+    const clockMst = document.getElementById('t1-clock-mst');
+    if(clockMst) clockMst.textContent = mstStr;
 
     const etDate = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
     const h = etDate.getHours(), m = etDate.getMinutes();
