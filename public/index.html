@@ -958,6 +958,125 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
+  <!-- ═════════ TIER 1 LIVE-TRADING PANEL (placeholder placement) ═════════ -->
+  <div class="parch-panel" id="tier1-panel" style="margin-top:14px;">
+    <div class="p-inner" style="font-family:var(--fell);padding:14px 18px;">
+      <div class="sec-title" style="text-align:center;">⚔ Live Trading — Discipline Console</div>
+
+      <!-- ROW 1: SESSION CLOCK / COUNTERS / DAILY P&L -->
+      <div id="t1-status-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin-bottom:12px;">
+        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">SESSION CLOCK (ET)</div>
+          <div id="t1-clock" style="font-size:22px;font-weight:700;color:#3a2818;font-family:var(--fell);">--:--:--</div>
+          <div id="t1-session-state" style="font-size:11px;color:var(--ink2);margin-top:2px;">—</div>
+        </div>
+        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">TRADES TAKEN</div>
+          <div id="t1-trade-count" style="font-size:22px;font-weight:700;color:#3a2818;">0 / 2</div>
+          <div id="t1-since-loss" style="font-size:11px;color:var(--ink2);margin-top:2px;">no losses today</div>
+        </div>
+        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">DAILY P&amp;L</div>
+          <div id="t1-daily-pnl" style="font-size:22px;font-weight:700;color:#3a2818;">$0.00</div>
+          <div id="t1-pnl-state" style="font-size:11px;color:var(--ink2);margin-top:2px;">within limit</div>
+        </div>
+      </div>
+
+      <!-- BLACKOUT / SESSION-OVER OVERLAY BANNERS -->
+      <div id="t1-blackout-banner" style="display:none;background:#5a1a14;color:#f3d2c2;border:1.5px solid #8a2a20;padding:8px 12px;text-align:center;font-family:var(--fellsc);letter-spacing:0.08em;margin-bottom:10px;border-radius:2px;">
+        ⛔ BLACKOUT WINDOW — no trades (first / last 15 min of session)
+      </div>
+      <div id="t1-sessionover-banner" style="display:none;background:#6a0a04;color:#ffe6c2;border:2px solid #c02010;padding:10px 12px;text-align:center;font-family:var(--fellsc);letter-spacing:0.1em;margin-bottom:10px;border-radius:2px;font-size:14px;">
+        🛑 SESSION OVER — daily loss limit reached. Walk away. The market will be there tomorrow.
+      </div>
+
+      <!-- ROW 2: PRE-TRADE CHECKLIST + TRADE INPUT -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px;">
+        <!-- LEFT: CHECKLIST -->
+        <div style="flex:1;min-width:280px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">PRE-TRADE GO / NO-GO</div>
+          <div id="t1-checklist" style="font-size:12.5px;color:#3a2818;line-height:1.55;">
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="setup"> Sanctioned setup (ORB / VWAP / FB / PDL)</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="stop"> Hard stop is placed before entry</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="risk"> Risk on this trade ≤ $50 (10% of $500)</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="rr"> Reward:Risk ≥ 1.5</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="window"> NOT in first 15 / last 15 min</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="notrevenge"> NOT a revenge / tilt trade</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="count"> This is trade #1 or #2 of the session</label>
+            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="plan"> I have a written exit plan (target + stop)</label>
+          </div>
+          <div id="t1-checklist-status" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">0 / 8 — checklist not complete</div>
+        </div>
+
+        <!-- RIGHT: TRADE LOG INPUT -->
+        <div style="flex:1;min-width:280px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">LOG THIS TRADE</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;font-size:12px;color:#3a2818;">
+            <label>Setup<br><input id="t1-f-setup" type="text" placeholder="ORB / VWAP / FB / PDL" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>Direction<br>
+              <select id="t1-f-dir" style="width:100%;padding:3px 5px;font-family:var(--fell);">
+                <option value="long">long</option><option value="short">short</option>
+              </select>
+            </label>
+            <label>Entry<br><input id="t1-f-entry" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>Stop<br><input id="t1-f-stop" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>Target<br><input id="t1-f-target" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>R:R (auto)<br><input id="t1-f-rr" type="text" readonly style="width:100%;padding:3px 5px;font-family:var(--fell);background:#e9dec2;"></label>
+            <label>Outcome<br>
+              <select id="t1-f-outcome" style="width:100%;padding:3px 5px;font-family:var(--fell);">
+                <option value="">— pending —</option>
+                <option value="win">win (target)</option>
+                <option value="loss">loss (stop)</option>
+                <option value="scratch">scratch</option>
+                <option value="partial">partial</option>
+              </select>
+            </label>
+            <label>P&amp;L $<br><input id="t1-f-pnl" type="number" step="0.01" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label style="grid-column:1 / span 2;">Notes / emotion<br><textarea id="t1-f-notes" rows="2" placeholder="What I saw, what I felt, what I'd do differently" style="width:100%;padding:3px 5px;font-family:var(--fell);"></textarea></label>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+            <button id="t1-submit-btn" disabled onclick="t1SubmitTrade()" style="flex:1;padding:8px 12px;background:#2a4a1a;color:#a0c070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #3a5a2a;cursor:pointer;border-radius:2px;opacity:0.4;">⚔ SUBMIT TRADE</button>
+            <button onclick="t1ResetChecklist()" style="padding:8px 10px;background:#4a3a1a;color:#d0b070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #6a4a2a;cursor:pointer;border-radius:2px;">Reset</button>
+          </div>
+          <div id="t1-submit-msg" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">complete the checklist to enable submit</div>
+        </div>
+      </div>
+
+      <!-- ROW 3: TRADE LOG TABLE -->
+      <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);">TRADE LOG — <span id="t1-log-date">today</span></div>
+          <div>
+            <button onclick="t1ToggleAll()" style="font-size:10px;padding:3px 8px;background:#e9dec2;border:1px solid var(--border);color:var(--ink2);cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;" id="t1-toggle-btn">show all dates</button>
+            <button onclick="t1ExportCsv()" style="font-size:10px;padding:3px 8px;background:#e9dec2;border:1px solid var(--border);color:var(--ink2);cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;">export CSV</button>
+            <button onclick="t1ClearAll()" style="font-size:10px;padding:3px 8px;background:#f3d2c2;border:1px solid #8a2a20;color:#5a1a14;cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;">clear all</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table id="t1-log-table" style="width:100%;border-collapse:collapse;font-size:11.5px;color:#3a2818;font-family:var(--fell);">
+            <thead>
+              <tr style="background:#e9dec2;text-align:left;">
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">When</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Setup</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Dir</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Entry</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Stop</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Tgt</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">R:R</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Out</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">P&amp;L</th>
+                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="t1-log-body"><tr><td colspan="11" style="padding:10px;text-align:center;color:var(--ink2);font-style:italic;">no trades logged yet today</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ═══ Row 2: MES + Strait of Hormuz (sized like the maps row above) ═══ -->
   <div style="margin-bottom:14px;border:1px solid var(--border3);background:#0a0d14;border-radius:3px;overflow:hidden;">
     <!-- Header bar -->
@@ -1115,125 +1234,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div id="battle-log"></div>
     </div>
   </div>
-
-  <!-- ═════════ TIER 1 LIVE-TRADING PANEL (placeholder placement) ═════════ -->
-  <div class="parch-panel" id="tier1-panel" style="margin-top:14px;">
-    <div class="p-inner" style="font-family:var(--fell);padding:14px 18px;">
-      <div class="sec-title" style="text-align:center;">⚔ Live Trading — Discipline Console</div>
-
-      <!-- ROW 1: SESSION CLOCK / COUNTERS / DAILY P&L -->
-      <div id="t1-status-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin-bottom:12px;">
-        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
-          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">SESSION CLOCK (ET)</div>
-          <div id="t1-clock" style="font-size:22px;font-weight:700;color:#3a2818;font-family:var(--fell);">--:--:--</div>
-          <div id="t1-session-state" style="font-size:11px;color:var(--ink2);margin-top:2px;">—</div>
-        </div>
-        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
-          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">TRADES TAKEN</div>
-          <div id="t1-trade-count" style="font-size:22px;font-weight:700;color:#3a2818;">0 / 2</div>
-          <div id="t1-since-loss" style="font-size:11px;color:var(--ink2);margin-top:2px;">no losses today</div>
-        </div>
-        <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
-          <div style="font-size:10px;letter-spacing:0.1em;color:var(--ink2);font-family:var(--fellsc);">DAILY P&amp;L</div>
-          <div id="t1-daily-pnl" style="font-size:22px;font-weight:700;color:#3a2818;">$0.00</div>
-          <div id="t1-pnl-state" style="font-size:11px;color:var(--ink2);margin-top:2px;">within limit</div>
-        </div>
-      </div>
-
-      <!-- BLACKOUT / SESSION-OVER OVERLAY BANNERS -->
-      <div id="t1-blackout-banner" style="display:none;background:#5a1a14;color:#f3d2c2;border:1.5px solid #8a2a20;padding:8px 12px;text-align:center;font-family:var(--fellsc);letter-spacing:0.08em;margin-bottom:10px;border-radius:2px;">
-        ⛔ BLACKOUT WINDOW — no trades (first / last 15 min of session)
-      </div>
-      <div id="t1-sessionover-banner" style="display:none;background:#6a0a04;color:#ffe6c2;border:2px solid #c02010;padding:10px 12px;text-align:center;font-family:var(--fellsc);letter-spacing:0.1em;margin-bottom:10px;border-radius:2px;font-size:14px;">
-        🛑 SESSION OVER — daily loss limit reached. Walk away. The market will be there tomorrow.
-      </div>
-
-      <!-- ROW 2: PRE-TRADE CHECKLIST + TRADE INPUT -->
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px;">
-        <!-- LEFT: CHECKLIST -->
-        <div style="flex:1;min-width:280px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
-          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">PRE-TRADE GO / NO-GO</div>
-          <div id="t1-checklist" style="font-size:12.5px;color:#3a2818;line-height:1.55;">
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="setup"> Sanctioned setup (ORB / VWAP / FB / PDL)</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="stop"> Hard stop is placed before entry</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="risk"> Risk on this trade ≤ $50 (10% of $500)</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="rr"> Reward:Risk ≥ 1.5</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="window"> NOT in first 15 / last 15 min</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="notrevenge"> NOT a revenge / tilt trade</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="count"> This is trade #1 or #2 of the session</label>
-            <label style="display:block;cursor:pointer;"><input type="checkbox" class="t1-chk" data-k="plan"> I have a written exit plan (target + stop)</label>
-          </div>
-          <div id="t1-checklist-status" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">0 / 8 — checklist not complete</div>
-        </div>
-
-        <!-- RIGHT: TRADE LOG INPUT -->
-        <div style="flex:1;min-width:280px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
-          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">LOG THIS TRADE</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;font-size:12px;color:#3a2818;">
-            <label>Setup<br><input id="t1-f-setup" type="text" placeholder="ORB / VWAP / FB / PDL" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label>Direction<br>
-              <select id="t1-f-dir" style="width:100%;padding:3px 5px;font-family:var(--fell);">
-                <option value="long">long</option><option value="short">short</option>
-              </select>
-            </label>
-            <label>Entry<br><input id="t1-f-entry" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label>Stop<br><input id="t1-f-stop" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label>Target<br><input id="t1-f-target" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label>R:R (auto)<br><input id="t1-f-rr" type="text" readonly style="width:100%;padding:3px 5px;font-family:var(--fell);background:#e9dec2;"></label>
-            <label>Outcome<br>
-              <select id="t1-f-outcome" style="width:100%;padding:3px 5px;font-family:var(--fell);">
-                <option value="">— pending —</option>
-                <option value="win">win (target)</option>
-                <option value="loss">loss (stop)</option>
-                <option value="scratch">scratch</option>
-                <option value="partial">partial</option>
-              </select>
-            </label>
-            <label>P&amp;L $<br><input id="t1-f-pnl" type="number" step="0.01" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label style="grid-column:1 / span 2;">Notes / emotion<br><textarea id="t1-f-notes" rows="2" placeholder="What I saw, what I felt, what I'd do differently" style="width:100%;padding:3px 5px;font-family:var(--fell);"></textarea></label>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
-            <button id="t1-submit-btn" disabled onclick="t1SubmitTrade()" style="flex:1;padding:8px 12px;background:#2a4a1a;color:#a0c070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #3a5a2a;cursor:pointer;border-radius:2px;opacity:0.4;">⚔ SUBMIT TRADE</button>
-            <button onclick="t1ResetChecklist()" style="padding:8px 10px;background:#4a3a1a;color:#d0b070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #6a4a2a;cursor:pointer;border-radius:2px;">Reset</button>
-          </div>
-          <div id="t1-submit-msg" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">complete the checklist to enable submit</div>
-        </div>
-      </div>
-
-      <!-- ROW 3: TRADE LOG TABLE -->
-      <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">
-          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);">TRADE LOG — <span id="t1-log-date">today</span></div>
-          <div>
-            <button onclick="t1ToggleAll()" style="font-size:10px;padding:3px 8px;background:#e9dec2;border:1px solid var(--border);color:var(--ink2);cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;" id="t1-toggle-btn">show all dates</button>
-            <button onclick="t1ExportCsv()" style="font-size:10px;padding:3px 8px;background:#e9dec2;border:1px solid var(--border);color:var(--ink2);cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;">export CSV</button>
-            <button onclick="t1ClearAll()" style="font-size:10px;padding:3px 8px;background:#f3d2c2;border:1px solid #8a2a20;color:#5a1a14;cursor:pointer;border-radius:2px;font-family:var(--fellsc);letter-spacing:0.06em;">clear all</button>
-          </div>
-        </div>
-        <div style="overflow-x:auto;">
-          <table id="t1-log-table" style="width:100%;border-collapse:collapse;font-size:11.5px;color:#3a2818;font-family:var(--fell);">
-            <thead>
-              <tr style="background:#e9dec2;text-align:left;">
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">When</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Setup</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Dir</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Entry</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Stop</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Tgt</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">R:R</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Out</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">P&amp;L</th>
-                <th style="padding:4px 6px;border-bottom:1px solid var(--border);">Notes</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="t1-log-body"><tr><td colspan="11" style="padding:10px;text-align:center;color:var(--ink2);font-style:italic;">no trades logged yet today</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 </div><!-- end center -->
 
