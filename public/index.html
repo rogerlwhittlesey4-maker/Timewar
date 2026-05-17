@@ -4299,11 +4299,13 @@ setInterval(updateMapClock,1000);
 updateMapClock();
 
 load();render();renderConflicts();initHoldings();initDayNightMap();
-document.getElementById('f-outcome').addEventListener('change',updatePreview);
-document.getElementById('council-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))sendCouncil();});
-document.getElementById('contract-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))sendGenericAI('contract');});
-document.getElementById('scout-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))sendGenericAI('scout');});
-document.getElementById('debrief-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))sendGenericAI('debrief');});
+// Null-safe init — contract-input was removed when Battle Contract became a static panel
+const _addKbd = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)) fn(); }); };
+{ const el = document.getElementById('f-outcome'); if(el) el.addEventListener('change', updatePreview); }
+_addKbd('council-input', sendCouncil);
+_addKbd('contract-input', ()=>sendGenericAI('contract'));
+_addKbd('scout-input', ()=>sendGenericAI('scout'));
+_addKbd('debrief-input', ()=>sendGenericAI('debrief'));
 </script>
 
 <!-- UNIFIED BOTTOM RIBBON — always visible on ALL pages -->
