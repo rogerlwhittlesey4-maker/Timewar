@@ -2437,7 +2437,7 @@ const SEED_CONFLICTS=[
 function defaultState(){
   return {treasury:500,seasons:0,wins:0,losses:0,
     campaign:'Defense of Whittlesey — Bandit Raids',
-    currentSeason:'Spring, 1526 AD',selectedMen:[],battles:[],
+    currentSeason:'Spring, 1526 AD',selectedMen:[],battles:[],chronicle:[],
     aiConflicts:null,
     territories:{'isle_ely':5},
     rpPool:0,
@@ -2456,6 +2456,28 @@ let activeBioId=null;
 let councilHistory=[];
 
 function save(){localStorage.setItem(SAVE_KEY,JSON.stringify(S));}
+
+// ── Unified Chronicle of Battles feed — every AI chat + trade log writes here ──
+function ensureChronicle(){ if(!Array.isArray(S.chronicle)) S.chronicle=[]; }
+function chronicleAdd(source, role, speakerName, speakerTag, text, opts){
+  ensureChronicle();
+  const ev = {
+    ts: Date.now(),
+    kind: 'chat',                 // distinguishes from legacy battle entries
+    source,                       // briefer | council | scout | debrief | contract | trade | log
+    role,                         // user | ai | system | trade
+    speakerName: speakerName||'',
+    speakerTag: speakerTag||'',
+    text: String(text||'').slice(0, 4000),
+    season: (typeof S!=='undefined'&&S.currentSeason)||'',
+    meta: opts||null
+  };
+  S.chronicle.unshift(ev);
+  // Cap to last 500 events so it doesn't grow forever
+  if(S.chronicle.length > 500) S.chronicle.length = 500;
+  try{ save(); }catch(e){}
+  try{ renderLog(); }catch(e){}
+}
 function load(){
   // First check for save data embedded in the file itself (from saveToFile)
   try{
@@ -2623,6 +2645,7 @@ async function generateBriefing(){
     const div=document.createElement('div');div.className='cm-entry cm-briefer';
     div.innerHTML=`<div class="cm-speaker">Royal Herald <span class="rank-tag">${S.currentSeason}</span></div><div class="cm-text">${formatted}</div>`;
     msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+    try{ chronicleAdd('briefer','ai','Royal Herald',S.currentSeason,reply); }catch(_){}
     {const _el_briefer_season_label=document.getElementById('briefer-season-label');if(_el_briefer_season_label)_el_briefer_season_label.textContent=S.currentSeason}
   {const _el_save_season_display=document.getElementById('save-season-display');if(_el_save_season_display)_el_save_season_display.textContent=S.currentSeason}
   }catch(e){
@@ -2663,6 +2686,7 @@ async function sendCouncil(){
   const userDiv=document.createElement('div');userDiv.className='cm-entry cm-user';
   userDiv.innerHTML=`<div class="cm-speaker">Roger Whittlesey <span class="rank-tag">Commander</span></div><div class="cm-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
   msgs.appendChild(userDiv);
+  try{ chronicleAdd('council','user','Roger Whittlesey','Commander',text); }catch(_){}
 
   // Typing indicator
   const typingDiv=document.createElement('div');typingDiv.id='council-typing';typingDiv.className='cm-entry cm-ai';
@@ -2704,6 +2728,7 @@ async function sendCouncil(){
     const aiDiv=document.createElement('div');aiDiv.className='cm-entry cm-ai';
     aiDiv.innerHTML=`<div class="cm-speaker">Chronicle <span class="rank-tag">${S.currentSeason}</span></div><div class="cm-text">${formatted}</div>`;
     msgs.appendChild(aiDiv);msgs.scrollTop=msgs.scrollHeight;
+    try{ chronicleAdd('council','ai','Chronicle',S.currentSeason,reply); }catch(_){}
 
   }catch(e){
     document.getElementById('council-typing')?.remove();
@@ -2883,6 +2908,10 @@ function logBattle(){
   // Auto-refresh world conflicts via AI each turn (user requested automation)
   try { if(typeof aiRefreshConflicts === 'function') aiRefreshConflicts(); } catch(e){ console.warn('[auto-refresh] aiRefreshConflicts failed:', e); }
   S.battles.unshift({id:Date.now(),season,outcome,pnl:outcome==='WIN'?pnl:-pnl,contract,setup,enemy,notes,men:results});
+  try{
+    const summary = outcome+' · '+contract+' '+setup+' vs '+enemy+' · $'+pnl.toFixed(2)+(notes?(' — '+notes):'');
+    chronicleAdd('log','trade','Log a Battle',season,summary);
+  }catch(_){}
   S.selectedMen=[];save();
   // Update season labels
   {const _el_briefer_season_label=document.getElementById('briefer-season-label');if(_el_briefer_season_label)_el_briefer_season_label.textContent=S.currentSeason}
@@ -2930,14 +2959,58 @@ function renderStats(){
 }
 
 function renderLog(){
+  ensureChronicle && ensureChronicle();
   const c=document.getElementById('battle-log');
-  if(!S.battles.length){c.innerHTML='<div class="empty-log">No battles yet. Deploy your men and commit to your first skirmish.</div>';return;}
+  if(!c) return;
   const sn={ORB:'ORB',VWAP:'VWAP',FB:'Failed B',PD:'Prior Day',OTHER:'Other'};
-  c.innerHTML=S.battles.map(b=>{
-    const icon=b.outcome==='WIN'?'⚔':'🩸';
-    const pnlCls=b.pnl>=0?'pnl-w':'pnl-l';const sign=b.pnl>=0?'+':'';
-    const tags=b.men.map(mr=>{let l=mr.name.split(' ')[0]+' '+(mr.type==='win'?'+':'−')+'$'+Math.abs(mr.share).toFixed(2);if(mr.type==='win'&&mr.promoted)l+=' ⬆';if(mr.dead)l+=' ☩';return `<span class="be-tag ${mr.type==='win'?'tw':'tl'}">${l}</span>`;}).join('');
-    return `<div class="bentry"><div class="be-date">${b.season}<br>${b.contract}·${sn[b.setup]||b.setup}</div><div class="be-icon">${icon}</div><div class="be-body"><div class="be-title">${b.outcome==='WIN'?'Victory':'Defeat'} — ${b.enemy}</div>${b.notes?`<div class="be-desc">${b.notes}</div>`:''}<div class="be-tags">${tags}</div></div><div class="be-pnl ${pnlCls}">${sign}$${Math.abs(b.pnl).toFixed(2)}</div></div>`;
+
+  // Build unified, time-sorted feed (battles + chronicle events)
+  const feed = [];
+  (S.battles||[]).forEach(b => feed.push({ts: b.id||0, kind:'battle', payload:b}));
+  (S.chronicle||[]).forEach(e => feed.push({ts: e.ts||0, kind:'chron', payload:e}));
+  feed.sort((a,b)=>b.ts-a.ts);
+
+  if(feed.length===0){
+    c.innerHTML='<div class="empty-log">No battles yet. Deploy your men, brief your council, scout the field, or log your first trade — every action appears here.</div>';
+    return;
+  }
+
+  const SOURCE_STYLE = {
+    briefer:  {icon:'📜', color:'#c9a227', label:'Royal Herald'},
+    council:  {icon:'⚔',  color:'#8a6d3b', label:'Council Chamber'},
+    scout:    {icon:'🦅', color:'#5a8050', label:'Scout Report'},
+    debrief:  {icon:'📓', color:'#70c070', label:'Debrief'},
+    contract: {icon:'📜', color:'#8a2a20', label:'Quartermaster'},
+    trade:    {icon:'💹', color:'#2a5a1a', label:'Trade Log'},
+    log:      {icon:'⚔',  color:'#8a6d3b', label:'Battle Log'},
+  };
+
+  c.innerHTML = feed.map(item => {
+    if(item.kind === 'battle'){
+      const b = item.payload;
+      const icon=b.outcome==='WIN'?'⚔':'🩸';
+      const pnlCls=b.pnl>=0?'pnl-w':'pnl-l';const sign=b.pnl>=0?'+':'';
+      const tags=(b.men||[]).map(mr=>{let l=mr.name.split(' ')[0]+' '+(mr.type==='win'?'+':'−')+'$'+Math.abs(mr.share).toFixed(2);if(mr.type==='win'&&mr.promoted)l+=' ⬆';if(mr.dead)l+=' ☩';return `<span class="be-tag ${mr.type==='win'?'tw':'tl'}">${l}</span>`;}).join('');
+      return `<div class="bentry"><div class="be-date">${b.season}<br>${b.contract}·${sn[b.setup]||b.setup}</div><div class="be-icon">${icon}</div><div class="be-body"><div class="be-title">${b.outcome==='WIN'?'Victory':'Defeat'} — ${b.enemy}</div>${b.notes?`<div class="be-desc">${b.notes}</div>`:''}<div class="be-tags">${tags}</div></div><div class="be-pnl ${pnlCls}">${sign}$${Math.abs(b.pnl).toFixed(2)}</div></div>`;
+    }
+    // chronicle event row
+    const e = item.payload;
+    const style = SOURCE_STYLE[e.source] || {icon:'•', color:'var(--ink2)', label:e.source||'event'};
+    const when = new Date(e.ts).toLocaleString('en-US',{hour12:true});
+    const isUser = e.role === 'user';
+    const safeText = String(e.text||'')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    const speakerLine = isUser
+      ? `<span style="color:var(--forest-m);font-weight:600;">Roger (Commander)</span> <span style="color:var(--ink4);font-size:10px;">→ ${style.label}</span>`
+      : `<span style="color:${style.color};font-weight:600;">${e.speakerName||style.label}</span>${e.speakerTag?` <span style="color:var(--ink4);font-size:10px;">· ${e.speakerTag}</span>`:''}`;
+    return `<div class="bentry chron-entry" style="background:var(--parch2);border-left:3px solid ${style.color};">
+      <div class="be-date" style="font-size:11px;">${style.icon} ${style.label}<br><span style="color:var(--ink4);font-family:var(--mono);font-size:9.5px;">${when}</span>${e.season?`<br><span style="font-size:9.5px;color:var(--ink4);">${e.season}</span>`:''}</div>
+      <div class="be-body" style="flex:1;">
+        <div class="be-title" style="font-size:12px;">${speakerLine}</div>
+        <div class="be-desc" style="font-size:12.5px;line-height:1.55;max-height:160px;overflow:auto;font-style:${isUser?'normal':'italic'};">${safeText}</div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -4350,6 +4423,7 @@ async function sendGenericAI(boxId){
   const userDiv=document.createElement('div');userDiv.className='cm-entry cm-user';
   userDiv.innerHTML=`<div class="cm-speaker">Roger Whittlesey <span class="rank-tag">Commander</span></div><div class="cm-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
   msgs.appendChild(userDiv);
+  try{ chronicleAdd(boxId,'user','Roger Whittlesey','Commander',text); }catch(_){}
 
   // Typing indicator
   const typingDiv=document.createElement('div');typingDiv.className='cm-entry cm-ai';
@@ -4379,6 +4453,7 @@ async function sendGenericAI(boxId){
     const formatted=reply.replace(/\*\*([^*]+):\*\*\s*/g,'<strong>$1:</strong> ').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
     aiDiv.innerHTML=`<div class="cm-speaker">${cfg.speakerName} <span class="rank-tag">${cfg.speakerTag}</span></div><div class="cm-text">${formatted}</div>`;
     msgs.appendChild(aiDiv);msgs.scrollTop=msgs.scrollHeight;
+    try{ chronicleAdd(boxId,'ai',cfg.speakerName,cfg.speakerTag,reply); }catch(_){}
   }catch(e){
     typingDiv.remove();
     const errDiv=document.createElement('div');errDiv.className='cm-entry cm-ai';
@@ -4798,6 +4873,14 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
     const all = t1Load();
     all.unshift(trade);
     t1Save(all);
+    try{
+      const outLabel = outcome ? (' ['+outcome+']') : ' [pending]';
+      const pnlStr = pnl ? (' · P&L $'+pnl.toFixed(2)) : '';
+      const summary = (setup||'(no setup)')+' '+dir+outLabel+' · entry '+entry+' / stop '+stop+' / target '+target+' (R:R '+(rr||'—')+')'+pnlStr+(notes?(' — '+notes):'');
+      if(typeof window.chronicleAdd === 'function'){
+        window.chronicleAdd('trade','trade','Discipline Console','live trade',summary);
+      }
+    }catch(_){}
     t1ResetChecklist();
     t1Render();
   };
