@@ -1075,9 +1075,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <ellipse cx="100" cy="42" rx="30" ry="7" fill="none" stroke="#1a4a8a" stroke-width="4" stroke-dasharray="10,10" stroke-dashoffset="5"/>
   <!-- Motto scroll -->
   <rect x="24" y="248" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
-  <text x="100" y="261" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Pro Fen et Familia</text>
+  <text x="100" y="261" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
 </svg>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--border3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Whittlesey Arms · Azure three Catherine wheels Or</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--border3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Whittlesey Arms · Azure, a fess ermine between three escallop shells Or</div>
       <div style="font-size:10px;font-style:italic;color:var(--ink4);">Click a soldier's card to read his dossier.</div>
     </div>
   </div>
@@ -1162,6 +1162,49 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <button class="land-update-btn" onclick="updateLand()">Update ↗</button>
     </div>
     <div class="land-coords">📍 Whittlesey, Cambridgeshire · Fenland, England<br>Bounded by the Mere to the west · Peterborough road to the north</div>
+  </div>
+
+
+  <!-- MES FUTURES — Trading screen -->
+  <div class="fleet-card" id="mes-card" style="border-color:#5a4a2a;">
+    <span class="fleet-icon">📈</span>
+    <div class="fleet-name">MES — Micro E-mini S&amp;P 500</div>
+    <div class="fleet-tier">Futures · Evening Globex Session</div>
+
+    <div style="text-align:center;margin:8px 0 6px;font-family:var(--mono);font-size:9px;color:#5a7a8a;text-transform:uppercase;letter-spacing:0.1em;">Live chart — front-month continuous</div>
+
+    <!-- TradingView MES Symbol Overview Widget -->
+    <div style="background:#0a1420;border-radius:4px;padding:4px;margin-bottom:8px;">
+      <div class="tradingview-widget-container" style="height:320px;width:100%;">
+        <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+        {
+          "autosize": true,
+          "symbol": "CME_MINI:MES1!",
+          "interval": "15",
+          "timezone": "America/Phoenix",
+          "theme": "dark",
+          "style": "1",
+          "locale": "en",
+          "enable_publishing": false,
+          "hide_top_toolbar": false,
+          "hide_legend": false,
+          "save_image": false,
+          "calendar": false,
+          "support_host": "https://www.tradingview.com"
+        }
+        </script>
+      </div>
+    </div>
+
+    <div class="fleet-stat"><span class="fleet-sk">Symbol</span><span class="fleet-sv gold">MES (Micro E-mini S&amp;P 500)</span></div>
+    <div class="fleet-stat"><span class="fleet-sk">Tick value</span><span class="fleet-sv">$1.25 per 0.25 point</span></div>
+    <div class="fleet-stat"><span class="fleet-sk">Margin (intraday)</span><span class="fleet-sv">~$50–80 per contract</span></div>
+    <div class="fleet-stat"><span class="fleet-sk">Session</span><span class="fleet-sv">Evening Globex · 18:00–17:00 ET</span></div>
+    <div class="fleet-stat"><span class="fleet-sk">Platform</span><span class="fleet-sv">NinjaTrader (desktop)</span></div>
+    <div class="fleet-input-row">
+      <a href="https://ninjatrader.com/" target="_blank" class="fleet-refresh-btn" style="text-align:center;text-decoration:none;display:inline-block;padding:6px 12px;">⚔ Open NinjaTrader</a>
+    </div>
   </div>
 
 
@@ -1433,9 +1476,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <ellipse cx="100" cy="42" rx="30" ry="7" fill="none" stroke="#1a4a8a" stroke-width="4" stroke-dasharray="10,10" stroke-dashoffset="5"/>
   <!-- Motto scroll -->
   <rect x="24" y="248" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
-  <text x="100" y="261" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Pro Fen et Familia</text>
+  <text x="100" y="261" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
 </svg></div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px;text-align:center;">Whittlesey Arms · Azure three Catherine wheels Or · Cambridgeshire, England</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px;text-align:center;">Whittlesey Arms · Azure, a fess ermine between three escallop shells Or · Cambridgeshire, England</div>
     </div>
 
     <!-- Origin of the name -->
@@ -1469,103 +1512,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div class="fam-fact"><span class="fam-fk">Legacy</span><span class="fam-fv">Highest-ranking Whittlesey in recorded history</span></div>
     </div>
 
-    <!-- ═══ THE BAND — DYNASTY SECTION ═══ -->
-    <div style="margin:20px 0 10px;">
-      <div style="font-family:var(--fellsc);font-size:22px;color:var(--gold-m);text-align:center;letter-spacing:0.06em;padding:12px 0 8px;border-top:2px solid var(--border3);border-bottom:1px solid var(--border3);">
-        ⚔ The Whittlesey Defense Band — Character Dossiers
-      </div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;padding:6px 0 14px;letter-spacing:0.08em;text-transform:uppercase;">
-        Whittlesey, Isle of Ely · Anno Domini 1526 · Five men. One fen town. The dynasty begins here.
-      </div>
-    </div>
-
-    <!-- Roger Whittlesey IV -->
-    <div class="fam-section" style="border-color:var(--gold-m);">
-      <div class="fam-section-title" style="color:var(--gold-m);">⚖️ Roger Lee Whittlesey IV — Commander</div>
-      <div class="fam-body">
-        <p>Roger Lee Whittlesey IV is the fourth generation of his line to bear the name in Whittlesey. His great-grandfather received the name from a wool merchant ancestor who chose it in deliberate homage to the town's most famous son — William de Whittlesey, the Archbishop of Canterbury. The naming tradition is both an honour and a burden: every Roger Lee Whittlesey carries the weight of that 14th-century achievement and the awareness of how far the family has descended from it.</p>
-        <p>Roger's father died of fever in 1522 when Roger was fourteen. He inherited modest holdings — a farmhouse with a small pasture, rights on the common, and his father's reputation as a reliable wool factor for the Peterborough market. Four years of managing that inheritance alone gave him the calculating mind and the controlled manner that men notice when they first deal with him. He does not raise his voice. He does not need to.</p>
-        <p>He formed the Defense Band in the spring of 1526 with four men he had known all his life, in response to a raid on a merchant convoy that killed two men he knew personally. The decision was made in three days. The band was assembled in a week. Roger is not impulsive — but once decided, he is immovable.</p>
-      </div>
-      <div class="fam-fact"><span class="fam-fk">Born</span><span class="fam-fv">1508 · Whittlesey, Cambridgeshire</span></div>
-      <div class="fam-fact"><span class="fam-fk">Age (1526)</span><span class="fam-fv">18 years old</span></div>
-      <div class="fam-fact"><span class="fam-fk">Origin</span><span class="fam-fv">Son of a wool merchant — middle fen prosperity</span></div>
-      <div class="fam-fact"><span class="fam-fk">Rank</span><span class="fam-fv">Private 2nd Class (PV2) — commander by deed, not title</span></div>
-      <div class="fam-fact"><span class="fam-fk">Character</span><span class="fam-fv">Calm, calculating, loyal, merchant's mind turned to strategy</span></div>
-      <div class="fam-fact"><span class="fam-fk">Portrait</span><span class="fam-fv">⚖️ — the scales of trade and justice</span></div>
-      <div class="fam-fact"><span class="fam-fk">Quote</span><span class="fam-fv">"We do not fight for glory. We fight so that Whittlesey stands when tomorrow comes."</span></div>
-    </div>
-
-    <!-- Ralph Whittlesey -->
-    <div class="fam-section" style="border-color:#5a7a40;">
-      <div class="fam-section-title" style="color:#90c060;">🌾 Ralph Whittlesey — Sergeant of the Fens</div>
-      <div class="fam-body">
-        <p>Ralph Whittlesey is not a cousin of Roger by blood — the name is coincidence, or perhaps destiny, in the way that the fens produce their own logic. His father, Thomas Whittlesey, is a fen farmer whose holding borders the eastern edge of the great Mere, and has worked those acres since his own father reclaimed them from the water with six years of ditch-digging and willow staking. The Whittlesey family name on a fen farmer is simply the name of the town on the man who was born there. Half the population might as well be called the same.</p>
-        <p>Ralph has worked the land since he could walk. He cut peat at seven, drove sheep at ten, and had the physical confidence of a grown man by fourteen — the broad shoulders, the unhurried movements, the sense that nothing in this landscape could surprise him because he had already encountered everything it had to offer. His father wanted him to inherit the farm. Ralph wanted something he could not name. When Roger came to him on a Tuesday morning in April 1526, Ralph said yes before Roger had finished the sentence.</p>
-        <p>He is the most purely physical member of the band — not stupid, but content to think slowly and act decisively. He holds positions. He does not retreat. He does not embellish reports of what he has seen. When Ralph says something happened, it happened exactly as he describes it, no more and no less. The other men trust this completely.</p>
-        <p>He carries a carved oak staff his grandfather made — the same grandfather who first pushed back the Mere's edge on their farmland. He touches it the way other men touch a rosary. The land made him. He serves to protect the land. The logic is simple and total.</p>
-      </div>
-      <div class="fam-fact"><span class="fam-fk">Born</span><span class="fam-fv">1508 · Whittlesey, Cambridgeshire</span></div>
-      <div class="fam-fact"><span class="fam-fk">Age (1526)</span><span class="fam-fv">18 years old</span></div>
-      <div class="fam-fact"><span class="fam-fk">Father</span><span class="fam-fv">Thomas Whittlesey — fen farmer, border of the Mere</span></div>
-      <div class="fam-fact"><span class="fam-fk">Grandfather</span><span class="fam-fv">First man to drain and claim the family's fen acres — c.1480s</span></div>
-      <div class="fam-fact"><span class="fam-fk">The land</span><span class="fam-fv">4.5 acres of drained fen farmland — the Whittlesey Fen Fields still held by the family</span></div>
-      <div class="fam-fact"><span class="fam-fk">Rank</span><span class="fam-fv">Private 2nd Class (PV2) — the steadiest man in the band</span></div>
-      <div class="fam-fact"><span class="fam-fk">Character</span><span class="fam-fv">Taciturn, stubborn, utterly reliable, fen-born and fen-wise</span></div>
-      <div class="fam-fact"><span class="fam-fk">Weapon</span><span class="fam-fv">Oak staff — carved by his grandfather, used as a walking stick and a weapon with equal ease</span></div>
-      <div class="fam-fact"><span class="fam-fk">Portrait</span><span class="fam-fv">🌾 — the wheat sheaf of the fen harvest; the land he defends</span></div>
-      <div class="fam-fact"><span class="fam-fk">Quote</span><span class="fam-fv">"Tell me where to stand and I'll be there."</span></div>
-      <div style="margin-top:10px;padding:8px 10px;background:#1a2010;border-left:3px solid #5a7a40;border-radius:0 3px 3px 0;">
-        <div style="font-family:var(--fellsc);font-size:11px;color:#90c060;margin-bottom:4px;">Connection to the Fen Fields</div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);line-height:1.6;">Ralph's grandfather carved the fen holding out of the Mere's edge in the 1480s. The 4.5 acres of Whittlesey Fen Fields now listed in your holdings are those same acres — drained, enclosed, and worked by the Whittlesey family for forty years before the band was formed. Ralph fights to protect what his grandfather built. The land is not abstract to him. It is the reason for everything.</div>
-      </div>
-    </div>
-
-    <!-- Thomas Fenne -->
-    <div class="fam-section">
-      <div class="fam-section-title">🪙 Thomas Fenne — The Tanner's Eye</div>
-      <div class="fam-body">
-        <p>Thomas Fenne is the son of William Fenne, the principal tanner of Whittlesey, whose yard on the eastern edge of town processes the hides from the local cattle trade and sells finished leather to the Peterborough saddlers and Cambridge cobblers. Thomas grew up learning two things simultaneously: the physical work of the tannery and the commercial logic of his father's trade ledgers. Both left marks. His hands are permanently stained from the oak bark pits. His mind moves through transactions the way other men move through physical spaces — instinctively, always knowing where the exits and the opportunities are.</p>
-        <p>He joined the band because he calculated that a man with a proven sword-arm and a reputation for reliability was better placed in the world than a man who smelled of the tannery for the rest of his life. This is not cynicism — it is honest self-assessment. Thomas respects honesty above almost everything. He is one of the least dishonest men in Cambridgeshire, which is not the same as being honest, but is not nothing either.</p>
-      </div>
-      <div class="fam-fact"><span class="fam-fk">Born</span><span class="fam-fv">1508 · Whittlesey, Cambridgeshire</span></div>
-      <div class="fam-fact"><span class="fam-fk">Father</span><span class="fam-fv">William Fenne — principal tanner of Whittlesey</span></div>
-      <div class="fam-fact"><span class="fam-fk">Rank</span><span class="fam-fv">Private 2nd Class (PV2)</span></div>
-      <div class="fam-fact"><span class="fam-fk">Character</span><span class="fam-fv">Sharp, observant, trader's instinct, cheerful pragmatism</span></div>
-      <div class="fam-fact"><span class="fam-fk">Portrait</span><span class="fam-fv">🪙 — the coin; trade made visible</span></div>
-      <div class="fam-fact"><span class="fam-fk">Quote</span><span class="fam-fv">"If you know where the enemy will be, you need never fight where they are."</span></div>
-    </div>
-
-    <!-- John Cobbes -->
-    <div class="fam-section">
-      <div class="fam-section-title">🔨 John Cobbes — The Smith's Son</div>
-      <div class="fam-body">
-        <p>John Cobbes is the blacksmith's eldest son and has swung a hammer since he was nine years old. He is the largest man in the band by a meaningful margin — broad-framed, with the particular kind of physical confidence that comes not from aggression but from having always been the strongest person in any room. He has never needed to prove it. This has made him gentle in a way that surprises people who have not met him before.</p>
-        <p>He is the moral centre of the band. The others notice this without naming it — they look to John when a decision feels wrong rather than just difficult. He asks whether something is right, not just whether it will work. He carries a carved wooden cross at his belt, a gift from his mother when he left to join the band. He touches it before anything dangerous. He is not superstitious. He is devout. The distinction matters to him.</p>
-      </div>
-      <div class="fam-fact"><span class="fam-fk">Born</span><span class="fam-fv">1508 · Whittlesey, Cambridgeshire</span></div>
-      <div class="fam-fact"><span class="fam-fk">Father</span><span class="fam-fv">Robert Cobbes — blacksmith of Whittlesey market square</span></div>
-      <div class="fam-fact"><span class="fam-fk">Rank</span><span class="fam-fv">Private 2nd Class (PV2)</span></div>
-      <div class="fam-fact"><span class="fam-fk">Character</span><span class="fam-fv">Protective, devout, moral conscience, patient strength</span></div>
-      <div class="fam-fact"><span class="fam-fk">Portrait</span><span class="fam-fv">🔨 — the hammer; iron made him</span></div>
-      <div class="fam-fact"><span class="fam-fk">Quote</span><span class="fam-fv">"A shield held firm is worth ten swords swung wild."</span></div>
-    </div>
-
-    <!-- William Draper -->
-    <div class="fam-section">
-      <div class="fam-section-title">📜 William Draper — The Seeker</div>
-      <div class="fam-body">
-        <p>William Draper is the cloth merchant's son who grew up knowing that the world extended beyond the fens. His father trades cloth with factors in Peterborough, Cambridge, and occasionally London — men who talk about Antwerp and Venice and places William has only read about in the books his father occasionally acquires. William reads everything he can find. In 1526 this is not many books, but it is more than anyone else in the band has read, and it shows in the questions he asks.</p>
-        <p>He joined the band because the alternative was the cloth trade, and the cloth trade would have kept him in the fens for the rest of his life. He is not ungrateful for his origins. He simply intends to see what lies beyond them. He throws himself into situations and works out the details while moving. This occasionally produces inspired results and occasionally produces bruises. The ratio, so far, is acceptable.</p>
-      </div>
-      <div class="fam-fact"><span class="fam-fk">Born</span><span class="fam-fv">1508 · Whittlesey, Cambridgeshire</span></div>
-      <div class="fam-fact"><span class="fam-fk">Father</span><span class="fam-fv">Edward Draper — cloth merchant, Whittlesey market</span></div>
-      <div class="fam-fact"><span class="fam-fk">Rank</span><span class="fam-fv">Private 2nd Class (PV2)</span></div>
-      <div class="fam-fact"><span class="fam-fk">Character</span><span class="fam-fv">Curious, impulsive, book-learned, adaptable, restless</span></div>
-      <div class="fam-fact"><span class="fam-fk">Portrait</span><span class="fam-fv">📜 — the scroll; the world beyond the fens</span></div>
-      <div class="fam-fact"><span class="fam-fk">Quote</span><span class="fam-fv">"There's a whole world past these fens. I intend to see it."</span></div>
-    </div>
-
     <!-- Documented Lineage — real people, sourced bios -->
     <div class="fam-section" style="border-color:#4a3a2a;background:#1a1610;">
       <div class="fam-section-title" style="color:#c0a06a;">📜 The Documented Lineage — Cambridgeshire to Connecticut</div>
@@ -1579,7 +1525,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <div class="fam-section" style="border-color:#3a3020;">
       <div class="fam-section-title" style="color:#a89060;">⚜ Ralph Whittelse — Tudor Cambridgeshire</div>
       <div class="fam-body">
-        <p>Ralph Whittelse appears in 16th-century parish records of Cambridgeshire, with a recorded baptism of March 11, 1508. He lived in the years between William de Whittlesey's death (1374) and the New World emigration of the family line — a period when the family appears to have persisted as fenland farmers and minor landholders around the town of Whittlesey itself. The spelling of the surname in this era was unstable (Whittelse, Whittelsey, Witsley) and varied even within single documents.</p>
+        <p>Ralph Whittelse appears in 16th-century parish records of Cambridgeshire, with a recorded baptism of March 11, 1508. He lived in the years between William de Whittlesey's death (1374) and the New World emigration of the family line — a period the records describe sparingly. The 1898 Whittelsey genealogy lists him by baptism date alone; his occupation, holdings, and movements are not documented in publicly accessible sources. The spelling of the surname in this era was unstable (Whittelse, Whittelsey, Witsley) and varied even within single documents.</p>
         <p>What is documented is that Whittleseys in the early Tudor period were grouped in Colne, Bluntisham, Godmanchester, Pidley, and the surrounding parishes within fifty miles of Whittlesey town — a tight regional clustering suggesting a single extended family with a shared origin in the eponymous fen island.</p>
       </div>
       <div class="fam-fact"><span class="fam-fk">Baptised</span><span class="fam-fv">March 11, 1508 · Cambridgeshire, England</span></div>
