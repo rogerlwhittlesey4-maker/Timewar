@@ -963,6 +963,19 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <div class="p-inner" style="font-family:var(--fell);padding:14px 18px;">
       <div class="sec-title" style="text-align:center;">⚔ Live Trading — Discipline Console</div>
 
+      <!-- TOOLBAR: account balance + Risk Officer toggle -->
+      <div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 12px;background:#1a1610;border:1.5px solid var(--border3);border-radius:2px;margin-bottom:10px;">
+        <div style="display:flex;gap:6px;align-items:center;color:#c9a227;font-family:var(--fellsc);font-size:11px;letter-spacing:0.06em;">
+          <span>⚙ NT ACCOUNT</span>
+          <span>$</span>
+          <input id="t1-account-balance" type="number" step="0.01" value="500" title="Your NinjaTrader account balance — used by the Risk Officer" style="width:88px;padding:3px 6px;background:#0a0d14;border:1px solid var(--border3);color:#c9a227;font-family:var(--mono);font-size:12px;border-radius:2px;text-align:right;">
+        </div>
+        <label style="display:flex;gap:6px;align-items:center;color:#c9a227;font-family:var(--fellsc);font-size:11px;letter-spacing:0.06em;cursor:pointer;" title="When ON, every trade is reviewed by the Risk Officer before being logged">
+          <input id="t1-risk-officer-toggle" type="checkbox" checked> RISK OFFICER ENFORCEMENT
+          <span id="t1-risk-officer-state" style="color:#5a8050;font-family:var(--mono);font-size:11px;">ARMED</span>
+        </label>
+      </div>
+
       <!-- ROW 1: SESSION CLOCK / COUNTERS / DAILY P&L -->
       <div id="t1-status-row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin-bottom:12px;">
         <div style="flex:1;min-width:140px;background:#f3e9d2;border:1.5px solid var(--border2);padding:8px 10px;border-radius:2px;text-align:center;">
@@ -1047,6 +1060,12 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           </div>
           <div id="t1-submit-msg" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">complete the checklist to enable submit</div>
         </div>
+      </div>
+
+      <!-- RISK OFFICER VERDICT BOX (shown after each Submit attempt) -->
+      <div id="t1-verdict-box" style="display:none;margin-bottom:12px;padding:12px 16px;border-radius:2px;border-left:4px solid;font-family:var(--fell);font-size:13px;line-height:1.55;"></div>
+      <div id="t1-override-row" style="display:none;margin-bottom:12px;text-align:center;">
+        <button id="t1-override-btn" onclick="t1ForceSubmit()" style="padding:8px 14px;background:#5a1a14;color:#f3d2c2;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #8a2a20;cursor:pointer;border-radius:2px;font-size:12px;">⚠ OVERRIDE — log trade despite Risk Officer veto (logged as discipline violation)</button>
       </div>
 
       <!-- ROW 3: TRADE LOG TABLE -->
@@ -4852,8 +4871,15 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
     out.value = rr.toFixed(2)+' : 1';
   }
 
-  // ── SUBMIT TRADE ─────────────────────────────────────────────
-  window.t1SubmitTrade = function(){
+  // ── ACCOUNT BALANCE PERSISTENCE ──────────────────────────────
+  const T1_BAL_KEY = 'timewar_t1_balance_v1';
+  function t1GetBalance(){ const v = parseFloat(localStorage.getItem(T1_BAL_KEY)); return isFinite(v) && v>0 ? v : 500; }
+  function t1SetBalance(v){ if(isFinite(v)&&v>0) localStorage.setItem(T1_BAL_KEY, String(v)); }
+
+  // ── DRAFT GATHERING (used by Submit and Force-Submit) ────────
+  let t1PendingDraft = null;   // trade being reviewed by Risk Officer
+
+  function t1GatherDraft(){
     const setup=document.getElementById('t1-f-setup').value.trim();
     const dir=document.getElementById('t1-f-dir').value;
     const entry=document.getElementById('t1-f-entry').value;
@@ -4863,27 +4889,224 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
     const outcome=document.getElementById('t1-f-outcome').value;
     const pnl=parseFloat(document.getElementById('t1-f-pnl').value)||0;
     const notes=document.getElementById('t1-f-notes').value.trim();
-    if(!setup){ alert('Setup name required'); return; }
-    const trade = {
+    if(!setup){ alert('Setup name required'); return null; }
+    return {
       id: Date.now(),
       date: t1Today(),
       time: new Date().toLocaleTimeString('en-US',{hour12:true,timeZone:'America/New_York'}),
       setup, dir, entry, stop, target, rr, outcome, pnl, notes
     };
+  }
+
+  // ── RISK OFFICER VERDICT UI ──────────────────────────────────
+  function t1ShowVerdict(state, html){
+    const box = document.getElementById('t1-verdict-box');
+    if(!box) return;
+    box.style.display = 'block';
+    let bg, border, color;
+    if(state === 'approved'){ bg='#e6f0d8'; border='#2a5a1a'; color='#1a3a0a'; }
+    else if(state === 'blocked'){ bg='#f3d2c2'; border='#8a2a20'; color='#5a1a14'; }
+    else if(state === 'consulting'){ bg='#f3e9d2'; border='#8a6d3b'; color='#3a2818'; }
+    else if(state === 'override'){ bg='#fbe5a8'; border='#c08020'; color='#5a3a0a'; }
+    else { bg='#e9dec2'; border='#8a6d3b'; color='#3a2818'; }
+    box.style.background = bg; box.style.borderLeftColor = border; box.style.color = color;
+    box.innerHTML = html;
+  }
+  function t1HideVerdict(){
+    const box = document.getElementById('t1-verdict-box');
+    if(box) box.style.display = 'none';
+    const ov = document.getElementById('t1-override-row');
+    if(ov) ov.style.display = 'none';
+    t1PendingDraft = null;
+  }
+
+  // ── THE RISK OFFICER (consults Claude before logging trade) ──
+  async function runRiskOfficer(draft){
+    const balance = t1GetBalance();
+    const todays  = t1Load().filter(t => t.date === t1Today());
+    const dailyPnl = todays.reduce((s,t)=>s + (parseFloat(t.pnl)||0), 0);
+    const checklistBoxes = document.querySelectorAll('.t1-chk');
+    const checklistDone  = Array.from(checklistBoxes).filter(b=>b.checked).length;
+    const checklistTotal = checklistBoxes.length;
+
+    // Compute MES point risk if entry & stop both present (MES tick = 0.25 pts = $1.25, so 1 pt = $5)
+    let stopRisk = null;
+    const e = parseFloat(draft.entry), s = parseFloat(draft.stop);
+    if(isFinite(e) && isFinite(s) && e !== s){
+      stopRisk = Math.abs(e - s) * 5;  // dollars per 1 MES contract
+    }
+
+    // ET blackout windows (first/last 15 min of NYSE session)
+    const now = new Date();
+    const etNow = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+    const h = etNow.getHours(), m = etNow.getMinutes();
+    const dow = etNow.getDay();
+    const minsSinceOpen = (h-9)*60 + (m-30);
+    const minsToClose   = (16-h)*60 - m;
+    let sessionWindow;
+    if(dow===0||dow===6) sessionWindow = 'weekend (market closed)';
+    else if(minsSinceOpen < 0) sessionWindow = 'pre-market';
+    else if(minsToClose <= 0) sessionWindow = 'after-hours (closed)';
+    else if(minsSinceOpen < 15) sessionWindow = 'OPENING BLACKOUT (first 15 min)';
+    else if(minsToClose <= 15) sessionWindow = 'CLOSING BLACKOUT (last 15 min)';
+    else sessionWindow = 'tradeable window ('+minsToClose+' min to close)';
+
+    const system = `You are the Risk Officer of the Whittlesey Defense Band — the enforcer of the Battle Contract in a 1526 England historical RPG that maps directly to live MES futures trading on the Commander's NinjaTrader account.
+
+THE BATTLE CONTRACT (these are the rules you enforce):
+1. Maximum risk per trade: 10% of account balance (e.g. $50 on $500). 1 MES point = $5 per contract.
+2. Maximum contracts per trade: 1 MES. No averaging in, no adding to losers.
+3. Maximum trades per session: 2.
+4. Daily loss limit: 20% of account balance (e.g. $100 on $500). Hit it = session over.
+5. Sanctioned setups only: Opening Range Breakout (ORB), VWAP Reclaim, Failed Breakdown (FB), Prior Day Level (PDL).
+6. Minimum reward-to-risk: 1.5R.
+7. No revenge trades. After a loss, mandatory 5-min pause.
+8. No trading the first or last 15 minutes of the session.
+9. Every trade — win or loss — must be debriefed.
+10. The account is a soldier under your command. Lose him and the campaign ends.
+
+YOUR JOB: review the proposed trade against the contract and today's context. Your reply MUST begin with one of these exact tokens on the first line:
+- APPROVED — the trade respects the contract
+- BLOCKED — the trade violates the contract (state which rule numbers)
+
+Then 1-3 short sentences explaining your reasoning in period military voice. Be direct, not consoling. When in doubt, lean BLOCKED — a missed trade costs nothing; a violated contract costs the campaign. The Commander's discipline is your responsibility.`;
+
+    const user = `ACCOUNT & SESSION STATE
+Account balance: $${balance.toFixed(2)}
+Max allowed risk per trade (10%): $${(balance*0.10).toFixed(2)}
+Daily loss limit (20%): -$${(balance*0.20).toFixed(2)}
+Trades taken today: ${todays.length} / 2
+Daily P&L today: $${dailyPnl.toFixed(2)}
+Pre-trade checklist completed: ${checklistDone} / ${checklistTotal}
+Current session window: ${sessionWindow}
+
+PROPOSED TRADE
+Setup: ${draft.setup}
+Direction: ${draft.dir}
+Entry: ${draft.entry || '(blank)'}
+Stop: ${draft.stop || '(blank)'}
+Target: ${draft.target || '(blank)'}
+R:R: ${draft.rr || '(blank)'}
+Computed risk (1 MES @ entry-to-stop): ${stopRisk!==null ? '$'+stopRisk.toFixed(2) : '(cannot compute)'}
+Outcome being logged: ${draft.outcome || 'pending'}
+Notes: ${draft.notes || '(none)'}
+
+Render your verdict now.`;
+
+    const res = await fetchWithTimeout('/api/claude', {
+      method:'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens: 350,
+        system,
+        messages: [{ role:'user', content:user }]
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message + ' (type: ' + data.error.type + ')');
+    const reply = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    const firstLine = reply.split('\n')[0].trim().toUpperCase();
+    const blocked = firstLine.startsWith('BLOCKED');
+    return { blocked, text: reply, rule: firstLine };
+  }
+
+  // ── SUBMIT TRADE (Risk-Officer gated) ────────────────────────
+  window.t1SubmitTrade = async function(){
+    const draft = t1GatherDraft();
+    if(!draft) return;
+
+    const roEnabled = (document.getElementById('t1-risk-officer-toggle')||{}).checked !== false;
+    const btn = document.getElementById('t1-submit-btn');
+
+    if(!roEnabled){
+      t1CommitTrade(draft, 'unreviewed');
+      return;
+    }
+
+    // Show consulting state
+    t1ShowVerdict('consulting',
+      '<div style="font-family:var(--fellsc);letter-spacing:0.08em;font-size:12px;margin-bottom:4px;">⚖ THE RISK OFFICER REVIEWS YOUR ORDER</div>'+
+      '<div style="font-style:italic;">Consulting the Battle Contract... (10–15 sec)</div>');
+    const ov = document.getElementById('t1-override-row'); if(ov) ov.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Consulting Risk Officer...'; btn.style.opacity = '0.6'; btn.style.cursor = 'wait';
+
+    let verdict;
+    try { verdict = await runRiskOfficer(draft); }
+    catch(e){
+      // Fail OPEN with a warning — don't brick the dashboard if the API is down
+      t1ShowVerdict('override',
+        '<div style="font-family:var(--fellsc);letter-spacing:0.08em;font-size:12px;margin-bottom:4px;">⚠ RISK OFFICER UNAVAILABLE</div>'+
+        '<div>'+(e.message||'unknown error')+'</div>'+
+        '<div style="margin-top:6px;">Trade logged without review. Verify rule compliance yourself.</div>');
+      t1CommitTrade(draft, 'unreviewed-error');
+      btn.disabled = false; btn.textContent = '⚔ SUBMIT TRADE'; btn.style.opacity='1'; btn.style.cursor='pointer';
+      return;
+    }
+
+    btn.disabled = false; btn.style.opacity='1'; btn.style.cursor='pointer'; btn.textContent = '⚔ SUBMIT TRADE';
+
+    const safeText = String(verdict.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+    if(verdict.blocked){
+      // BLOCKED — do NOT log the trade; offer override path
+      t1PendingDraft = draft;
+      t1ShowVerdict('blocked',
+        '<div style="font-family:var(--fellsc);letter-spacing:0.08em;font-size:12px;margin-bottom:4px;">⛔ BLOCKED BY THE RISK OFFICER</div>'+
+        '<div>'+safeText+'</div>');
+      const ovRow = document.getElementById('t1-override-row');
+      if(ovRow) ovRow.style.display = 'block';
+      try{ if(typeof window.chronicleAdd==='function'){
+        window.chronicleAdd('contract','ai','Risk Officer','veto', verdict.text);
+      } }catch(_){}
+      return;
+    }
+
+    // APPROVED — log it
+    t1ShowVerdict('approved',
+      '<div style="font-family:var(--fellsc);letter-spacing:0.08em;font-size:12px;margin-bottom:4px;">✅ APPROVED BY THE RISK OFFICER</div>'+
+      '<div>'+safeText+'</div>');
+    try{ if(typeof window.chronicleAdd==='function'){
+      window.chronicleAdd('contract','ai','Risk Officer','approval', verdict.text);
+    } }catch(_){}
+    t1CommitTrade(draft, 'approved');
+  };
+
+  // ── FORCE-SUBMIT (override after a veto) ─────────────────────
+  window.t1ForceSubmit = function(){
+    if(!t1PendingDraft){ alert('No trade pending override.'); return; }
+    if(!confirm('Override the Risk Officer and log this trade as a discipline violation?\n\nThis action will be permanently recorded in the Chronicle of Battles.')) return;
+    const draft = t1PendingDraft;
+    t1PendingDraft = null;
+    t1ShowVerdict('override',
+      '<div style="font-family:var(--fellsc);letter-spacing:0.08em;font-size:12px;margin-bottom:4px;">⚠ COMMANDER OVERRIDE — DISCIPLINE VIOLATION LOGGED</div>'+
+      '<div>This trade was logged against the Risk Officer\'s veto.</div>');
+    const ov = document.getElementById('t1-override-row'); if(ov) ov.style.display = 'none';
+    try{ if(typeof window.chronicleAdd==='function'){
+      window.chronicleAdd('contract','user','Roger Whittlesey','Commander override',
+        'Overrode Risk Officer veto and logged the trade. Setup: '+draft.setup+' '+draft.dir+' entry '+draft.entry+' stop '+draft.stop);
+    } }catch(_){}
+    t1CommitTrade(draft, 'override');
+  };
+
+  // ── COMMIT TRADE TO LOG + CHRONICLE ──────────────────────────
+  function t1CommitTrade(draft, reviewState){
+    draft.riskOfficer = reviewState; // 'approved' | 'override' | 'unreviewed' | 'unreviewed-error'
     const all = t1Load();
-    all.unshift(trade);
+    all.unshift(draft);
     t1Save(all);
     try{
-      const outLabel = outcome ? (' ['+outcome+']') : ' [pending]';
-      const pnlStr = pnl ? (' · P&L $'+pnl.toFixed(2)) : '';
-      const summary = (setup||'(no setup)')+' '+dir+outLabel+' · entry '+entry+' / stop '+stop+' / target '+target+' (R:R '+(rr||'—')+')'+pnlStr+(notes?(' — '+notes):'');
+      const outLabel = draft.outcome ? (' ['+draft.outcome+']') : ' [pending]';
+      const pnlStr = draft.pnl ? (' · P&L $'+Number(draft.pnl).toFixed(2)) : '';
+      const tag = reviewState==='override' ? ' [OVERRIDE]' : (reviewState==='unreviewed' || reviewState==='unreviewed-error' ? ' [unreviewed]' : '');
+      const summary = (draft.setup||'(no setup)')+' '+draft.dir+outLabel+tag+' · entry '+draft.entry+' / stop '+draft.stop+' / target '+draft.target+' (R:R '+(draft.rr||'—')+')'+pnlStr+(draft.notes?(' — '+draft.notes):'');
       if(typeof window.chronicleAdd === 'function'){
         window.chronicleAdd('trade','trade','Discipline Console','live trade',summary);
       }
     }catch(_){}
     t1ResetChecklist();
     t1Render();
-  };
+  }
 
   // ── DELETE A LOGGED TRADE ────────────────────────────────────
   window.t1DeleteTrade = function(id){
@@ -5048,6 +5271,23 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
       const el=document.getElementById(id);
       if(el) el.addEventListener('input', t1UpdateRR);
     });
+    // Account balance: load from localStorage, save on change
+    const balEl = document.getElementById('t1-account-balance');
+    if(balEl){
+      balEl.value = t1GetBalance();
+      balEl.addEventListener('input', ()=>{ const v=parseFloat(balEl.value); if(isFinite(v)&&v>0) t1SetBalance(v); });
+    }
+    // Risk Officer toggle: reflect state in label badge
+    const roEl = document.getElementById('t1-risk-officer-toggle');
+    const roState = document.getElementById('t1-risk-officer-state');
+    function refreshRoState(){
+      if(!roState) return;
+      const armed = roEl && roEl.checked;
+      roState.textContent = armed ? 'ARMED' : 'DISARMED';
+      roState.style.color = armed ? '#5a8050' : '#8a2a20';
+    }
+    if(roEl){ roEl.addEventListener('change', refreshRoState); }
+    refreshRoState();
     t1UpdateChecklistStatus();
     t1Render();
     t1Tick();
