@@ -970,6 +970,28 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
     </div>
   </div>
+  <!-- THE BATTLE CONTRACT — Static risk-management rules (parchment style, matches other panels) -->
+  <div class="parch-panel">
+    <div class="p-inner">
+      <div class="sec-title">📋 Battle Contract — Standing Risk Rules</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:10px;letter-spacing:0.08em;text-transform:uppercase;">MES Micro E-mini S&amp;P 500 · $500 Account · Evening Globex Session</div>
+      <div style="background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:12px;font-family:var(--fell);font-size:13px;line-height:1.7;color:var(--ink);">
+        <div style="font-family:var(--fellsc);font-size:14px;color:var(--ink);margin-bottom:10px;letter-spacing:0.04em;border-bottom:1px solid var(--border);padding-bottom:6px;">⚔ The Contract</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">4.</span> Daily loss limit: <strong style="color:var(--blood-m);">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">5.</span> Sanctioned setups only: <strong style="color:var(--ink);">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">6.</span> Minimum reward-to-risk: <strong style="color:#5a8050;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
+        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
+        <div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border);font-style:italic;color:var(--ink3);text-align:center;font-size:12px;">"A commander who cannot hold his contract cannot hold his ground."</div>
+      </div>
+    </div>
+  </div>
+
 
 
   <!-- ══ NEXT SEASON BUTTON ══ -->
@@ -1074,28 +1096,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           <textarea class="ai-textarea" id="debrief-input" placeholder="Describe the trade — what happened, what you saw, what you did, what the result was..." rows="2"></textarea>
         </div>
         <button class="ai-btn" id="debrief-btn" onclick="sendGenericAI('debrief')" style="border-color:#2a4a1a;background:#141e10;color:#70c070;">Debrief ↗</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- THE BATTLE CONTRACT — Static risk-management rules -->
-  <div class="parch-panel" style="border-color:#7a1c1c;background:#160a0a;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:var(--blood-m);">📋 Battle Contract — Standing Risk Rules</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:10px;letter-spacing:0.08em;text-transform:uppercase;">MES Micro E-mini S&amp;P 500 · $500 Account · Evening Globex Session</div>
-      <div style="background:#0a0608;border:1px solid #5a1c1c;border-radius:3px;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.7;color:#d8c8a8;">
-        <div style="font-family:var(--fellsc);font-size:13px;color:var(--blood-m);margin-bottom:8px;letter-spacing:0.04em;">⚔ THE CONTRACT</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">1.</span> Maximum risk per trade: <strong style="color:#e07070;">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">2.</span> Maximum contracts per trade: <strong style="color:#e07070;">1 MES</strong>. No averaging in, no adding to losers.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">3.</span> Maximum trades per session: <strong style="color:#e07070;">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">4.</span> Daily loss limit: <strong style="color:#e07070;">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">5.</span> Sanctioned setups only: <strong style="color:#a8c8e8;">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">6.</span> Minimum reward-to-risk: <strong style="color:#7ab070;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
-        <div style="margin-bottom:6px;"><span style="color:#c9a227;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
-        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #5a1c1c;font-style:italic;color:#a89060;text-align:center;font-size:10px;">"A commander who cannot hold his contract cannot hold his ground."</div>
       </div>
     </div>
   </div>
@@ -4158,8 +4158,9 @@ document.getElementById('debrief-input').addEventListener('keydown',e=>{if(e.key
     </div>
   </div>
 
-  <!-- RIGHT: location + season -->
-  <div class="save-bar-right">
+  <!-- RIGHT: Next Turn button + location + season -->
+  <div class="save-bar-right" style="display:flex;align-items:center;gap:10px;">
+    <button onclick="openSeasonTransition()" title="End the current season and advance" style="font-family:var(--fellsc);font-size:10px;padding:5px 11px;border-radius:3px;cursor:pointer;border:1.5px solid var(--gold-m);background:var(--gold-l);color:var(--gold);letter-spacing:0.04em;white-space:nowrap;line-height:1.2;">⚔ Next Turn ↗</button>
     <span style="color:var(--border2);font-size:9px;white-space:nowrap;">📍 <span id="save-location-display">Whittlesey, Isle of Ely</span></span>
     <span style="color:var(--border3);font-size:9px;white-space:nowrap;" id="save-season-display">Spring, 1526 AD</span>
   </div>
