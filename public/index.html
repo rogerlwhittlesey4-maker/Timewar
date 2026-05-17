@@ -159,7 +159,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .ai-msgs{background:#efe8d2;border:1px solid var(--border2);border-radius:3px;padding:8px 10px;min-height:120px;max-height:320px;overflow-y:auto;margin-bottom:6px;display:flex;flex-direction:column;gap:8px;}
 .ai-msgs::-webkit-scrollbar{width:4px;}
 .ai-msgs::-webkit-scrollbar-thumb{background:var(--border2);}
-.ai-msgs.briefer-msgs{background:#1e1a12;flex:1;}
+.ai-msgs.briefer-msgs{background:#1e1a12;flex:1;max-height:none !important;min-height:0;}
 .cm-entry{animation:fi 0.25s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 .cm-speaker{font-family:var(--fellsc);font-size:12px;color:var(--ink2);margin-bottom:3px;}
@@ -917,7 +917,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div class="parch-panel ai-panel" style="flex:1;display:flex;flex-direction:column;">
         <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
           <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
-          <div class="ai-msgs" id="council-msgs" style="flex:1;">
+          <div class="ai-msgs" id="council-msgs" style="flex:1;max-height:none;min-height:0;">
             <div class="cm-entry cm-ai">
               <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
               <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
