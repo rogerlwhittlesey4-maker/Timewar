@@ -644,6 +644,33 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
 @media(max-width:1100px){.left-panel,.right-panel{display:none;}.center-col{padding:12px 8px 70px;}}
 @media(max-width:680px){.roster-grid{grid-template-columns:repeat(3,1fr);}.stats-row{grid-template-columns:repeat(3,1fr);}.fr3,.fr4{grid-template-columns:1fr 1fr;}.game-title{font-size:28px;}}
+
+/* ── WoW Classic-style Character Window ── */
+.wow-char-window{background:linear-gradient(180deg,#1a1208 0%,#2a1a08 50%,#1a1208 100%);border:3px solid #8B6914;border-radius:6px;padding:14px;max-width:760px;margin:14px auto;box-shadow:0 0 0 1px #3a2810,inset 0 0 16px rgba(0,0,0,0.5);}
+.wow-char-titlebar{display:flex;justify-content:space-between;align-items:center;font-family:var(--fellsc);font-size:16px;color:#C9A227;padding:2px 4px 6px;border-bottom:1px solid #8B6914;margin-bottom:10px;}
+.wow-char-titlebar .wow-x{font-family:var(--mono);font-size:14px;color:#8a7a4a;cursor:pointer;padding:0 6px;border:1px solid #5a4520;border-radius:2px;}
+.wow-tabs{display:flex;gap:0;margin-bottom:10px;border-bottom:2px solid #8B6914;}
+.wow-tab{flex:1;padding:5px 0;text-align:center;background:#1a1208;border:1px solid #5a4520;border-bottom:none;font-family:var(--fellsc);font-size:10px;color:#8a7a4a;cursor:pointer;letter-spacing:0.04em;}
+.wow-tab.active{background:#2a2010;color:#C9A227;border-color:#8B6914;position:relative;top:1px;}
+.wow-tab:hover{color:#d0b070;}
+.wow-char-body{display:grid;grid-template-columns:62px 1fr 62px;gap:10px;align-items:start;}
+.wow-slot-col{display:flex;flex-direction:column;gap:14px;align-items:center;}
+.wow-slot{width:48px;height:48px;background:#0d0a05;border:2px solid #5a4520;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;cursor:default;line-height:1;}
+.wow-slot:hover{border-color:#C9A227;background:#1a1208;}
+.wow-slot-empty{color:#3a2820;}
+.wow-slot-label{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:6px;color:#6a5530;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;background:#1a1208;padding:0 3px;}
+.wow-paperdoll{width:100%;min-height:340px;background:radial-gradient(ellipse at center,#2a1a08 0%,#0a0608 80%);border:2px solid #5a4520;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:90px;color:#C9A227;position:relative;}
+.wow-paperdoll-name{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--fellsc);font-size:13px;color:#C9A227;font-size:11px;letter-spacing:0.05em;}
+.wow-weapons-row{display:flex;justify-content:center;gap:14px;margin-top:18px;}
+.wow-stats-panel{margin-top:14px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:10px;}
+.wow-stats-title{font-family:var(--fellsc);font-size:13px;color:#C9A227;text-align:center;border-bottom:1px solid #5a4520;padding-bottom:4px;margin-bottom:6px;letter-spacing:0.05em;}
+.wow-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+.wow-stat-row{display:flex;justify-content:space-between;padding:3px 6px;font-family:var(--mono);font-size:10px;border-bottom:1px dashed #2a2010;}
+.wow-stat-key{color:#8a7a4a;text-transform:uppercase;letter-spacing:0.06em;}
+.wow-stat-val{color:#C9A227;font-weight:600;}
+.wow-stat-val.green{color:#7ab070;}
+.wow-stat-val.red{color:#b07070;}
+
 </style>
 </head>
 <body>
@@ -683,7 +710,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="display:flex;gap:14px;align-items:center;">
         <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);" id="map-utc-clock">UTC --:--:--</span>
         <a href="https://lanrat.github.io/day-night-map/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">day/night ↗</a>
-        <a href="https://www.windy.com/?temp,34,-111.5,6" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
+        <a href="https://www.windy.com/?temp,32.6,-109.93,5" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
       </div>
     </div>
 
@@ -706,7 +733,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="flex:1;min-width:0;position:relative;">
         <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">🌤 Live Weather</div>
         <iframe
-          src="https://embed.windy.com/embed2.html?lat=34&lon=-111.5&detailLat=34&detailLon=-111.5&width=650&height=320&zoom=6&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+          src="https://embed.windy.com/embed2.html?lat=32.6&lon=-109.93&detailLat=32.6&detailLon=-109.93&width=650&height=320&zoom=5&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
           style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
           title="Live Windy weather map"
           allowfullscreen>
@@ -1077,10 +1104,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <circle cx="1.5" cy="-1" r="0.6" fill="#1a1208"/>
     </symbol>
   </defs>
-  <!-- Lion Rampant crest (heraldic, gold, above helm) -->
-  <g transform="translate(100,18)">
-    <text text-anchor="middle" font-size="22" font-family="Georgia,serif" fill="#C9A227" dominant-baseline="middle">🦁</text>
-  </g>
   <!-- Torse / wreath (twisted gold &amp; blue rope above helmet) -->
   <g transform="translate(100,42)">
     <ellipse cx="0" cy="0" rx="26" ry="4" fill="#1a4a8a" stroke="#8B6914" stroke-width="0.5"/>
@@ -1241,6 +1264,83 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 <!-- PAGE 2: CHARACTER SCREEN -->
 <div id="page-character" class="page">
 <div class="char-page">
+
+  <!-- WoW Classic-style character window -->
+  <div class="wow-char-window">
+    <div class="wow-char-titlebar">
+      <span>Roger Lee Whittlesey IV — Level <span id="wow-level">1</span> Warrior</span>
+      <span class="wow-x" title="Decorative close button">✕</span>
+    </div>
+    <div class="wow-tabs">
+      <div class="wow-tab active">⚔ Character</div>
+      <div class="wow-tab">📜 Reputation</div>
+      <div class="wow-tab">⚜ PvP</div>
+      <div class="wow-tab">📖 Skills</div>
+    </div>
+
+    <div class="wow-char-body">
+
+      <!-- LEFT equipment column: head, neck, shoulder, back, chest, shirt, tabard, wrist -->
+      <div class="wow-slot-col">
+        <div class="wow-slot wow-slot-empty" title="Head — empty">⛑️<span class="wow-slot-label">Head</span></div>
+        <div class="wow-slot wow-slot-empty" title="Neck — empty">📿<span class="wow-slot-label">Neck</span></div>
+        <div class="wow-slot wow-slot-empty" title="Shoulder — empty">🪶<span class="wow-slot-label">Shoulder</span></div>
+        <div class="wow-slot wow-slot-empty" title="Back — empty">🧥<span class="wow-slot-label">Back</span></div>
+        <div class="wow-slot wow-slot-empty" title="Chest — empty">🦺<span class="wow-slot-label">Chest</span></div>
+        <div class="wow-slot wow-slot-empty" title="Shirt — empty">👕<span class="wow-slot-label">Shirt</span></div>
+        <div class="wow-slot wow-slot-empty" title="Tabard — Whittlesey Defense Band">🏴<span class="wow-slot-label">Tabard</span></div>
+        <div class="wow-slot wow-slot-empty" title="Wrist — empty">⛓️<span class="wow-slot-label">Wrist</span></div>
+      </div>
+
+      <!-- CENTER: Paper doll with character representation -->
+      <div class="wow-paperdoll">
+        <div style="font-size:90px;">⚖️</div>
+        <div class="wow-paperdoll-name">Commander · Isle of Ely · 1526</div>
+      </div>
+
+      <!-- RIGHT equipment column: hands, waist, legs, feet, ring×2, trinket×2 -->
+      <div class="wow-slot-col">
+        <div class="wow-slot wow-slot-empty" title="Hands — empty">🧤<span class="wow-slot-label">Hands</span></div>
+        <div class="wow-slot wow-slot-empty" title="Waist — empty">🎗️<span class="wow-slot-label">Waist</span></div>
+        <div class="wow-slot wow-slot-empty" title="Legs — empty">🩲<span class="wow-slot-label">Legs</span></div>
+        <div class="wow-slot wow-slot-empty" title="Feet — empty">🥾<span class="wow-slot-label">Feet</span></div>
+        <div class="wow-slot wow-slot-empty" title="Ring 1 — empty">💍<span class="wow-slot-label">Ring 1</span></div>
+        <div class="wow-slot wow-slot-empty" title="Ring 2 — empty">💍<span class="wow-slot-label">Ring 2</span></div>
+        <div class="wow-slot wow-slot-empty" title="Trinket 1 — empty">🕯️<span class="wow-slot-label">Trinket 1</span></div>
+        <div class="wow-slot wow-slot-empty" title="Trinket 2 — empty">🪨<span class="wow-slot-label">Trinket 2</span></div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM: weapon row (Main Hand, Off Hand, Ranged) -->
+    <div class="wow-weapons-row">
+      <div class="wow-slot wow-slot-empty" title="Main Hand — empty">🗡️<span class="wow-slot-label">Main Hand</span></div>
+      <div class="wow-slot wow-slot-empty" title="Off Hand — empty">🛡️<span class="wow-slot-label">Off Hand</span></div>
+      <div class="wow-slot wow-slot-empty" title="Ranged — empty">🏹<span class="wow-slot-label">Ranged</span></div>
+    </div>
+
+    <!-- Stats panel — mirrors the existing character attributes -->
+    <div class="wow-stats-panel">
+      <div class="wow-stats-title">⚔ Attributes &amp; Combat</div>
+      <div class="wow-stat-grid">
+        <div class="wow-stat-row"><span class="wow-stat-key">💪 Strength</span><span class="wow-stat-val" id="wow-str">10</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">🏃 Agility</span><span class="wow-stat-val" id="wow-agi">10</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">🛡 Stamina</span><span class="wow-stat-val" id="wow-sta">10</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">📖 Intellect</span><span class="wow-stat-val" id="wow-int">10</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">✨ Spirit</span><span class="wow-stat-val" id="wow-spi">10</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">🪖 Armor</span><span class="wow-stat-val" id="wow-armor">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">❤ Health</span><span class="wow-stat-val green" id="wow-hp">100 / 100</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">⭐ Experience</span><span class="wow-stat-val" id="wow-xp">0 / 100</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">⚔ Honor Kills</span><span class="wow-stat-val" id="wow-honor">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">🏆 Battles Won</span><span class="wow-stat-val" id="wow-wins">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">💀 Defeats</span><span class="wow-stat-val red" id="wow-losses">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">💰 Gold (Treasury)</span><span class="wow-stat-val" id="wow-gold">$500.00</span></div>
+      </div>
+      <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:8px;color:#5a4520;font-style:italic;">Click an equipment slot to (in future) attach an item</div>
+    </div>
+  </div>
+  <!-- end WoW Classic-style character window -->
+
   <div class="char-outer">
 
     <div class="char-header">
@@ -1408,10 +1508,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <circle cx="1.5" cy="-1" r="0.6" fill="#1a1208"/>
     </symbol>
   </defs>
-  <!-- Lion Rampant crest (heraldic, gold, above helm) -->
-  <g transform="translate(100,18)">
-    <text text-anchor="middle" font-size="22" font-family="Georgia,serif" fill="#C9A227" dominant-baseline="middle">🦁</text>
-  </g>
   <!-- Torse / wreath (twisted gold &amp; blue rope above helmet) -->
   <g transform="translate(100,42)">
     <ellipse cx="0" cy="0" rx="26" ry="4" fill="#1a4a8a" stroke="#8B6914" stroke-width="0.5"/>
