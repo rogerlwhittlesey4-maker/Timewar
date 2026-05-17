@@ -912,53 +912,50 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         </div>
       </div>
     </div>
-  
-
-
-
   <!-- THE BATTLE CONTRACT — Centered title + indented rules -->
-    <div class="parch-panel">
-      <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:14px 22px;">
-        <div style="font-family:var(--fellsc);font-size:20px;color:var(--ink);text-align:center;letter-spacing:0.06em;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--border2);">Battle Contract</div>
-        <div style="padding-left:14px;padding-right:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;">
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">4.</span> Daily loss limit: <strong style="color:var(--blood-m);">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">5.</span> Sanctioned setups only: <strong style="color:var(--ink);">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">6.</span> Minimum reward-to-risk: <strong style="color:#5a8050;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
-          <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
-        <div style="grid-column:1 / -1;margin-top:14px;padding-top:10px;font-style:italic;color:var(--ink3);text-align:center;font-size:13px;border-top:1px solid var(--border2);">"A commander who cannot hold his contract cannot hold his ground."</div>
-        </div>
-      </div>
-    </div>
-    </div>
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-    <!-- COUNCIL CHAMBER -->
-    <div class="parch-panel ai-panel" style="flex:1;display:flex;flex-direction:column;">
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-        <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
-        <div class="ai-msgs" id="council-msgs" style="flex:1;">
-          <div class="cm-entry cm-ai">
-            <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
-            <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
+      <div class="parch-panel">
+        <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:14px 22px;">
+          <div style="font-family:var(--fellsc);font-size:20px;color:var(--ink);text-align:center;letter-spacing:0.06em;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--border2);">Battle Contract</div>
+          <div style="padding-left:14px;padding-right:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;">
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">4.</span> Daily loss limit: <strong style="color:var(--blood-m);">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">5.</span> Sanctioned setups only: <strong style="color:var(--ink);">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">6.</span> Minimum reward-to-risk: <strong style="color:#5a8050;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
+            <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
+          <div style="grid-column:1 / -1;margin-top:14px;padding-top:10px;font-style:italic;color:var(--ink3);text-align:center;font-size:13px;border-top:1px solid var(--border2);">"A commander who cannot hold his contract cannot hold his ground."</div>
           </div>
         </div>
-        <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
-        <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
-          <div class="ai-input-wrap">
-            <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
-            <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
+      </div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+      <!-- COUNCIL CHAMBER -->
+      <div class="parch-panel ai-panel" style="flex:1;display:flex;flex-direction:column;">
+        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+          <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
+          <div class="ai-msgs" id="council-msgs" style="flex:1;">
+            <div class="cm-entry cm-ai">
+              <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
+              <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
+            </div>
           </div>
-          <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
+          <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
+          <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
+            <div class="ai-input-wrap">
+              <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
+              <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
+            </div>
+            <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
+          </div>
         </div>
       </div>
+      </div>
     </div>
-    </div>
-  </div>
+
 
   <!-- ═══ Row 2: MES + Strait of Hormuz (sized like the maps row above) ═══ -->
   <div style="margin-bottom:14px;border:1px solid var(--border3);background:#0a0d14;border-radius:3px;overflow:hidden;">
