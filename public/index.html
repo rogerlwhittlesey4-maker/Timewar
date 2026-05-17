@@ -2163,7 +2163,9 @@ function renderConflicts(){
 
 function openConflict(id){
   console.log('[openConflict] called with id:', id);
-  const conflicts=S.aiConflicts||SEED_CONFLICTS;
+  // Same priority order as renderConflicts so the IDs match
+  const calendarConflicts = getConflictsForSeason(S.currentSeason);
+  const conflicts = S.aiConflicts || calendarConflicts || SEED_CONFLICTS;
   const c=conflicts.find(x=>x.id===id);
   if(!c){console.warn('[openConflict] No conflict found for id:', id, 'Available:', conflicts.map(x=>x.id));return;}
   const travelBlock = (c.miles && c.travel)
