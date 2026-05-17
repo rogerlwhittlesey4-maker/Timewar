@@ -1289,8 +1289,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div class="char-header-sub">Commander · Whittlesey Defense Band · Isle of Ely, England · Anno Domini 1526</div>
     </div>
 
-    <!-- Two-column layout: WoW window (1/3 left) + 1526 Calendar (2/3 right) -->
-    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+    <!-- Two-column layout: WoW window (1/3 left) + Calendar (2/3 right) — stretch to equal height -->
+    <div style="display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;">
 
       <div style="flex:1 1 360px;min-width:360px;max-width:780px;">
         <!-- WoW Classic-style character window -->
@@ -1409,10 +1409,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
       <!-- /WoW column -->
 
-      <!-- 1526 ENGLISH CALENDAR (2/3 width right column) -->
-      <div style="flex:2 1 480px;min-width:320px;">
-        <div class="parch-panel">
-          <div class="p-inner">
+      <!-- May 2026 calendar (2/3 width, stretches to match WoW column height) -->
+      <div style="flex:2 1 480px;min-width:320px;display:flex;flex-direction:column;">
+        <div class="parch-panel" style="flex:1;display:flex;flex-direction:column;">
+          <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
             <div style="font-family:var(--fellsc);font-size:22px;color:var(--gold);text-align:center;letter-spacing:0.06em;padding-bottom:6px;margin-bottom:4px;">📅 May 2026</div>
             <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border2);">Personal Development Tracker · The Now</div>
 
@@ -1480,30 +1480,30 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
             </div>
 
             <style>
-              .cal-day{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;min-height:64px;padding:5px 6px;position:relative;transition:all 0.15s;cursor:default;}
+              .cal-day{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;min-height:110px;padding:8px 10px;position:relative;transition:all 0.15s;cursor:default;display:flex;flex-direction:column;}
               .cal-day:hover:not(.cal-empty){border-color:var(--gold-m);background:#fff8e0;}
               .cal-day.cal-empty{background:transparent;border-color:transparent;cursor:default;}
               .cal-day.cal-today{background:linear-gradient(135deg,#fff5d8,#ffeec0);border:2px solid var(--gold);box-shadow:0 0 12px rgba(201,162,39,0.4);}
-              .cal-day.cal-today .cal-d{color:var(--blood);font-size:18px;font-weight:bold;}
+              .cal-day.cal-today .cal-d{color:var(--blood);font-size:26px;font-weight:bold;}
               .cal-day.cal-holiday{background:#f0e8d0;border-color:var(--gold-m);}
-              .cal-day .cal-d{font-family:var(--fellsc);font-size:16px;color:var(--ink);line-height:1.1;}
-              .cal-day .cal-note{font-family:var(--mono);font-size:7px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.05em;margin-top:3px;line-height:1.2;}
+              .cal-day .cal-d{font-family:var(--fellsc);font-size:22px;color:var(--ink);line-height:1.1;}
+              .cal-day .cal-note{font-family:var(--mono);font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.05em;margin-top:5px;line-height:1.3;}
               .cal-day.cal-today .cal-note{color:var(--blood);font-weight:600;}
             </style>
 
-            <!-- Below grid: daily reflection + weekly habits -->
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <!-- Below grid: daily reflection + weekly habits — compact -->
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div style="background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:10px;">
                 <div style="font-family:var(--fellsc);font-size:13px;color:var(--ink);margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">📓 Today\'s Reflection</div>
                 <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Sunday, May 17, 2026</div>
-                <textarea id="cal-daily-reflection" placeholder="What did you do today that moves you forward? What habit did you hold? What rule did you break?" style="width:100%;min-height:80px;background:#fff;border:1px solid var(--border2);border-radius:2px;padding:6px 8px;font-family:var(--fell);font-size:12px;color:var(--ink);resize:vertical;line-height:1.5;"></textarea>
+                <textarea id="cal-daily-reflection" placeholder="What did you do today that moves you forward?" style="width:100%;min-height:42px;max-height:80px;background:#fff;border:1px solid var(--border2);border-radius:2px;padding:5px 7px;font-family:var(--fell);font-size:11px;color:var(--ink);resize:vertical;line-height:1.4;"></textarea>
                 <button onclick="saveCalReflection()" style="margin-top:6px;font-family:var(--fellsc);font-size:10px;padding:4px 10px;border-radius:3px;cursor:pointer;border:1px solid var(--border2);background:var(--parch);color:var(--ink);">Save reflection</button>
               </div>
               <div style="background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:10px;">
                 <div style="font-family:var(--fellsc);font-size:13px;color:var(--ink);margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">✅ Daily Habits</div>
                 <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Check each as you complete it today</div>
-                <div style="font-family:var(--fell);font-size:12px;color:var(--ink);line-height:1.9;">
-                  <label style="display:block;cursor:pointer;"><input type="checkbox" class="cal-habit" data-habit="strength" style="margin-right:8px;"> 💪 Strength training</label>
+                <div style="font-family:var(--fell);font-size:11px;color:var(--ink);line-height:1.55;">
+                  <label style="display:block;cursor:pointer;"><input type="checkbox" class="cal-habit" data-habit="strength" style="margin-right:6px;"> 💪 Strength training</label>
                   <label style="display:block;cursor:pointer;"><input type="checkbox" class="cal-habit" data-habit="cardio" style="margin-right:8px;"> 🏃 Cardio (30+ min)</label>
                   <label style="display:block;cursor:pointer;"><input type="checkbox" class="cal-habit" data-habit="meditation" style="margin-right:8px;"> 🧘 Meditation (10+ min)</label>
                   <label style="display:block;cursor:pointer;"><input type="checkbox" class="cal-habit" data-habit="read" style="margin-right:8px;"> 📖 Read (30+ min)</label>
@@ -1513,9 +1513,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
               </div>
             </div>
 
-            <div style="margin-top:12px;padding-top:8px;border-top:1px solid var(--border2);font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;letter-spacing:0.06em;">
-              The day is the unit of self-improvement. Each box held is a kingdom won.
-            </div>
 
             <script>
               // Daily reflection persistence (localStorage)
