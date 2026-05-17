@@ -671,6 +671,36 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .wow-stat-val.green{color:#7ab070;}
 .wow-stat-val.red{color:#b07070;}
 
+
+/* ── Family Page: Lighter parchment, library-of-ancestors style ── */
+#page-family.page{background:linear-gradient(180deg,#f5e8c8 0%,#ede0b8 60%,#e5d8b0 100%);min-height:100vh;padding:20px;}
+#page-family .fam-section{background:#fdf6e0;color:#3a2810;border:2px solid #c9a227;border-radius:4px;padding:14px;margin:8px;box-shadow:0 1px 4px rgba(0,0,0,0.12);transition:all 0.2s;}
+#page-family .fam-section.ancestor-card{cursor:pointer;display:inline-block;vertical-align:top;width:calc(33% - 18px);min-width:220px;max-width:320px;overflow:hidden;position:relative;}
+#page-family .fam-section.ancestor-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(60,30,8,0.35);background:#fff8e8;border-color:#a87a14;}
+#page-family .fam-section.ancestor-card::after{content:"📖 Click to read full bio";position:absolute;bottom:6px;right:10px;font-family:var(--mono);font-size:7px;color:#a87a14;text-transform:uppercase;letter-spacing:0.08em;}
+#page-family .fam-section.ancestor-card .fam-body{max-height:62px;overflow:hidden;font-size:11px;line-height:1.45;color:#5a4030;-webkit-mask-image:linear-gradient(to bottom,black 70%,transparent);mask-image:linear-gradient(to bottom,black 70%,transparent);}
+#page-family .fam-section.ancestor-card .fam-fact{display:none;}
+#page-family .fam-section-title{color:#5a3010;font-family:var(--fellsc);font-size:14px;border-bottom:1px solid #c9a227;padding-bottom:4px;margin-bottom:8px;}
+#page-family .fam-section.ancestor-card .fam-section-title{font-size:13px;color:#5a3010 !important;}
+#page-family .fam-body p{color:#3a2810;font-size:13px;line-height:1.6;}
+#page-family .fam-fact{color:#5a4030;background:rgba(201,162,39,0.08);padding:3px 8px;margin:2px 0;border-radius:2px;}
+#page-family .fam-fact .fam-fk{color:#a87a14;font-weight:600;}
+#page-family .fam-fact .fam-fv{color:#3a2810;}
+#page-family h2,#page-family h3{color:#5a3010;}
+#page-family .fam-section[style*="border-color:var(--gold-m)"]{background:#fff5d8;}
+
+/* Ancestor full-screen modal */
+.anc-modal{position:fixed;inset:0;background:rgba(20,12,4,0.92);display:none;align-items:flex-start;justify-content:center;z-index:10000;padding:40px 20px;overflow-y:auto;}
+.anc-modal.show{display:flex;}
+.anc-modal-content{background:#fdf6e0;color:#3a2810;border:3px solid #8B6914;border-radius:6px;max-width:900px;width:100%;padding:36px 44px;font-family:var(--fell);font-size:15px;line-height:1.8;position:relative;box-shadow:0 12px 48px rgba(0,0,0,0.6);}
+.anc-modal-close{position:absolute;top:12px;right:16px;font-family:var(--mono);font-size:18px;color:#8B6914;cursor:pointer;background:#fff8e8;border:1px solid #c9a227;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.anc-modal-close:hover{background:#ffeec0;color:#5a3010;}
+.anc-modal-content .fam-section-title{font-family:var(--fellsc);font-size:22px;color:#5a3010;border-bottom:2px solid #c9a227;padding-bottom:8px;margin-bottom:16px;}
+.anc-modal-content .fam-body p{font-size:15px;line-height:1.85;color:#2a1808;margin-bottom:14px;}
+.anc-modal-content .fam-fact{font-size:12px;padding:6px 12px;margin:4px 0;background:rgba(201,162,39,0.12);border-left:3px solid #c9a227;border-radius:2px;}
+.anc-modal-content .fam-fact .fam-fk{color:#a87a14;font-weight:700;margin-right:10px;}
+.anc-modal-content .fam-fact .fam-fv{color:#2a1808;}
+
 </style>
 </head>
 <body>
@@ -1000,28 +1030,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
-  <!-- THE WAR CHEST — Battle Contract / Risk Rules -->
-  <div class="parch-panel ai-panel" style="border-color:#7a1c1c;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:var(--blood-m);">📋 The War Chest — Battle Contract</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Your risk management rules. Hold yourself to the contract before entering the field.</div>
-      <div class="ai-msgs" id="contract-msgs" style="max-height:200px;">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Quartermaster <span class="rank-tag">risk command</span></div>
-          <div class="cm-text">State your standing orders for this campaign, Commander. What are the rules of engagement? What is your maximum risk per battle? How many battles will you fight tonight? What setups are sanctioned? Set the contract — and hold it.</div>
-        </div>
-      </div>
-      <span class="ai-clear" onclick="clearAIBox('contract-msgs','The Quartermaster','risk command','State your standing orders for this campaign, Commander. Rules of engagement, risk limits, sanctioned setups.')">Clear</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">e.g. "Tonight: max 2 trades, 10% risk each, VWAP Reclaim only, no revenge trades after a loss."</div>
-          <textarea class="ai-textarea" id="contract-input" placeholder="State your battle contract for this session..." rows="2"></textarea>
-        </div>
-        <button class="ai-btn" id="contract-btn" onclick="sendGenericAI('contract')" style="border-color:var(--blood-m);background:var(--blood-l);color:var(--blood-m);">Submit ↗</button>
-      </div>
-    </div>
-  </div>
-
   <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
   <div class="parch-panel ai-panel" style="border-color:#285080;">
     <div class="p-inner">
@@ -1062,6 +1070,28 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           <textarea class="ai-textarea" id="debrief-input" placeholder="Describe the trade — what happened, what you saw, what you did, what the result was..." rows="2"></textarea>
         </div>
         <button class="ai-btn" id="debrief-btn" onclick="sendGenericAI('debrief')" style="border-color:#2a4a1a;background:#141e10;color:#70c070;">Debrief ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE BATTLE CONTRACT — Static risk-management rules -->
+  <div class="parch-panel" style="border-color:#7a1c1c;background:#160a0a;">
+    <div class="p-inner">
+      <div class="sec-title" style="color:var(--blood-m);">📋 Battle Contract — Standing Risk Rules</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:10px;letter-spacing:0.08em;text-transform:uppercase;">MES Micro E-mini S&amp;P 500 · $500 Account · Evening Globex Session</div>
+      <div style="background:#0a0608;border:1px solid #5a1c1c;border-radius:3px;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.7;color:#d8c8a8;">
+        <div style="font-family:var(--fellsc);font-size:13px;color:var(--blood-m);margin-bottom:8px;letter-spacing:0.04em;">⚔ THE CONTRACT</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">1.</span> Maximum risk per trade: <strong style="color:#e07070;">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">2.</span> Maximum contracts per trade: <strong style="color:#e07070;">1 MES</strong>. No averaging in, no adding to losers.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">3.</span> Maximum trades per session: <strong style="color:#e07070;">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">4.</span> Daily loss limit: <strong style="color:#e07070;">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">5.</span> Sanctioned setups only: <strong style="color:#a8c8e8;">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">6.</span> Minimum reward-to-risk: <strong style="color:#7ab070;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
+        <div style="margin-bottom:6px;"><span style="color:#c9a227;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
+        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #5a1c1c;font-style:italic;color:#a89060;text-align:center;font-size:10px;">"A commander who cannot hold his contract cannot hold his ground."</div>
       </div>
     </div>
   </div>
@@ -1110,10 +1140,36 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <ellipse cx="0" cy="0" rx="26" ry="4" fill="#1a4a8a" stroke="#8B6914" stroke-width="0.5"/>
     <path d="M-26,0 Q-22,-3 -18,0 Q-14,3 -10,0 Q-6,-3 -2,0 Q2,3 6,0 Q10,-3 14,0 Q18,3 22,0 Q26,-3 26,0" fill="none" stroke="#C9A227" stroke-width="2.5"/>
   </g>
-  <!-- Esquire helmet (closed, profile, above shield) -->
+  <!-- Mantling: leafy scrollwork flanking the shield (heraldic ornament) -->
+  <g fill="#3a2810" opacity="0.85">
+    <!-- Left mantling curls -->
+    <path d="M30,80 Q10,75 8,95 Q15,108 25,100 Q12,118 22,135 Q35,145 38,128 Q28,160 40,175 Q52,185 50,165 Q40,200 50,220 Q62,225 58,205 Q52,240 65,250 Q75,248 68,232 L30,200 Z" stroke="#1a1208" stroke-width="0.6"/>
+    <!-- Right mantling curls (mirror) -->
+    <path d="M170,80 Q190,75 192,95 Q185,108 175,100 Q188,118 178,135 Q165,145 162,128 Q172,160 160,175 Q148,185 150,165 Q160,200 150,220 Q138,225 142,205 Q148,240 135,250 Q125,248 132,232 L170,200 Z" stroke="#1a1208" stroke-width="0.6"/>
+  </g>
+  <!-- Lion Rampant crest (silhouette, on top of helm) -->
+  <g transform="translate(100,18)" fill="#C9A227" stroke="#8B6914" stroke-width="0.4">
+    <!-- Lion body in rampant pose -->
+    <path d="M-2,-10 Q-6,-12 -8,-8 Q-10,-4 -8,0 L-10,4 Q-12,6 -10,10 L-8,12 L-6,12 L-4,14 L-2,12 L0,14 L4,12 L8,10 Q12,6 10,2 Q8,-2 6,-4 L8,-8 Q6,-12 2,-12 Q0,-10 -2,-10 Z"/>
+    <!-- Lion head -->
+    <circle cx="-6" cy="-12" r="3.5" fill="#C9A227"/>
+    <!-- Mane suggestion -->
+    <path d="M-9,-14 Q-10,-10 -8,-9 M-3,-14 Q-2,-10 -4,-9" stroke="#8B6914" stroke-width="0.5" fill="none"/>
+    <!-- Front paw raised -->
+    <line x1="6" y1="0" x2="11" y2="-6" stroke="#C9A227" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Tail curl -->
+    <path d="M10,2 Q15,-2 12,-8" stroke="#C9A227" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Esquire helmet (closed, profile, above shield, gold detail) -->
   <g transform="translate(100,52)">
-    <path d="M-18,4 Q-18,-8 0,-10 Q18,-8 18,4 L14,8 L-14,8 Z" fill="#9a8050" stroke="#3a2810" stroke-width="1"/>
-    <line x1="-12" y1="-2" x2="12" y2="-2" stroke="#3a2810" stroke-width="0.8"/>
+    <!-- Helmet body -->
+    <path d="M-20,5 Q-20,-10 0,-12 Q20,-10 20,5 L16,10 L-16,10 Z" fill="#a89060" stroke="#3a2810" stroke-width="1.2"/>
+    <!-- Visor bars -->
+    <line x1="-14" y1="-4" x2="14" y2="-4" stroke="#3a2810" stroke-width="0.7"/>
+    <line x1="-14" y1="0" x2="14" y2="0" stroke="#3a2810" stroke-width="0.7"/>
+    <line x1="-14" y1="4" x2="14" y2="4" stroke="#3a2810" stroke-width="0.7"/>
+    <!-- Helmet outline highlight -->
+    <path d="M-20,5 Q-20,-10 0,-12 Q20,-10 20,5" fill="none" stroke="#C9A227" stroke-width="0.4"/>
   </g>
   <!-- Shield: full Azure field (no chief — matches 1898 description) -->
   <path d="M30 60 L170 60 L170 195 Q170 250 100 275 Q30 250 30 195 Z" fill="#1a4a8a" stroke="#8B6914" stroke-width="2.5"/>
@@ -1394,10 +1450,36 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <ellipse cx="0" cy="0" rx="26" ry="4" fill="#1a4a8a" stroke="#8B6914" stroke-width="0.5"/>
     <path d="M-26,0 Q-22,-3 -18,0 Q-14,3 -10,0 Q-6,-3 -2,0 Q2,3 6,0 Q10,-3 14,0 Q18,3 22,0 Q26,-3 26,0" fill="none" stroke="#C9A227" stroke-width="2.5"/>
   </g>
-  <!-- Esquire helmet (closed, profile, above shield) -->
+  <!-- Mantling: leafy scrollwork flanking the shield (heraldic ornament) -->
+  <g fill="#3a2810" opacity="0.85">
+    <!-- Left mantling curls -->
+    <path d="M30,80 Q10,75 8,95 Q15,108 25,100 Q12,118 22,135 Q35,145 38,128 Q28,160 40,175 Q52,185 50,165 Q40,200 50,220 Q62,225 58,205 Q52,240 65,250 Q75,248 68,232 L30,200 Z" stroke="#1a1208" stroke-width="0.6"/>
+    <!-- Right mantling curls (mirror) -->
+    <path d="M170,80 Q190,75 192,95 Q185,108 175,100 Q188,118 178,135 Q165,145 162,128 Q172,160 160,175 Q148,185 150,165 Q160,200 150,220 Q138,225 142,205 Q148,240 135,250 Q125,248 132,232 L170,200 Z" stroke="#1a1208" stroke-width="0.6"/>
+  </g>
+  <!-- Lion Rampant crest (silhouette, on top of helm) -->
+  <g transform="translate(100,18)" fill="#C9A227" stroke="#8B6914" stroke-width="0.4">
+    <!-- Lion body in rampant pose -->
+    <path d="M-2,-10 Q-6,-12 -8,-8 Q-10,-4 -8,0 L-10,4 Q-12,6 -10,10 L-8,12 L-6,12 L-4,14 L-2,12 L0,14 L4,12 L8,10 Q12,6 10,2 Q8,-2 6,-4 L8,-8 Q6,-12 2,-12 Q0,-10 -2,-10 Z"/>
+    <!-- Lion head -->
+    <circle cx="-6" cy="-12" r="3.5" fill="#C9A227"/>
+    <!-- Mane suggestion -->
+    <path d="M-9,-14 Q-10,-10 -8,-9 M-3,-14 Q-2,-10 -4,-9" stroke="#8B6914" stroke-width="0.5" fill="none"/>
+    <!-- Front paw raised -->
+    <line x1="6" y1="0" x2="11" y2="-6" stroke="#C9A227" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Tail curl -->
+    <path d="M10,2 Q15,-2 12,-8" stroke="#C9A227" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Esquire helmet (closed, profile, above shield, gold detail) -->
   <g transform="translate(100,52)">
-    <path d="M-18,4 Q-18,-8 0,-10 Q18,-8 18,4 L14,8 L-14,8 Z" fill="#9a8050" stroke="#3a2810" stroke-width="1"/>
-    <line x1="-12" y1="-2" x2="12" y2="-2" stroke="#3a2810" stroke-width="0.8"/>
+    <!-- Helmet body -->
+    <path d="M-20,5 Q-20,-10 0,-12 Q20,-10 20,5 L16,10 L-16,10 Z" fill="#a89060" stroke="#3a2810" stroke-width="1.2"/>
+    <!-- Visor bars -->
+    <line x1="-14" y1="-4" x2="14" y2="-4" stroke="#3a2810" stroke-width="0.7"/>
+    <line x1="-14" y1="0" x2="14" y2="0" stroke="#3a2810" stroke-width="0.7"/>
+    <line x1="-14" y1="4" x2="14" y2="4" stroke="#3a2810" stroke-width="0.7"/>
+    <!-- Helmet outline highlight -->
+    <path d="M-20,5 Q-20,-10 0,-12 Q20,-10 20,5" fill="none" stroke="#C9A227" stroke-width="0.4"/>
   </g>
   <!-- Shield: full Azure field (no chief — matches 1898 description) -->
   <path d="M30 60 L170 60 L170 195 Q170 250 100 275 Q30 250 30 195 Z" fill="#1a4a8a" stroke="#8B6914" stroke-width="2.5"/>
@@ -1458,7 +1540,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- William de Whittlesey -->
     <div class="fam-section">
-      <div class="fam-section-title">✝ William de Whittlesey — Archbishop of Canterbury</div>
+      <div class="fam-section ancestor-card-title" onclick="openAncestorCard(this)">✝ William de Whittlesey — Archbishop of Canterbury</div>
       <div class="fam-body">
         <p>William de Whittlesey (died January 5, 1374) was born in the town of Whittlesey and rose through the English Church to become Archbishop of Canterbury from 1368 until his death — the highest ecclesiastical office in England, placing him second only to the monarch in the nation's hierarchy of power and prestige.</p>
         <p>His career traced the medieval path of clerical advancement: educated at Cambridge, advancing through cathedral chapters and bishoprics, accumulating the administrative experience that the medieval Church demanded of its senior figures. He served as Bishop of Rochester (1362–1364) and Bishop of Worcester (1364–1368) before his appointment to Canterbury. His tenure as Archbishop coincided with the aftermath of the Black Death and the early stirrings of Lollard religious dissent — he condemned Wycliffite ideas and worked to maintain orthodox Catholic authority in England.</p>
@@ -1484,7 +1566,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Ralph Whittelse - Tudor English ancestor -->
     <div class="fam-section" style="border-color:#3a3020;">
-      <div class="fam-section-title" style="color:#a89060;">⚜ Ralph Whittelse — Tudor Cambridgeshire</div>
+      <div class="fam-section ancestor-card-title" style="color:#a89060;" onclick="openAncestorCard(this)">⚜ Ralph Whittelse — Tudor Cambridgeshire</div>
       <div class="fam-body">
         <p>Ralph Whittelse appears in 16th-century parish records of Cambridgeshire, with a recorded baptism of March 11, 1508. He lived in the years between William de Whittlesey's death (1374) and the New World emigration of the family line — a period the records describe sparingly. The 1898 Whittelsey genealogy lists him by baptism date alone; his occupation, holdings, and movements are not documented in publicly accessible sources. The spelling of the surname in this era was unstable (Whittelse, Whittelsey, Witsley) and varied even within single documents.</p>
         <p>What is documented is that Whittleseys in the early Tudor period were grouped in Colne, Bluntisham, Godmanchester, Pidley, and the surrounding parishes within fifty miles of Whittlesey town — a tight regional clustering suggesting a single extended family with a shared origin in the eponymous fen island.</p>
@@ -1496,7 +1578,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Simeon Whittlesea -->
     <div class="fam-section" style="border-color:#3a3020;">
-      <div class="fam-section-title" style="color:#a89060;">⚜ Simeon Whittlesea — Born 1542</div>
+      <div class="fam-section ancestor-card-title" style="color:#a89060;" onclick="openAncestorCard(this)">⚜ Simeon Whittlesea — Born 1542</div>
       <div class="fam-body">
         <p>Simeon Whittlesea was baptised June 23, 1542 in Cambridgeshire, in the reign of Henry VIII. His generation lived through the religious upheaval of the English Reformation — Henry's break with Rome (1534), Edward VI's Protestant reforms, Mary I's Catholic restoration, and Elizabeth I's settlement of 1559. The fenland parishes were not insulated from these changes.</p>
         <p>Simeon appears in the documented Whittlesey ancestor chain as second-great-grandfather of the John Whittlesey who emigrated to Saybrook. He died around 1571, aged about 29 — early adulthood, the cause and circumstances unrecorded. His descendants would carry the name through the next eighty years until one of them crossed the Atlantic.</p>
@@ -1509,7 +1591,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- John Whittlesey - the immigrant -->
     <div class="fam-section" style="border-color:#2a4a6a;">
-      <div class="fam-section-title" style="color:#70a0d0;">⛵ John Whittlesey — The Immigrant (1623–1705)</div>
+      <div class="fam-section ancestor-card-title" style="color:#70a0d0;" onclick="openAncestorCard(this)">⛵ John Whittlesey — The Immigrant (1623–1705)</div>
       <div class="fam-body">
         <p>John Whittlesey is the founder of the American line — the single ancestor from whom all American Whittleseys are descended. He was born around 1623 in Cambridgeshire, England (the exact date of April 8, 1623 appears in some sources but is disputed by modern researchers, who note that his marriage in 1664 at the assumed age of 41 would have been unusually late and suggest a birth nearer 1640). He emigrated to New England in the great Puritan migration, with traditional dates of arrival ranging from 1635 to 1650 depending on the source.</p>
         <p>What is firmly documented is that by 1662 John Whittlesey was operating a ferry across the Connecticut River at Saybrook under a contract from the town — sharing the operation with William Dudley, who would become his father-in-law. He worked as a tanner and shoemaker and built a homestead near the ferry landing on what is still called Ferry Road in Old Saybrook. In 1664 he married Ruth Dudley, daughter of William and Jane (Lutman) Dudley of Guilford. Their ten children were given Biblical names — Stephen, Ebenezer, Joseph, Josiah, Jabez, David, Eliphalet, Samuel, Ruth, and Sarah — a marker of the Puritan religious culture he had joined.</p>
@@ -1526,7 +1608,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- John Whittlesey Jr. -->
     <div class="fam-section" style="border-color:#2a4a6a;">
-      <div class="fam-section-title" style="color:#70a0d0;">⛵ John Whittlesey Jr. — The Ferryman (b. 1665)</div>
+      <div class="fam-section ancestor-card-title" style="color:#70a0d0;" onclick="openAncestorCard(this)">⛵ John Whittlesey Jr. — The Ferryman (b. 1665)</div>
       <div class="fam-body">
         <p>John Whittlesey Jr. was the eldest son of the immigrant John Whittlesey and Ruth Dudley, born in Saybrook in 1665. He inherited his father's role as keeper of the Connecticut River ferry at Saybrook, continuing the family's central position in the town's commerce — every traveler going between New London and the lower river towns crossed on a Whittlesey boat.</p>
         <p>Around 1693 he built a house at 40 Ferry Road in Old Saybrook. The rear ell of that house, dating to that construction, is one of the oldest surviving buildings in Connecticut. It still stands. In 1984 it was added to the National Register of Historic Places (NRHP reference #84002644). The main block was rebuilt around 1750, but the original 1693 frame remains visible in the rear ell, with its heavy post-and-beam construction and wrought-iron door hardware intact.</p>
@@ -1541,7 +1623,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- John Whittlesey III -->
     <div class="fam-section" style="border-color:#2a4a6a;">
-      <div class="fam-section-title" style="color:#70a0d0;">⛵ John Whittlesey III — Grandson of the Immigrant</div>
+      <div class="fam-section ancestor-card-title" style="color:#70a0d0;" onclick="openAncestorCard(this)">⛵ John Whittlesey III — Grandson of the Immigrant</div>
       <div class="fam-body">
         <p>The third John Whittlesey in the American line is the most thinly documented of the three. He continued the Whittlesey presence in the Saybrook and Wethersfield area of Connecticut during the early-to-mid 18th century, the period when the colony was transitioning from frontier settlement to established society. The name John Whittlesey appears repeatedly in Saybrook church and town records of this era, but disambiguating which John in which record corresponds to which generation requires more genealogical work than most sources have done.</p>
         <p>What can be said: by his generation, the Whittleseys were no longer recent immigrants but established Connecticut families, marrying into the Pratt, Dudley, Bushnell, and Kellogg lines that interconnected the Saybrook and Wethersfield communities. The family was beginning to disperse from the ferry at Saybrook into the broader colony.</p>
@@ -1553,7 +1635,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Eliphalet Whittlesey I -->
     <div class="fam-section" style="border-color:#3a4a3a;">
-      <div class="fam-section-title" style="color:#90c090;">⚔ Eliphalet Whittlesey — Born 1679</div>
+      <div class="fam-section ancestor-card-title" style="color:#90c090;" onclick="openAncestorCard(this)">⚔ Eliphalet Whittlesey — Born 1679</div>
       <div class="fam-body">
         <p>Eliphalet Whittlesey was the seventh son of the immigrant John and Ruth (Dudley) Whittlesey, born July 24, 1679 in Saybrook, Connecticut Colony. He grew up in the family ferry house and learned his father's trade as a tanner. As an adult he moved north up the Connecticut River, away from Saybrook, settling in the Wethersfield area where many second-generation Saybrook families spread out as land became available.</p>
         <p>On December 1, 1702, at age 23, he married Mary Pratt (born May 24, 1677, also of Saybrook) at Saybrook. The couple eventually settled in Newington, a precinct of Wethersfield in Hartford County. They had at least one son who carried the name — Eliphalet Whittlesey II, born May 10, 1714 in Newington, who would become a Captain in the Colonial Army during the French and Indian Wars. The elder Eliphalet died September 14, 1757 at age 78 in Wethersfield, and is buried in Newington Cemetery (Find A Grave memorial #24326120).</p>
@@ -1568,7 +1650,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Eliphalet Whittlesey II -->
     <div class="fam-section" style="border-color:#5a3a2a;">
-      <div class="fam-section-title" style="color:#d0a070;">⚔ Capt. Eliphalet Whittlesey II — French and Indian War (1714–1786)</div>
+      <div class="fam-section ancestor-card-title" style="color:#d0a070;" onclick="openAncestorCard(this)">⚔ Capt. Eliphalet Whittlesey II — French and Indian War (1714–1786)</div>
       <div class="fam-body">
         <p>Eliphalet Whittlesey II was born May 10, 1714 in Newington (then a precinct of Wethersfield), Hartford County, Connecticut Colony — son of Eliphalet and Mary (Pratt) Whittlesey. He came of age in the 1730s and married Dorothy Kellogg, with whom he had at least nine children: Martin, Lemuel, John (b. December 23, 1741), Anna, Abner, Eliphalet (III), Asaph, Dorothy, and Elisha.</p>
         <p>The defining event of his life was his service as a Captain in the Connecticut Colonial Army during the French and Indian Wars (1754–1763) — the North American theater of the broader Seven Years War between Britain and France over control of the continent. Connecticut raised regiments for the campaigns against the French at Fort Ticonderoga, Crown Point, and the St. Lawrence, and Whittlesey companies served in those provincial forces. He survived the war and lived another twenty years, dying in 1786, three years after the American Revolution ended.</p>
@@ -1585,7 +1667,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Martin Whittlesey -->
     <div class="fam-section" style="border-color:#5a3a2a;">
-      <div class="fam-section-title" style="color:#d0a070;">⚔ Martin Whittlesey — Son of the Captain</div>
+      <div class="fam-section ancestor-card-title" style="color:#d0a070;" onclick="openAncestorCard(this)">⚔ Martin Whittlesey — Son of the Captain</div>
       <div class="fam-body">
         <p>Martin Whittlesey was a son of Capt. Eliphalet Whittlesey II and Dorothy (Kellogg) Whittlesey of Newington, Connecticut, born in the mid-18th century. Compared to his more prominent siblings — his brother Elisha Whittlesey would become a United States Congressman and orator of the family 1855 reunion at Saybrook, and his brother Eliphalet III served as a soldier in the American Revolution — Martin's personal record is the thinner. His birth is documented through the genealogy by his relationship to his father, and his name appears in the published descendant lists of the 1898 Whittelsey genealogy, but extended biographical detail has not survived in the publicly accessible sources.</p>
         <p>Martin came of age in the 1760s–1770s, the generation that fought the American Revolution. He would have known the upheaval of the war firsthand, whether or not he himself served in the Continental forces. His descendants carried the Whittlesey name forward into the early Republic.</p>
@@ -1608,7 +1690,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- You -->
     <div class="fam-section" style="border-color:var(--gold-m);background:#1e1a08;">
-      <div class="fam-section-title" style="color:var(--gold-m);">⭐ Roger Lee Whittlesey IV — Present Day</div>
+      <div class="fam-section ancestor-card-title" style="color:var(--gold-m);" onclick="openAncestorCard(this)">⭐ Roger Lee Whittlesey IV — Present Day</div>
       <div class="fam-body">
         <p>The fourth Roger Lee Whittlesey. Descendant of John Whittlesey who came from England around 1648, who was himself a descendant of the Cambridgeshire family that gave England an Archbishop of Canterbury in 1368. The line runs from the black peat and reed beds of the Whittlesey fens, across the Atlantic in a period of English upheaval, and ends — for now — in the high desert of Cochise County, Arizona.</p>
         <p>Owner of 4.5 acres off West Dakota Lane, Leslie Canyon Road, north of Douglas, Arizona — 4,500 feet above sea level, under the Chiricahua Mountains, in the dry country that the Spanish once called New Spain and the Apaches called home. The fen farmer's line has crossed an ocean, a continent, and three centuries, and it has arrived at a different kind of flatland with different kinds of water problems, but the same instinct to hold ground and work it.</p>
@@ -1642,6 +1724,27 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 </div>
+
+<!-- Ancestor full-screen bio modal -->
+<div class="anc-modal" id="anc-modal" onclick="if(event.target===this)closeAncestorCard()">
+  <div class="anc-modal-content">
+    <span class="anc-modal-close" onclick="closeAncestorCard()" title="Close">✕</span>
+    <div id="anc-modal-body"></div>
+  </div>
+</div>
+<script>
+function openAncestorCard(sectionEl){
+  const inner = sectionEl.innerHTML;
+  document.getElementById('anc-modal-body').innerHTML = inner;
+  document.getElementById('anc-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeAncestorCard(){
+  document.getElementById('anc-modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeAncestorCard(); });
+</script>
 </div><!-- end page-family -->
 
 
