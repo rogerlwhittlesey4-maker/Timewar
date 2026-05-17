@@ -1019,63 +1019,71 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
-
-  <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
-  <div class="parch-panel ai-panel" style="border-color:#285080;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
-      <div class="ai-msgs" id="scout-msgs" style="max-height:200px;">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
-          <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
+  <!-- SCOUT REPORT + LOG A BATTLE — side-by-side -->
+  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
+    <div class="parch-panel ai-panel" style="border-color:#285080;flex:1;display:flex;flex-direction:column;">
+      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+        <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
+        <div class="ai-msgs" id="scout-msgs" style="flex:1;max-height:none;min-height:0;">
+          <div class="cm-entry cm-ai">
+            <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
+            <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
+          </div>
+        </div>
+        <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
+        <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
+          <div class="ai-input-wrap">
+            <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
+            <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
+          </div>
+          <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
         </div>
       </div>
-      <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
-          <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
+    </div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <!-- BATTLE LOG FORM -->
+    <div class="parch-panel log-panel" style="flex:1;display:flex;flex-direction:column;">
+      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+        <div class="sec-title">✦ Log a Battle (Trade)</div>
+        <div class="sel-bar" id="sel-bar">No men deployed — double-click soldier cards to send them into battle</div>
+        <div class="form-row fr3">
+          <div class="field"><label>Season / Time ET &amp; MT</label><input type="text" id="f-season" placeholder="Spring 1526 · 6:45 PM ET / 4:45 PM MT"></div>
+          <div class="field"><label>Outcome</label>
+            <select id="f-outcome" onchange="updatePreview()">
+              <option value="">Select...</option>
+              <option value="WIN">Victory (Win)</option>
+              <option value="LOSS">Defeat (Loss)</option>
+            </select>
+          </div>
+          <div class="field"><label>P&amp;L $ (positive)</label><input type="number" id="f-pnl" placeholder="50.00" step="0.01" min="0.01" oninput="updatePreview()"></div>
         </div>
-        <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
+        <div class="form-row fr4">
+          <div class="field"><label>Contract</label>
+            <select id="f-contract"><option value="MES">MES</option><option value="ES">ES</option><option value="MNQ">MNQ</option><option value="NQ">NQ</option><option value="CL">CL</option><option value="GC">GC</option></select>
+          </div>
+          <div class="field"><label>Setup</label>
+            <select id="f-setup"><option value="ORB">Opening Range Breakout</option><option value="VWAP">VWAP Reclaim</option><option value="FB">Failed Breakdown</option><option value="PD">Prior Day Level</option><option value="OTHER">Other</option></select>
+          </div>
+          <div class="field"><label>Enemy / Adversary</label><input type="text" id="f-enemy" placeholder="Fen Road Bandits"></div>
+          <div class="field"><label>Chronicle Notes</label><textarea id="f-notes" placeholder="Describe the skirmish..."></textarea></div>
+        </div>
+        <div class="split-box" id="split-preview">Deploy men and enter a P&amp;L to preview the split...</div>
+        <div class="form-btns">
+          <button class="btn go" onclick="logBattle()">⚔ Commit to Battle</button>
+          <button class="btn" onclick="clearForm()">Clear</button>
+          <button class="btn dng" onclick="clearAll()">🗑 Purge All</button>
+        </div>
       </div>
+    </div>
     </div>
   </div>
 
-  <!-- BATTLE LOG FORM -->
-  <div class="parch-panel log-panel">
-    <div class="p-inner">
-      <div class="sec-title">✦ Log a Battle (Trade)</div>
-      <div class="sel-bar" id="sel-bar">No men deployed — double-click soldier cards to send them into battle</div>
-      <div class="form-row fr3">
-        <div class="field"><label>Season / Time ET &amp; MT</label><input type="text" id="f-season" placeholder="Spring 1526 · 6:45 PM ET / 4:45 PM MT"></div>
-        <div class="field"><label>Outcome</label>
-          <select id="f-outcome" onchange="updatePreview()">
-            <option value="">Select...</option>
-            <option value="WIN">Victory (Win)</option>
-            <option value="LOSS">Defeat (Loss)</option>
-          </select>
-        </div>
-        <div class="field"><label>P&amp;L $ (positive)</label><input type="number" id="f-pnl" placeholder="50.00" step="0.01" min="0.01" oninput="updatePreview()"></div>
-      </div>
-      <div class="form-row fr4">
-        <div class="field"><label>Contract</label>
-          <select id="f-contract"><option value="MES">MES</option><option value="ES">ES</option><option value="MNQ">MNQ</option><option value="NQ">NQ</option><option value="CL">CL</option><option value="GC">GC</option></select>
-        </div>
-        <div class="field"><label>Setup</label>
-          <select id="f-setup"><option value="ORB">Opening Range Breakout</option><option value="VWAP">VWAP Reclaim</option><option value="FB">Failed Breakdown</option><option value="PD">Prior Day Level</option><option value="OTHER">Other</option></select>
-        </div>
-        <div class="field"><label>Enemy / Adversary</label><input type="text" id="f-enemy" placeholder="Fen Road Bandits"></div>
-        <div class="field"><label>Chronicle Notes</label><textarea id="f-notes" placeholder="Describe the skirmish..."></textarea></div>
-      </div>
-      <div class="split-box" id="split-preview">Deploy men and enter a P&amp;L to preview the split...</div>
-      <div class="form-btns">
-        <button class="btn go" onclick="logBattle()">⚔ Commit to Battle</button>
-        <button class="btn" onclick="clearForm()">Clear</button>
-        <button class="btn dng" onclick="clearAll()">🗑 Purge All</button>
-      </div>
-    </div>
-  </div>
+
+
 
 
   <!-- THE DEBRIEF — Post trade retrospect -->
