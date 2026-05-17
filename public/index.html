@@ -658,7 +658,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .wow-slot{width:48px;height:48px;background:#0d0a05;border:2px solid #5a4520;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;cursor:default;line-height:1;}
 .wow-slot:hover{border-color:#C9A227;background:#1a1208;}
 .wow-slot-empty{color:#3a2820;}
-.wow-slot-label{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:6px;color:#6a5530;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;background:#1a1208;padding:0 3px;}
+.wow-slot-label{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:7px;color:#d8c090;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;background:#1a1208;padding:0 4px;font-weight:600;}
 .wow-paperdoll{width:100%;min-height:340px;background:radial-gradient(ellipse at center,#2a1a08 0%,#0a0608 80%);border:2px solid #5a4520;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:90px;color:#C9A227;position:relative;}
 .wow-paperdoll-name{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--fellsc);font-size:13px;color:#C9A227;font-size:11px;letter-spacing:0.05em;}
 .wow-weapons-row{display:flex;justify-content:center;gap:14px;margin-top:18px;}
@@ -970,9 +970,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
     </div>
   </div>
-  <!-- THE BATTLE CONTRACT — Static risk-management rules (clean, no header) -->
+  <!-- THE BATTLE CONTRACT — Centered title + indented rules -->
   <div class="parch-panel">
-    <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:6px 2px;">
+    <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:14px 22px;">
+      <div style="font-family:var(--fellsc);font-size:20px;color:var(--ink);text-align:center;letter-spacing:0.06em;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--border2);">Battle Contract</div>
+      <div style="padding-left:14px;padding-right:8px;">
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
@@ -983,7 +985,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
         <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
-      <div style="margin-top:14px;padding-top:8px;font-style:italic;color:var(--ink3);text-align:center;font-size:13px;">"A commander who cannot hold his contract cannot hold his ground."</div>
+      <div style="margin-top:14px;padding-top:10px;font-style:italic;color:var(--ink3);text-align:center;font-size:13px;border-top:1px solid var(--border2);">"A commander who cannot hold his contract cannot hold his ground."</div>
+      </div>
     </div>
   </div>
 
@@ -1293,11 +1296,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <span class="wow-x" title="Decorative close button">✕</span>
     </div>
     <div class="wow-tabs">
-      <div class="wow-tab active">⚔ Character</div>
-      <div class="wow-tab">📜 Reputation</div>
-      <div class="wow-tab">⚜ PvP</div>
-      <div class="wow-tab">📖 Skills</div>
+      <div class="wow-tab active" data-wow-tab="character" onclick="switchWowTab('character')">⚔ Character</div>
+      <div class="wow-tab" data-wow-tab="reputation" onclick="switchWowTab('reputation')">📜 Reputation</div>
+      <div class="wow-tab" data-wow-tab="pvp" onclick="switchWowTab('pvp')">⚜ PvP</div>
+      <div class="wow-tab" data-wow-tab="skills" onclick="switchWowTab('skills')">📖 Skills</div>
     </div>
+
+    <!-- Character tab content (default visible) -->
+    <div class="wow-tab-panel" id="wow-tab-character">
 
     <div class="wow-char-body">
 
@@ -1359,6 +1365,41 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
       <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:8px;color:#5a4520;font-style:italic;">Click an equipment slot to (in future) attach an item</div>
     </div>
+
+    </div><!-- end #wow-tab-character -->
+
+    <!-- Reputation tab -->
+    <div class="wow-tab-panel" id="wow-tab-reputation" style="display:none;">
+      <div style="font-family:var(--fellsc);font-size:14px;color:#C9A227;text-align:center;margin-bottom:10px;letter-spacing:0.06em;padding-bottom:6px;border-bottom:1px solid #5a4520;">Reputation</div>
+      <div style="font-family:var(--mono);font-size:9px;color:#8a7a4a;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.08em;">Standing with the factions of 1526</div>
+      <div id="wow-rep-list" style="max-width:540px;margin:0 auto;"></div>
+    </div>
+
+    <!-- PvP tab -->
+    <div class="wow-tab-panel" id="wow-tab-pvp" style="display:none;">
+      <div style="font-family:var(--fellsc);font-size:14px;color:#C9A227;text-align:center;margin-bottom:10px;letter-spacing:0.06em;padding-bottom:6px;border-bottom:1px solid #5a4520;">PvP — Honour &amp; Combat Record</div>
+      <div style="font-family:var(--mono);font-size:9px;color:#8a7a4a;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.08em;">Battle honours · Standing in the realm</div>
+      <div style="max-width:540px;margin:0 auto;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:14px;">
+        <div style="font-family:var(--fellsc);font-size:12px;color:#d8c090;margin-bottom:8px;border-bottom:1px solid #2a2010;padding-bottom:4px;">Honourable Standing</div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Rank</span><span class="wow-stat-val">Private — No Rank</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Lifetime Honourable Kills</span><span class="wow-stat-val" id="wow-pvp-kills">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Battles Fought</span><span class="wow-stat-val" id="wow-pvp-battles">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Battles Won</span><span class="wow-stat-val green" id="wow-pvp-wins">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Battles Lost</span><span class="wow-stat-val red" id="wow-pvp-losses">0</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Killing Blow (Biggest Win)</span><span class="wow-stat-val">—</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Heaviest Defeat</span><span class="wow-stat-val">—</span></div>
+        <div class="wow-stat-row"><span class="wow-stat-key">Current Streak</span><span class="wow-stat-val">—</span></div>
+        <div style="text-align:center;margin-top:12px;font-family:var(--mono);font-size:8px;color:#5a4520;font-style:italic;">Ranks earned through honourable trading; each win is a confirmed kill on the field.</div>
+      </div>
+    </div>
+
+    <!-- Skills tab -->
+    <div class="wow-tab-panel" id="wow-tab-skills" style="display:none;">
+      <div style="font-family:var(--fellsc);font-size:14px;color:#C9A227;text-align:center;margin-bottom:10px;letter-spacing:0.06em;padding-bottom:6px;border-bottom:1px solid #5a4520;">Skills</div>
+      <div style="font-family:var(--mono);font-size:9px;color:#8a7a4a;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.08em;">Combat &amp; Profession proficiencies — train through use</div>
+      <div id="wow-skill-list" style="max-width:540px;margin:0 auto;"></div>
+    </div>
+
   </div>
   <!-- end WoW Classic-style character window -->
 
@@ -2506,7 +2547,103 @@ function saveToFile(){
     html = html.replace(/<div id="__tw_save__"[^>]*><\/div>/g, '');
     html = html.replace(/<div id="__tw_save__"[^>]*\/>/g, '');
 
-    // Inject hidden div with base64 save data before </body>
+    // Inject hidden div with base64 save data before 
+<script>
+// WoW tabs — switch + populate
+const WOW_REPUTATIONS = [
+  {faction:'English Crown',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Loyal subject of King Henry VIII.'},
+  {faction:'House of Tudor',           standing:'Neutral', bar:0, color:'#c0b070', desc:'A minor name in a great realm.'},
+  {faction:'Bishop of Ely',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Whittlesey sits in the Bishop\'s manor.'},
+  {faction:'Whittlesey Townsmen',      standing:'Neutral', bar:0, color:'#c0b070', desc:'Defender of their fen roads.'},
+  {faction:'The Fen Folk',             standing:'Neutral', bar:0, color:'#c0b070', desc:'Born of their black water and reed.'},
+  {faction:'Peterborough Merchants',   standing:'Neutral', bar:0, color:'#c0b070', desc:'Buyers of Whittlesey wool and peat.'},
+  {faction:'Cambridge University',     standing:'Neutral', bar:0, color:'#c0b070', desc:'Distant scholars; few introductions.'},
+  {faction:'Hanseatic League',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Foreign traders at the Steelyard, London.'},
+  {faction:'French Crown (Valois)',    standing:'Neutral', bar:0, color:'#c0b070', desc:'England\'s ancient adversary.'},
+  {faction:'Holy Roman Empire',        standing:'Neutral', bar:0, color:'#c0b070', desc:'Charles V\'s vast and uncertain realm.'},
+  {faction:'Ottoman Empire',           standing:'Neutral', bar:0, color:'#c0b070', desc:'Suleiman marches on Christendom.'},
+  {faction:'Fen Road Bandits',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Black Tom of the Mere and his discharged soldiers.'},
+];
+
+// Real-life self-improvement skills, dressed in WoW Classic skill-window conventions.
+//   Body Skills (Weapon Skill slot): cap = 5 × character_level (Lvl 1 = 5, Lvl 60 = 300)
+//   Practice Skills (Secondary):     daily/weekly habits — 0/75 Apprentice, scales up
+//   Mastery Tracks (Primary Profession): focused long-term grinds — 0/75 Apprentice
+//   Communication (Language Skill):  reading & speaking — 0/75
+//   Locked tracks:                   unlock after a prerequisite skill reaches a threshold
+const WOW_SKILLS = [
+  // ── BODY (Weapon Skill slot — scales with level) ──
+  {name:'Strength Training',  rank:1, max:5,  cat:'Body Skill',          desc:'The body must be tested. Lift, push, pull, carry. (5 × level cap)'},
+  {name:'Cardio Endurance',   rank:1, max:5,  cat:'Body Skill',          desc:'Long roads, long breath. Run, ruck, climb. (5 × level cap)'},
+  {name:'Mobility &amp; Posture', rank:1, max:5,  cat:'Body Skill',          desc:'The body that bends does not break. Stretch, mobilise. (5 × level cap)'},
+
+  // ── MIND (Secondary Skills — daily practices) ──
+  {name:'Meditation',         rank:1, max:75, cat:'Practice',            desc:'The mind is the first battlefield. Sit. Breathe. (Apprentice 1/75)'},
+  {name:'Sleep Discipline',   rank:1, max:75, cat:'Practice',            desc:'Recovery is where strength is built. 7–9 hours, regular. (Apprentice 1/75)'},
+  {name:'Nutrition',          rank:1, max:75, cat:'Practice',            desc:'What you eat builds what you become. (Apprentice 1/75)'},
+  {name:'Hydration',          rank:1, max:75, cat:'Practice',            desc:'Half your body weight in ounces of water. Daily. (Apprentice 1/75)'},
+
+  // ── MASTERY (Primary Profession — long-term grinds) ──
+  {name:'Risk Management',    rank:1, max:75, cat:'Mastery Track',       desc:'The contract held is the war won. (Apprentice 1/75)'},
+  {name:'Journaling',         rank:1, max:75, cat:'Mastery Track',       desc:'An undocumented life is a life forgotten. (Apprentice 1/75)'},
+
+  // ── COMMUNICATION (Language Skill — reading & speaking) ──
+  {name:'Reading &amp; Study',    rank:1, max:75, cat:'Communication',       desc:'Books are the cheapest mentors. (Apprentice 1/75)'},
+  {name:'Active Listening',   rank:1, max:75, cat:'Communication',       desc:'Most men fail because they cannot hear. (Apprentice 1/75)'},
+
+  // ── LOCKED (requires a foundation skill first — like Riding required Level 40) ──
+  {name:'Deep Work',          rank:0, max:0,  cat:'Advanced Mastery',    desc:'Requires Meditation 40 — multi-hour focused sessions without distraction.'},
+];
+
+function switchWowTab(tab){
+  document.querySelectorAll('.wow-tab').forEach(el=>{
+    el.classList.toggle('active', el.dataset.wowTab===tab);
+  });
+  document.querySelectorAll('.wow-tab-panel').forEach(el=>{
+    el.style.display = (el.id === 'wow-tab-'+tab) ? 'block' : 'none';
+  });
+  if(tab==='reputation') renderWowReputation();
+  if(tab==='skills') renderWowSkills();
+}
+
+function renderWowReputation(){
+  const list = document.getElementById('wow-rep-list');
+  if(!list) return;
+  list.innerHTML = WOW_REPUTATIONS.map(r=>{
+    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;">
+      <div style="flex:0 0 160px;font-family:var(--fellsc);font-size:12px;color:#d8c090;">${r.faction}</div>
+      <div style="flex:0 0 80px;font-family:var(--mono);font-size:9px;color:${r.color};text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${r.standing}</div>
+      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;position:relative;">
+        <div style="width:${r.bar}%;height:100%;background:${r.color};"></div>
+      </div>
+      <div style="flex:0 0 36px;text-align:right;font-family:var(--mono);font-size:9px;color:#8a7a4a;">${r.bar}/100</div>
+    </div>`;
+  }).join('');
+}
+
+function renderWowSkills(){
+  const list = document.getElementById('wow-skill-list');
+  if(!list) return;
+  list.innerHTML = WOW_SKILLS.map(s=>{
+    const pct = s.max > 0 ? Math.round(s.rank/s.max*100) : 0;
+    const locked = s.max === 0;
+    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;${locked?'opacity:0.55;':''}">
+      <div style="flex:0 0 110px;">
+        <div style="font-family:var(--fellsc);font-size:12px;color:#d8c090;line-height:1.1;">${s.name}</div>
+        <div style="font-family:var(--mono);font-size:7px;color:#8a7a4a;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">${s.cat||''}</div>
+      </div>
+      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:#7090c0;"></div>
+      </div>
+      <div style="flex:0 0 60px;text-align:right;font-family:var(--mono);font-size:10px;color:${locked?'#8a7a4a':'#c9a227'};font-weight:600;">${locked?'Locked':s.rank+' / '+s.max}</div>
+    </div>`;
+  }).join('');
+}
+
+// Pre-render in case user lands directly on those tabs
+document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); renderWowSkills(); });
+</script>
+</body>
     const saveEl = '<div id="__tw_save__" data-v="' + encoded + '" style="display:none"></div>';
     html = html.replace('</body>', saveEl + '\n</body>');
 
