@@ -2547,103 +2547,7 @@ function saveToFile(){
     html = html.replace(/<div id="__tw_save__"[^>]*><\/div>/g, '');
     html = html.replace(/<div id="__tw_save__"[^>]*\/>/g, '');
 
-    // Inject hidden div with base64 save data before 
-<script>
-// WoW tabs — switch + populate
-const WOW_REPUTATIONS = [
-  {faction:'English Crown',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Loyal subject of King Henry VIII.'},
-  {faction:'House of Tudor',           standing:'Neutral', bar:0, color:'#c0b070', desc:'A minor name in a great realm.'},
-  {faction:'Bishop of Ely',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Whittlesey sits in the Bishop\'s manor.'},
-  {faction:'Whittlesey Townsmen',      standing:'Neutral', bar:0, color:'#c0b070', desc:'Defender of their fen roads.'},
-  {faction:'The Fen Folk',             standing:'Neutral', bar:0, color:'#c0b070', desc:'Born of their black water and reed.'},
-  {faction:'Peterborough Merchants',   standing:'Neutral', bar:0, color:'#c0b070', desc:'Buyers of Whittlesey wool and peat.'},
-  {faction:'Cambridge University',     standing:'Neutral', bar:0, color:'#c0b070', desc:'Distant scholars; few introductions.'},
-  {faction:'Hanseatic League',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Foreign traders at the Steelyard, London.'},
-  {faction:'French Crown (Valois)',    standing:'Neutral', bar:0, color:'#c0b070', desc:'England\'s ancient adversary.'},
-  {faction:'Holy Roman Empire',        standing:'Neutral', bar:0, color:'#c0b070', desc:'Charles V\'s vast and uncertain realm.'},
-  {faction:'Ottoman Empire',           standing:'Neutral', bar:0, color:'#c0b070', desc:'Suleiman marches on Christendom.'},
-  {faction:'Fen Road Bandits',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Black Tom of the Mere and his discharged soldiers.'},
-];
-
-// Real-life self-improvement skills, dressed in WoW Classic skill-window conventions.
-//   Body Skills (Weapon Skill slot): cap = 5 × character_level (Lvl 1 = 5, Lvl 60 = 300)
-//   Practice Skills (Secondary):     daily/weekly habits — 0/75 Apprentice, scales up
-//   Mastery Tracks (Primary Profession): focused long-term grinds — 0/75 Apprentice
-//   Communication (Language Skill):  reading & speaking — 0/75
-//   Locked tracks:                   unlock after a prerequisite skill reaches a threshold
-const WOW_SKILLS = [
-  // ── BODY (Weapon Skill slot — scales with level) ──
-  {name:'Strength Training',  rank:1, max:5,  cat:'Body Skill',          desc:'The body must be tested. Lift, push, pull, carry. (5 × level cap)'},
-  {name:'Cardio Endurance',   rank:1, max:5,  cat:'Body Skill',          desc:'Long roads, long breath. Run, ruck, climb. (5 × level cap)'},
-  {name:'Mobility &amp; Posture', rank:1, max:5,  cat:'Body Skill',          desc:'The body that bends does not break. Stretch, mobilise. (5 × level cap)'},
-
-  // ── MIND (Secondary Skills — daily practices) ──
-  {name:'Meditation',         rank:1, max:75, cat:'Practice',            desc:'The mind is the first battlefield. Sit. Breathe. (Apprentice 1/75)'},
-  {name:'Sleep Discipline',   rank:1, max:75, cat:'Practice',            desc:'Recovery is where strength is built. 7–9 hours, regular. (Apprentice 1/75)'},
-  {name:'Nutrition',          rank:1, max:75, cat:'Practice',            desc:'What you eat builds what you become. (Apprentice 1/75)'},
-  {name:'Hydration',          rank:1, max:75, cat:'Practice',            desc:'Half your body weight in ounces of water. Daily. (Apprentice 1/75)'},
-
-  // ── MASTERY (Primary Profession — long-term grinds) ──
-  {name:'Risk Management',    rank:1, max:75, cat:'Mastery Track',       desc:'The contract held is the war won. (Apprentice 1/75)'},
-  {name:'Journaling',         rank:1, max:75, cat:'Mastery Track',       desc:'An undocumented life is a life forgotten. (Apprentice 1/75)'},
-
-  // ── COMMUNICATION (Language Skill — reading & speaking) ──
-  {name:'Reading &amp; Study',    rank:1, max:75, cat:'Communication',       desc:'Books are the cheapest mentors. (Apprentice 1/75)'},
-  {name:'Active Listening',   rank:1, max:75, cat:'Communication',       desc:'Most men fail because they cannot hear. (Apprentice 1/75)'},
-
-  // ── LOCKED (requires a foundation skill first — like Riding required Level 40) ──
-  {name:'Deep Work',          rank:0, max:0,  cat:'Advanced Mastery',    desc:'Requires Meditation 40 — multi-hour focused sessions without distraction.'},
-];
-
-function switchWowTab(tab){
-  document.querySelectorAll('.wow-tab').forEach(el=>{
-    el.classList.toggle('active', el.dataset.wowTab===tab);
-  });
-  document.querySelectorAll('.wow-tab-panel').forEach(el=>{
-    el.style.display = (el.id === 'wow-tab-'+tab) ? 'block' : 'none';
-  });
-  if(tab==='reputation') renderWowReputation();
-  if(tab==='skills') renderWowSkills();
-}
-
-function renderWowReputation(){
-  const list = document.getElementById('wow-rep-list');
-  if(!list) return;
-  list.innerHTML = WOW_REPUTATIONS.map(r=>{
-    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;">
-      <div style="flex:0 0 160px;font-family:var(--fellsc);font-size:12px;color:#d8c090;">${r.faction}</div>
-      <div style="flex:0 0 80px;font-family:var(--mono);font-size:9px;color:${r.color};text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${r.standing}</div>
-      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;position:relative;">
-        <div style="width:${r.bar}%;height:100%;background:${r.color};"></div>
-      </div>
-      <div style="flex:0 0 36px;text-align:right;font-family:var(--mono);font-size:9px;color:#8a7a4a;">${r.bar}/100</div>
-    </div>`;
-  }).join('');
-}
-
-function renderWowSkills(){
-  const list = document.getElementById('wow-skill-list');
-  if(!list) return;
-  list.innerHTML = WOW_SKILLS.map(s=>{
-    const pct = s.max > 0 ? Math.round(s.rank/s.max*100) : 0;
-    const locked = s.max === 0;
-    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;${locked?'opacity:0.55;':''}">
-      <div style="flex:0 0 110px;">
-        <div style="font-family:var(--fellsc);font-size:12px;color:#d8c090;line-height:1.1;">${s.name}</div>
-        <div style="font-family:var(--mono);font-size:7px;color:#8a7a4a;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">${s.cat||''}</div>
-      </div>
-      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;">
-        <div style="width:${pct}%;height:100%;background:#7090c0;"></div>
-      </div>
-      <div style="flex:0 0 60px;text-align:right;font-family:var(--mono);font-size:10px;color:${locked?'#8a7a4a':'#c9a227'};font-weight:600;">${locked?'Locked':s.rank+' / '+s.max}</div>
-    </div>`;
-  }).join('');
-}
-
-// Pre-render in case user lands directly on those tabs
-document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); renderWowSkills(); });
-</script>
-</body>
+    // Inject hidden div with base64 save data before </body>
     const saveEl = '<div id="__tw_save__" data-v="' + encoded + '" style="display:none"></div>';
     html = html.replace('</body>', saveEl + '\n</body>');
 
@@ -4292,6 +4196,103 @@ document.getElementById('debrief-input').addEventListener('keydown',e=>{if(e.key
   </div>
 
 </div>
+
+
+<script>
+// WoW tabs — switch + populate
+const WOW_REPUTATIONS = [
+  {faction:'English Crown',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Loyal subject of King Henry VIII.'},
+  {faction:'House of Tudor',           standing:'Neutral', bar:0, color:'#c0b070', desc:'A minor name in a great realm.'},
+  {faction:'Bishop of Ely',            standing:'Neutral', bar:0, color:'#c0b070', desc:'Whittlesey sits in the Bishop\'s manor.'},
+  {faction:'Whittlesey Townsmen',      standing:'Neutral', bar:0, color:'#c0b070', desc:'Defender of their fen roads.'},
+  {faction:'The Fen Folk',             standing:'Neutral', bar:0, color:'#c0b070', desc:'Born of their black water and reed.'},
+  {faction:'Peterborough Merchants',   standing:'Neutral', bar:0, color:'#c0b070', desc:'Buyers of Whittlesey wool and peat.'},
+  {faction:'Cambridge University',     standing:'Neutral', bar:0, color:'#c0b070', desc:'Distant scholars; few introductions.'},
+  {faction:'Hanseatic League',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Foreign traders at the Steelyard, London.'},
+  {faction:'French Crown (Valois)',    standing:'Neutral', bar:0, color:'#c0b070', desc:'England\'s ancient adversary.'},
+  {faction:'Holy Roman Empire',        standing:'Neutral', bar:0, color:'#c0b070', desc:'Charles V\'s vast and uncertain realm.'},
+  {faction:'Ottoman Empire',           standing:'Neutral', bar:0, color:'#c0b070', desc:'Suleiman marches on Christendom.'},
+  {faction:'Fen Road Bandits',         standing:'Neutral', bar:0, color:'#c0b070', desc:'Black Tom of the Mere and his discharged soldiers.'},
+];
+
+// Real-life self-improvement skills, dressed in WoW Classic skill-window conventions.
+//   Body Skills (Weapon Skill slot): cap = 5 × character_level (Lvl 1 = 5, Lvl 60 = 300)
+//   Practice Skills (Secondary):     daily/weekly habits — 0/75 Apprentice, scales up
+//   Mastery Tracks (Primary Profession): focused long-term grinds — 0/75 Apprentice
+//   Communication (Language Skill):  reading & speaking — 0/75
+//   Locked tracks:                   unlock after a prerequisite skill reaches a threshold
+const WOW_SKILLS = [
+  // ── BODY (Weapon Skill slot — scales with level) ──
+  {name:'Strength Training',  rank:1, max:5,  cat:'Body Skill',          desc:'The body must be tested. Lift, push, pull, carry. (5 × level cap)'},
+  {name:'Cardio Endurance',   rank:1, max:5,  cat:'Body Skill',          desc:'Long roads, long breath. Run, ruck, climb. (5 × level cap)'},
+  {name:'Mobility &amp; Posture', rank:1, max:5,  cat:'Body Skill',          desc:'The body that bends does not break. Stretch, mobilise. (5 × level cap)'},
+
+  // ── MIND (Secondary Skills — daily practices) ──
+  {name:'Meditation',         rank:1, max:75, cat:'Practice',            desc:'The mind is the first battlefield. Sit. Breathe. (Apprentice 1/75)'},
+  {name:'Sleep Discipline',   rank:1, max:75, cat:'Practice',            desc:'Recovery is where strength is built. 7–9 hours, regular. (Apprentice 1/75)'},
+  {name:'Nutrition',          rank:1, max:75, cat:'Practice',            desc:'What you eat builds what you become. (Apprentice 1/75)'},
+  {name:'Hydration',          rank:1, max:75, cat:'Practice',            desc:'Half your body weight in ounces of water. Daily. (Apprentice 1/75)'},
+
+  // ── MASTERY (Primary Profession — long-term grinds) ──
+  {name:'Risk Management',    rank:1, max:75, cat:'Mastery Track',       desc:'The contract held is the war won. (Apprentice 1/75)'},
+  {name:'Journaling',         rank:1, max:75, cat:'Mastery Track',       desc:'An undocumented life is a life forgotten. (Apprentice 1/75)'},
+
+  // ── COMMUNICATION (Language Skill — reading & speaking) ──
+  {name:'Reading &amp; Study',    rank:1, max:75, cat:'Communication',       desc:'Books are the cheapest mentors. (Apprentice 1/75)'},
+  {name:'Active Listening',   rank:1, max:75, cat:'Communication',       desc:'Most men fail because they cannot hear. (Apprentice 1/75)'},
+
+  // ── LOCKED (requires a foundation skill first — like Riding required Level 40) ──
+  {name:'Deep Work',          rank:0, max:0,  cat:'Advanced Mastery',    desc:'Requires Meditation 40 — multi-hour focused sessions without distraction.'},
+];
+
+function switchWowTab(tab){
+  document.querySelectorAll('.wow-tab').forEach(el=>{
+    el.classList.toggle('active', el.dataset.wowTab===tab);
+  });
+  document.querySelectorAll('.wow-tab-panel').forEach(el=>{
+    el.style.display = (el.id === 'wow-tab-'+tab) ? 'block' : 'none';
+  });
+  if(tab==='reputation') renderWowReputation();
+  if(tab==='skills') renderWowSkills();
+}
+
+function renderWowReputation(){
+  const list = document.getElementById('wow-rep-list');
+  if(!list) return;
+  list.innerHTML = WOW_REPUTATIONS.map(r=>{
+    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;">
+      <div style="flex:0 0 160px;font-family:var(--fellsc);font-size:12px;color:#d8c090;">${r.faction}</div>
+      <div style="flex:0 0 80px;font-family:var(--mono);font-size:9px;color:${r.color};text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">${r.standing}</div>
+      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;position:relative;">
+        <div style="width:${r.bar}%;height:100%;background:${r.color};"></div>
+      </div>
+      <div style="flex:0 0 36px;text-align:right;font-family:var(--mono);font-size:9px;color:#8a7a4a;">${r.bar}/100</div>
+    </div>`;
+  }).join('');
+}
+
+function renderWowSkills(){
+  const list = document.getElementById('wow-skill-list');
+  if(!list) return;
+  list.innerHTML = WOW_SKILLS.map(s=>{
+    const pct = s.max > 0 ? Math.round(s.rank/s.max*100) : 0;
+    const locked = s.max === 0;
+    return `<div style="display:flex;align-items:center;gap:10px;background:#0d0a05;border:1px solid #5a4520;border-radius:3px;padding:7px 10px;margin-bottom:5px;${locked?'opacity:0.55;':''}">
+      <div style="flex:0 0 110px;">
+        <div style="font-family:var(--fellsc);font-size:12px;color:#d8c090;line-height:1.1;">${s.name}</div>
+        <div style="font-family:var(--mono);font-size:7px;color:#8a7a4a;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">${s.cat||''}</div>
+      </div>
+      <div style="flex:1;height:10px;background:#1a1208;border:1px solid #3a2810;border-radius:2px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:#7090c0;"></div>
+      </div>
+      <div style="flex:0 0 60px;text-align:right;font-family:var(--mono);font-size:10px;color:${locked?'#8a7a4a':'#c9a227'};font-weight:600;">${locked?'Locked':s.rank+' / '+s.max}</div>
+    </div>`;
+  }).join('');
+}
+
+// Pre-render in case user lands directly on those tabs
+document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); renderWowSkills(); });
+</script>
 
 </body>
 </html>                            
