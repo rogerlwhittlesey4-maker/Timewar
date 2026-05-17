@@ -723,6 +723,67 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
+  <!-- ═══ Row 2: MES + Strait of Hormuz (sized like the maps row above) ═══ -->
+  <div style="margin-bottom:14px;border:1px solid var(--border3);background:#0a0d14;border-radius:3px;overflow:hidden;">
+    <!-- Header bar -->
+    <div style="background:#0d0900;border-bottom:1px solid var(--border3);padding:5px 12px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:var(--fellsc);font-size:12px;color:var(--gold-m);letter-spacing:0.05em;">📊 Markets · Live Data</span>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <a href="https://ninjatrader.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">NinjaTrader ↗</a>
+        <a href="https://www.hormuztracker.com/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">HormuzTracker ↗</a>
+      </div>
+    </div>
+
+    <!-- Two widgets side by side -->
+    <div style="display:flex;gap:0;">
+
+      <!-- Left: MES TradingView -->
+      <div style="flex:1;min-width:0;position:relative;border-right:1px solid var(--border3);">
+        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">📈 MES — Micro E-mini S&amp;P 500 · 15min</div>
+        <div class="tradingview-widget-container" style="height:320px;width:100%;background:#131722;">
+          <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+          {
+            "autosize": true,
+            "symbol": "CME_MINI:MES1!",
+            "interval": "15",
+            "timezone": "America/Phoenix",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "calendar": false,
+            "support_host": "https://www.tradingview.com"
+          }
+          </script>
+        </div>
+      </div>
+
+      <!-- Right: Strait of Hormuz tanker tracker -->
+      <div style="flex:1;min-width:0;position:relative;">
+        <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">⚓ Strait of Hormuz · Live Tanker &amp; Oil Tracker</div>
+        <iframe
+          src="https://www.hormuztracker.com/"
+          style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
+          title="Strait of Hormuz live shipping tracker"
+          loading="lazy"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#0d0900;border-top:1px solid var(--border3);padding:4px 12px;font-family:var(--mono);font-size:9px;color:var(--ink4);display:flex;gap:20px;">
+      <span>CME futures · 0.25pt = $1.25 · Live AIS shipping data</span>
+      <span style="margin-left:auto;color:var(--border3);">Click to expand either panel</span>
+    </div>
+
+  </div>
+
   <div class="stats-row">
     <div class="sblock"><div class="sb-l">Treasury</div><div class="sb-v gold" id="s-treasury">$500.00</div><div class="sb-s">equity</div></div>
     <div class="sblock"><div class="sb-l">Band</div><div class="sb-v green" id="s-men">5/5</div><div class="sb-s">alive/total</div></div>
@@ -1165,49 +1226,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   </div>
 
 
-  <!-- MES FUTURES — Trading screen -->
-  <div class="fleet-card" id="mes-card" style="border-color:#5a4a2a;">
-    <span class="fleet-icon">📈</span>
-    <div class="fleet-name">MES — Micro E-mini S&amp;P 500</div>
-    <div class="fleet-tier">Futures · Evening Globex Session</div>
-
-    <div style="text-align:center;margin:8px 0 6px;font-family:var(--mono);font-size:9px;color:#5a7a8a;text-transform:uppercase;letter-spacing:0.1em;">Live chart — front-month continuous</div>
-
-    <!-- TradingView MES Symbol Overview Widget -->
-    <div style="background:#0a1420;border-radius:4px;padding:4px;margin-bottom:8px;">
-      <div class="tradingview-widget-container" style="height:320px;width:100%;">
-        <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-        {
-          "autosize": true,
-          "symbol": "CME_MINI:MES1!",
-          "interval": "15",
-          "timezone": "America/Phoenix",
-          "theme": "dark",
-          "style": "1",
-          "locale": "en",
-          "enable_publishing": false,
-          "hide_top_toolbar": false,
-          "hide_legend": false,
-          "save_image": false,
-          "calendar": false,
-          "support_host": "https://www.tradingview.com"
-        }
-        </script>
-      </div>
-    </div>
-
-    <div class="fleet-stat"><span class="fleet-sk">Symbol</span><span class="fleet-sv gold">MES (Micro E-mini S&amp;P 500)</span></div>
-    <div class="fleet-stat"><span class="fleet-sk">Tick value</span><span class="fleet-sv">$1.25 per 0.25 point</span></div>
-    <div class="fleet-stat"><span class="fleet-sk">Margin (intraday)</span><span class="fleet-sv">~$50–80 per contract</span></div>
-    <div class="fleet-stat"><span class="fleet-sk">Session</span><span class="fleet-sv">Evening Globex · 18:00–17:00 ET</span></div>
-    <div class="fleet-stat"><span class="fleet-sk">Platform</span><span class="fleet-sv">NinjaTrader (desktop)</span></div>
-    <div class="fleet-input-row">
-      <a href="https://ninjatrader.com/" target="_blank" class="fleet-refresh-btn" style="text-align:center;text-decoration:none;display:inline-block;padding:6px 12px;">⚔ Open NinjaTrader</a>
-    </div>
-  </div>
-
-
 </div>
 
 
@@ -1479,6 +1497,26 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <text x="100" y="261" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
 </svg></div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px;text-align:center;">Whittlesey Arms · Azure, a fess ermine between three escallop shells Or · Cambridgeshire, England</div>
+
+      <!-- Archive.org bookreader: the actual 1898 Whittlesey genealogy with original arms image -->
+      <div style="margin-top:14px;padding:8px;background:#0a0608;border:1px solid var(--border3);border-radius:4px;">
+        <div style="font-family:var(--fellsc);font-size:11px;color:var(--gold-m);text-align:center;margin-bottom:4px;letter-spacing:0.05em;">📖 The 1898 Genealogy — Original Scan</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);text-align:center;margin-bottom:8px;line-height:1.5;">Charles B. Whittelsey, <em>Genealogy of the Whittelsey-Whittlesey family</em> (Hartford: Case, Lockwood &amp; Brainard Co., 1898) · 489 pages · Internet Archive</div>
+        <iframe
+          src="https://archive.org/embed/genealogyofwhitt00whit"
+          style="width:100%;height:420px;border:1px solid var(--border3);border-radius:3px;display:block;"
+          title="Genealogy of the Whittelsey-Whittlesey family (1898) bookreader"
+          loading="lazy"
+          allowfullscreen
+          webkitallowfullscreen="true"
+          mozallowfullscreen="true">
+        </iframe>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);text-align:center;margin-top:6px;font-style:italic;">Navigate to the front matter (first 10-15 pages) to find the coat of arms plate. The heraldry section appears with the family arms.</div>
+        <div style="font-family:var(--mono);font-size:8px;text-align:center;margin-top:4px;">
+          <a href="https://archive.org/details/genealogyofwhitt00whit" target="_blank" style="color:var(--gold-m);text-decoration:none;">View on archive.org ↗</a> ·
+          <a href="https://archive.org/download/genealogyofwhitt00whit/genealogyofwhitt00whit.pdf" target="_blank" style="color:var(--gold-m);text-decoration:none;">Download PDF (27 MB) ↗</a>
+        </div>
+      </div>
     </div>
 
     <!-- Origin of the name -->
