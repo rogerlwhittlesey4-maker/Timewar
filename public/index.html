@@ -701,6 +701,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
+<div class="stats-row">
+    <div class="sblock"><div class="sb-l">Treasury</div><div class="sb-v gold" id="s-treasury">$500.00</div><div class="sb-s">equity</div></div>
+    <div class="sblock"><div class="sb-l">Band</div><div class="sb-v green" id="s-men">5/5</div><div class="sb-s">alive/total</div></div>
+    <div class="sblock"><div class="sb-l">Seasons</div><div class="sb-v" id="s-seasons">0</div><div class="sb-s">fought</div></div>
+    <div class="sblock"><div class="sb-l">Record</div><div class="sb-v" id="s-record">0—0</div><div class="sb-s" id="s-winrate">—</div></div>
+    <div class="sblock"><div class="sb-l">Goal</div><div class="sb-v gold" id="s-goal">50%</div><div class="sb-s">of $1,000</div></div>
+  </div>
+
   <!-- ══ LIVE MAPS — DAY/NIGHT + WEATHER SIDE BY SIDE ══ -->
   <div style="margin-bottom:12px;border:2px solid var(--border3);border-radius:3px;overflow:hidden;">
 
@@ -811,13 +819,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
-  <div class="stats-row">
-    <div class="sblock"><div class="sb-l">Treasury</div><div class="sb-v gold" id="s-treasury">$500.00</div><div class="sb-s">equity</div></div>
-    <div class="sblock"><div class="sb-l">Band</div><div class="sb-v green" id="s-men">5/5</div><div class="sb-s">alive/total</div></div>
-    <div class="sblock"><div class="sb-l">Seasons</div><div class="sb-v" id="s-seasons">0</div><div class="sb-s">fought</div></div>
-    <div class="sblock"><div class="sb-l">Record</div><div class="sb-v" id="s-record">0—0</div><div class="sb-s" id="s-winrate">—</div></div>
-    <div class="sblock"><div class="sb-l">Goal</div><div class="sb-v gold" id="s-goal">50%</div><div class="sb-s">of $1,000</div></div>
-  </div>
 
   <!-- RECRUIT TRACKER -->
   <!-- ══ RP + ROSTER SIDE BY SIDE ══ -->
@@ -1080,7 +1081,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <div class="panel-title">📖 Dossier</div>
   <div id="bio-content">
     <div class="bio-placeholder" style="padding:12px 6px;">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" style="width:100%;max-width:220px;display:block;margin:0 auto 8px;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 312" style="width:100%;max-width:220px;display:block;margin:0 auto 8px;">
   <defs>
     <clipPath id="sc"><path d="M30 60 L170 60 L170 195 Q170 250 100 275 Q30 250 30 195 Z"/></clipPath>
     <!-- Reusable escallop shell symbol (heraldic Or) -->
@@ -1131,8 +1132,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <use href="#escallop" x="84" y="194" width="32" height="34"/>
   </g>
   <!-- Motto scroll: Animo et Fide -->
-  <rect x="24" y="262" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
-  <text x="100" y="275" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
+  <rect x="24" y="290" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
+  <text x="100" y="303" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
 </svg>
       <div style="font-family:var(--mono);font-size:8px;color:var(--border3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Whittlesey Arms · Azure, a fess ermine between three escallop shells Or</div>
       <div style="font-size:10px;font-style:italic;color:var(--ink4);">Click a soldier's card to read his dossier.</div>
@@ -1265,6 +1266,13 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 <div id="page-character" class="page">
 <div class="char-page">
 
+  <div class="char-outer">
+
+    <div class="char-header">
+      <div class="char-header-title">⚔ Roger Lee Whittlesey IV</div>
+      <div class="char-header-sub">Commander · Whittlesey Defense Band · Isle of Ely, England · Anno Domini 1526</div>
+    </div>
+
   <!-- WoW Classic-style character window -->
   <div class="wow-char-window">
     <div class="wow-char-titlebar">
@@ -1282,14 +1290,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
       <!-- LEFT equipment column: head, neck, shoulder, back, chest, shirt, tabard, wrist -->
       <div class="wow-slot-col">
-        <div class="wow-slot wow-slot-empty" title="Head — empty">⛑️<span class="wow-slot-label">Head</span></div>
-        <div class="wow-slot wow-slot-empty" title="Neck — empty">📿<span class="wow-slot-label">Neck</span></div>
-        <div class="wow-slot wow-slot-empty" title="Shoulder — empty">🪶<span class="wow-slot-label">Shoulder</span></div>
-        <div class="wow-slot wow-slot-empty" title="Back — empty">🧥<span class="wow-slot-label">Back</span></div>
-        <div class="wow-slot wow-slot-empty" title="Chest — empty">🦺<span class="wow-slot-label">Chest</span></div>
-        <div class="wow-slot wow-slot-empty" title="Shirt — empty">👕<span class="wow-slot-label">Shirt</span></div>
-        <div class="wow-slot wow-slot-empty" title="Tabard — Whittlesey Defense Band">🏴<span class="wow-slot-label">Tabard</span></div>
-        <div class="wow-slot wow-slot-empty" title="Wrist — empty">⛓️<span class="wow-slot-label">Wrist</span></div>
+        <div class="wow-slot wow-slot-empty" title="Head — empty">◇<span class="wow-slot-label">Head</span></div>
+        <div class="wow-slot wow-slot-empty" title="Neck — empty">◇<span class="wow-slot-label">Neck</span></div>
+        <div class="wow-slot wow-slot-empty" title="Shoulder — empty">◇<span class="wow-slot-label">Shoulder</span></div>
+        <div class="wow-slot wow-slot-empty" title="Back — empty">◇<span class="wow-slot-label">Back</span></div>
+        <div class="wow-slot wow-slot-empty" title="Chest — empty">◇<span class="wow-slot-label">Chest</span></div>
+        <div class="wow-slot wow-slot-empty" title="Shirt — empty">◇<span class="wow-slot-label">Shirt</span></div>
+        <div class="wow-slot wow-slot-empty" title="Tabard — Whittlesey Defense Band">◇<span class="wow-slot-label">Tabard</span></div>
+        <div class="wow-slot wow-slot-empty" title="Wrist — empty">◇<span class="wow-slot-label">Wrist</span></div>
       </div>
 
       <!-- CENTER: Paper doll with character representation -->
@@ -1300,23 +1308,23 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
       <!-- RIGHT equipment column: hands, waist, legs, feet, ring×2, trinket×2 -->
       <div class="wow-slot-col">
-        <div class="wow-slot wow-slot-empty" title="Hands — empty">🧤<span class="wow-slot-label">Hands</span></div>
-        <div class="wow-slot wow-slot-empty" title="Waist — empty">🎗️<span class="wow-slot-label">Waist</span></div>
-        <div class="wow-slot wow-slot-empty" title="Legs — empty">🩲<span class="wow-slot-label">Legs</span></div>
-        <div class="wow-slot wow-slot-empty" title="Feet — empty">🥾<span class="wow-slot-label">Feet</span></div>
-        <div class="wow-slot wow-slot-empty" title="Ring 1 — empty">💍<span class="wow-slot-label">Ring 1</span></div>
-        <div class="wow-slot wow-slot-empty" title="Ring 2 — empty">💍<span class="wow-slot-label">Ring 2</span></div>
-        <div class="wow-slot wow-slot-empty" title="Trinket 1 — empty">🕯️<span class="wow-slot-label">Trinket 1</span></div>
-        <div class="wow-slot wow-slot-empty" title="Trinket 2 — empty">🪨<span class="wow-slot-label">Trinket 2</span></div>
+        <div class="wow-slot wow-slot-empty" title="Hands — empty">◇<span class="wow-slot-label">Hands</span></div>
+        <div class="wow-slot wow-slot-empty" title="Waist — empty">◇<span class="wow-slot-label">Waist</span></div>
+        <div class="wow-slot wow-slot-empty" title="Legs — empty">◇<span class="wow-slot-label">Legs</span></div>
+        <div class="wow-slot wow-slot-empty" title="Feet — empty">◇<span class="wow-slot-label">Feet</span></div>
+        <div class="wow-slot wow-slot-empty" title="Ring 1 — empty">◇<span class="wow-slot-label">Ring 1</span></div>
+        <div class="wow-slot wow-slot-empty" title="Ring 2 — empty">◇<span class="wow-slot-label">Ring 2</span></div>
+        <div class="wow-slot wow-slot-empty" title="Trinket 1 — empty">◇<span class="wow-slot-label">Trinket 1</span></div>
+        <div class="wow-slot wow-slot-empty" title="Trinket 2 — empty">◇<span class="wow-slot-label">Trinket 2</span></div>
       </div>
 
     </div>
 
     <!-- BOTTOM: weapon row (Main Hand, Off Hand, Ranged) -->
     <div class="wow-weapons-row">
-      <div class="wow-slot wow-slot-empty" title="Main Hand — empty">🗡️<span class="wow-slot-label">Main Hand</span></div>
-      <div class="wow-slot wow-slot-empty" title="Off Hand — empty">🛡️<span class="wow-slot-label">Off Hand</span></div>
-      <div class="wow-slot wow-slot-empty" title="Ranged — empty">🏹<span class="wow-slot-label">Ranged</span></div>
+      <div class="wow-slot wow-slot-empty" title="Main Hand — empty">◇<span class="wow-slot-label">Main Hand</span></div>
+      <div class="wow-slot wow-slot-empty" title="Off Hand — empty">◇<span class="wow-slot-label">Off Hand</span></div>
+      <div class="wow-slot wow-slot-empty" title="Ranged — empty">◇<span class="wow-slot-label">Ranged</span></div>
     </div>
 
     <!-- Stats panel — mirrors the existing character attributes -->
@@ -1341,133 +1349,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   </div>
   <!-- end WoW Classic-style character window -->
 
-  <div class="char-outer">
-
-    <div class="char-header">
-      <div class="char-header-title">⚔ Roger Lee Whittlesey IV</div>
-      <div class="char-header-sub">Commander · Whittlesey Defense Band · Isle of Ely, England · Anno Domini 1526</div>
-    </div>
-
-    <div class="char-layout">
-
-      <!-- LEFT COLUMN: Portrait + Identity -->
-      <div class="char-portrait-panel">
-        <div class="char-portrait-box">⚖️</div>
-        <div class="char-name-lbl">Roger Lee Whittlesey IV</div>
-        <div class="char-class-lbl">Warrior · Commander Class</div>
-        <div class="char-level" id="char-level">Level 1</div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin:4px 0 2px;">Guild</div>
-        <div class="char-guild">Whittlesey Defense Band</div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin:6px 0 2px;">Realm</div>
-        <div class="char-realm">Isle of Ely, Cambridgeshire</div>
-        <div class="char-realm" style="margin-top:2px;" id="char-season-lbl">Spring, 1526 AD</div>
-        <hr style="border:none;border-top:1px solid var(--border3);margin:10px 0;">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Faction</div>
-        <div style="font-family:var(--fellsc);font-size:12px;color:#c9a227;margin-bottom:8px;">Alliance — English Crown</div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:4px;">Title</div>
-        <div style="font-family:var(--fellsc);font-size:11px;color:var(--parch3);" id="char-title-display">Cottar of Whittlesey</div>
-        <hr style="border:none;border-top:1px solid var(--border3);margin:10px 0;">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;">Honour Standing</div>
-        <div style="background:#2a2010;border:1px solid var(--border3);border-radius:3px;padding:6px 8px;text-align:left;">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:3px;">Lifetime Honourable Kills</div>
-          <div style="font-family:var(--mono);font-size:16px;font-weight:600;color:#c9a227;" id="char-hk">0</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-top:4px;">Standing</div>
-          <div style="font-family:var(--fellsc);font-size:11px;color:var(--parch3);margin-top:2px;" id="char-standing">Private — No Rank</div>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN: Stats -->
-      <div class="char-stats-panel">
-
-        <!-- Health + Resources -->
-        <div class="stat-section">
-          <div class="stat-section-title">❤ Vitals</div>
-          <div class="stat-bar-row">
-            <span class="stat-bar-lbl">Health</span>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="cs-hp-bar" style="width:100%;background:#8b1a1a;"></div></div>
-            <span class="stat-bar-val" id="cs-hp-val">100 / 100</span>
-          </div>
-          <div class="stat-bar-row">
-            <span class="stat-bar-lbl">Experience</span>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="cs-xp-bar" style="width:0%;background:#4a3a00;"></div></div>
-            <span class="stat-bar-val" id="cs-xp-val">0 / 100</span>
-          </div>
-          <div class="stat-bar-row">
-            <span class="stat-bar-lbl">Treasury Goal</span>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="cs-goal-bar" style="width:50%;background:#c9a227;"></div></div>
-            <span class="stat-bar-val" id="cs-goal-val">50%</span>
-          </div>
-        </div>
-
-        <!-- Primary Attributes -->
-        <div class="stat-section">
-          <div class="stat-section-title">📊 Primary Attributes</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:8px;line-height:1.5;">
-            Derived from your trading record. Real-world self-improvement tracking coming in a future update — these will map to actual physical and mental training.
-          </div>
-          <div class="stat-row">
-            <span class="stat-name">💪 Strength</span>
-            <span class="stat-val str" id="cs-str">10</span>
-          </div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);padding:1px 0 5px 12px;">Increases attack power. Maps to: physical training, lifting, discipline.</div>
-          <div class="stat-row">
-            <span class="stat-name">🏃 Agility</span>
-            <span class="stat-val agi" id="cs-agi">10</span>
-          </div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);padding:1px 0 5px 12px;">Improves dodge and crit. Maps to: speed training, reaction time, flexibility.</div>
-          <div class="stat-row">
-            <span class="stat-name">🛡 Stamina</span>
-            <span class="stat-val sta" id="cs-sta">10</span>
-          </div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);padding:1px 0 5px 12px;">Increases health. Maps to: endurance, cardio, resilience under pressure.</div>
-          <div class="stat-row">
-            <span class="stat-name">📖 Intellect</span>
-            <span class="stat-val int" id="cs-int">10</span>
-          </div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);padding:1px 0 5px 12px;">Increases mana pool. Maps to: study, reading, market research, learning.</div>
-          <div class="stat-row">
-            <span class="stat-name">✨ Spirit</span>
-            <span class="stat-val spi" id="cs-spi">10</span>
-          </div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);padding:1px 0 5px 12px;">Health/mana regeneration. Maps to: sleep, mindset, meditation, consistency.</div>
-        </div>
-
-        <!-- Combat Stats -->
-        <div class="stat-section">
-          <div class="stat-section-title">⚔ Combat — Derived from Trading Record</div>
-          <div class="stat-row"><span class="stat-name">Battles Fought</span><span class="stat-val" id="cs-seasons">0</span></div>
-          <div class="stat-row"><span class="stat-name">Victories (Wins)</span><span class="stat-val agi" id="cs-wins">0</span></div>
-          <div class="stat-row"><span class="stat-name">Defeats (Losses)</span><span class="stat-val str" id="cs-losses">0</span></div>
-          <div class="stat-row"><span class="stat-name">Win Rate</span><span class="stat-val" id="cs-winrate">—</span></div>
-          <div class="stat-row"><span class="stat-name">Killing Blow (Biggest Win)</span><span class="stat-val agi" id="cs-bigwin">—</span></div>
-          <div class="stat-row"><span class="stat-name">Heaviest Defeat</span><span class="stat-val str" id="cs-bigloss">—</span></div>
-          <div class="stat-row"><span class="stat-name">Current Streak</span><span class="stat-val" id="cs-streak">—</span></div>
-        </div>
-
-        <!-- Wealth + Holdings -->
-        <div class="stat-section">
-          <div class="stat-section-title">💰 Wealth &amp; Holdings</div>
-          <div class="stat-row"><span class="stat-name">Treasury (Gold)</span><span class="stat-val" style="color:#c9a227" id="cs-treasury">$500</span></div>
-          <div class="stat-row"><span class="stat-name">Savings (Manor)</span><span class="stat-val" style="color:#c9a227" id="cs-savings">$500</span></div>
-          <div class="stat-row"><span class="stat-name">XRP Fleet Value</span><span class="stat-val" style="color:#7ab0d0" id="cs-xrp">4,000 XRP</span></div>
-          <div class="stat-row"><span class="stat-name">Fen Fields Value</span><span class="stat-val" style="color:#70c070" id="cs-land">$7,000</span></div>
-          <div class="stat-row"><span class="stat-name">Manor Title</span><span class="stat-val" id="cs-manor-tier">Whittlesey Hovel</span></div>
-          <div class="stat-row"><span class="stat-name">Net Worth (Est.)</span><span class="stat-val" style="color:#c9a227" id="cs-networth">$8,000</span></div>
-        </div>
-
-        <!-- Band + Territory -->
-        <div class="stat-section">
-          <div class="stat-section-title">🗺 Band &amp; Territory</div>
-          <div class="stat-row"><span class="stat-name">Men Alive</span><span class="stat-val agi" id="cs-alive">5</span></div>
-          <div class="stat-row"><span class="stat-name">Band Capacity</span><span class="stat-val" id="cs-capacity">8 slots</span></div>
-          <div class="stat-row"><span class="stat-name">Counties Controlled</span><span class="stat-val" id="cs-counties">0</span></div>
-          <div class="stat-row"><span class="stat-name">Counties Contested</span><span class="stat-val str" id="cs-contested">1</span></div>
-          <div class="stat-row"><span class="stat-name">Men Garrisoned</span><span class="stat-val" id="cs-garrisoned">5</span></div>
-          <div class="stat-row"><span class="stat-name">Recruitment Points</span><span class="stat-val" style="color:#c9a227" id="cs-rp">0 RP</span></div>
-        </div>
-
-      </div>
-    </div>
   </div>
 </div>
 </div><!-- end page-character -->
@@ -1484,7 +1365,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     <!-- Crest -->
     <div class="family-crest">
-      <div style="max-width:200px;margin:0 auto;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" style="width:100%;max-width:220px;display:block;margin:0 auto 8px;">
+      <div style="max-width:200px;margin:0 auto;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 312" style="width:100%;max-width:220px;display:block;margin:0 auto 8px;">
   <defs>
     <clipPath id="sc"><path d="M30 60 L170 60 L170 195 Q170 250 100 275 Q30 250 30 195 Z"/></clipPath>
     <!-- Reusable escallop shell symbol (heraldic Or) -->
@@ -1535,8 +1416,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <use href="#escallop" x="84" y="194" width="32" height="34"/>
   </g>
   <!-- Motto scroll: Animo et Fide -->
-  <rect x="24" y="262" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
-  <text x="100" y="275" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
+  <rect x="24" y="290" width="152" height="18" rx="4" fill="#1a1208" stroke="#8B6914" stroke-width="1"/>
+  <text x="100" y="303" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Georgia,serif" font-style="italic">Animo et Fide</text>
 </svg></div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px;text-align:center;">Whittlesey Arms · Azure, a fess ermine between three escallop shells Or · Cambridgeshire, England</div>
 
