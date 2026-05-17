@@ -162,19 +162,19 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .ai-msgs.briefer-msgs{background:#1e1a12;max-height:260px;}
 .cm-entry{animation:fi 0.25s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
-.cm-speaker{font-family:var(--fellsc);font-size:10px;color:var(--ink2);margin-bottom:2px;}
-.cm-speaker .rank-tag{font-family:var(--mono);font-size:7px;color:var(--ink4);margin-left:5px;}
-.cm-text{font-size:11px;color:var(--ink);line-height:1.6;font-style:italic;}
+.cm-speaker{font-family:var(--fellsc);font-size:12px;color:var(--ink2);margin-bottom:3px;}
+.cm-speaker .rank-tag{font-family:var(--mono);font-size:8px;color:var(--ink4);margin-left:5px;}
+.cm-text{font-size:13px;color:var(--ink);line-height:1.7;font-style:italic;}
 .cm-user{align-self:flex-end;background:var(--parch3);border:1px solid var(--border2);border-radius:3px;padding:5px 9px;max-width:88%;}
 .cm-user .cm-speaker{color:var(--forest-m);}
 .cm-user .cm-text{font-style:normal;}
 .cm-ai{background:var(--parch2);border:1px solid var(--border);border-radius:3px;padding:7px 9px;}
 .cm-briefer{background:#28220e;border:1px solid var(--border3);border-radius:3px;padding:8px 10px;color:var(--parch3);}
 .cm-briefer .cm-speaker{color:var(--gold-m);}
-.cm-briefer .cm-text{color:var(--parch3);font-size:11px;}
+.cm-briefer .cm-text{color:var(--parch3);font-size:13px;}
 .cm-quest:hover{background:#243218;border-color:#3d6a28;}
 .cm-quest .cm-speaker{color:#70c070;}
-.cm-quest .cm-text{color:#c8d8b8;font-size:11px;}
+.cm-quest .cm-text{color:#c8d8b8;font-size:13px;}
 .quest-tag{font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:10px;display:inline-block;margin-bottom:4px;}
 .qt-local{background:#1a2d1a;color:#70c070;border:1px solid #2d4a20;}
 .qt-regional{background:#2a2410;color:#c9a227;border:1px solid #4a3d10;}
@@ -752,7 +752,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="display:flex;gap:14px;align-items:center;">
         <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);" id="map-utc-clock">UTC --:--:--</span>
         <a href="https://lanrat.github.io/day-night-map/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">day/night ↗</a>
-        <a href="https://www.windy.com/?temp,32.6,-109.93,5" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
+        <a href="https://www.windy.com/?temp,32.6,-109.93,7" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
       </div>
     </div>
 
@@ -775,7 +775,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="flex:1;min-width:0;position:relative;">
         <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">🌤 Live Weather</div>
         <iframe
-          src="https://embed.windy.com/embed2.html?lat=32.6&lon=-109.93&detailLat=32.6&detailLon=-109.93&width=650&height=320&zoom=5&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+          src="https://embed.windy.com/embed2.html?lat=32.6&lon=-109.93&detailLat=32.6&detailLon=-109.93&width=650&height=320&zoom=7&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
           style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
           title="Live Windy weather map"
           allowfullscreen>
@@ -970,24 +970,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
     </div>
   </div>
-  <!-- THE BATTLE CONTRACT — Static risk-management rules (parchment style, matches other panels) -->
+  <!-- THE BATTLE CONTRACT — Static risk-management rules (clean, no header) -->
   <div class="parch-panel">
-    <div class="p-inner">
-      <div class="sec-title">📋 Battle Contract — Standing Risk Rules</div>
-      <div style="background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:12px;font-family:var(--fell);font-size:13px;line-height:1.7;color:var(--ink);">
-        <div style="font-family:var(--fellsc);font-size:14px;color:var(--ink);margin-bottom:10px;letter-spacing:0.04em;border-bottom:1px solid var(--border);padding-bottom:6px;">⚔ The Contract</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">4.</span> Daily loss limit: <strong style="color:var(--blood-m);">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">5.</span> Sanctioned setups only: <strong style="color:var(--ink);">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">6.</span> Minimum reward-to-risk: <strong style="color:#5a8050;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
-        <div style="margin-bottom:7px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:13px;margin-right:6px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
-        <div style="margin-top:14px;padding-top:8px;border-top:1px solid var(--border);font-style:italic;color:var(--ink3);text-align:center;font-size:12px;">"A commander who cannot hold his contract cannot hold his ground."</div>
-      </div>
+    <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:6px 2px;">
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">1.</span> Maximum risk per trade: <strong style="color:var(--blood-m);">$50</strong> (10% of $500 account). 40-point MES stop = $50 (40 × $1.25 per tick).</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">2.</span> Maximum contracts per trade: <strong style="color:var(--blood-m);">1 MES</strong>. No averaging in, no adding to losers.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">3.</span> Maximum trades per session: <strong style="color:var(--blood-m);">2</strong>. Quality over quantity. Walk away after two completed trades.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">4.</span> Daily loss limit: <strong style="color:var(--blood-m);">$100</strong> (20% — equivalent to two full-stop losses). Hit it and you are done for the night.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">5.</span> Sanctioned setups only: <strong style="color:var(--ink);">Opening Range Breakout · VWAP Reclaim · Failed Breakdown · Prior Day Level</strong>. Anything else is a no-trade.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">6.</span> Minimum reward-to-risk: <strong style="color:#5a8050;">1.5R</strong>. Take partials at 1R, full out at 1.5R or trailing stop.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">7.</span> No revenge trades. After a loss, mandatory 5-minute pause before re-entering the field.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">8.</span> No trading the first or last 15 minutes of a session. Liquidity is thin, slippage punishes.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">9.</span> Every trade — win or loss — debriefed in the Chronicler before sleep. No exceptions.</div>
+        <div style="margin-bottom:9px;font-size:14px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:15px;margin-right:8px;">10.</span> The account is a soldier under your command. Lose him and the campaign ends.</div>
+      <div style="margin-top:14px;padding-top:8px;font-style:italic;color:var(--ink3);text-align:center;font-size:13px;">"A commander who cannot hold his contract cannot hold his ground."</div>
     </div>
   </div>
 
