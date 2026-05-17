@@ -1289,8 +1289,12 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div class="char-header-sub">Commander · Whittlesey Defense Band · Isle of Ely, England · Anno Domini 1526</div>
     </div>
 
-  <!-- WoW Classic-style character window -->
-  <div class="wow-char-window">
+    <!-- Two-column layout: WoW window (1/3 left) + 1526 Calendar (2/3 right) -->
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+
+      <div style="flex:1 1 360px;min-width:360px;max-width:780px;">
+        <!-- WoW Classic-style character window -->
+        <div class="wow-char-window" style="margin:0;">
     <div class="wow-char-titlebar">
       <span>Roger Lee Whittlesey IV — Level <span id="wow-level">1</span> Warrior</span>
       <span class="wow-x" title="Decorative close button">✕</span>
@@ -1400,8 +1404,170 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div id="wow-skill-list" style="max-width:540px;margin:0 auto;"></div>
     </div>
 
-  </div>
-  <!-- end WoW Classic-style character window -->
+        </div>
+        <!-- end WoW Classic-style character window -->
+      </div>
+      <!-- /WoW column -->
+
+      <!-- 1526 ENGLISH CALENDAR (2/3 width right column) -->
+      <div style="flex:2 1 480px;min-width:320px;">
+        <div class="parch-panel">
+          <div class="p-inner">
+            <div style="font-family:var(--fellsc);font-size:22px;color:var(--gold);text-align:center;letter-spacing:0.06em;padding-bottom:6px;margin-bottom:4px;">📅 Anno Domini MDXXVI</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border2);">The Year of Our Lord 1526 · Julian Calendar · Reign of Henry VIII</div>
+
+            <div style="font-family:var(--fell);font-size:12px;color:var(--ink3);line-height:1.65;margin-bottom:14px;padding:8px 12px;background:var(--parch2);border-radius:3px;border-left:3px solid var(--gold-m);">
+              <strong style="color:var(--ink2);">A note on the year.</strong> In England in 1526 the legal year begins on <strong>Lady Day (March 25)</strong> — the Feast of the Annunciation, when Mary received the angel\'s news. By that reckoning, the months from January through 24 March are still considered 1525. The Gregorian calendar reform lies 56 years in the future and England will not adopt it until 1752. All dates below are <em>Old Style</em>.
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;">
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">❄ January</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Wulfmonað · Wolf Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Jan 1</strong> — Circumcision of Christ</div>
+                  <div>· <strong>Jan 5</strong> — Twelfth Night · end of Christmas</div>
+                  <div>· <strong>Jan 6</strong> — Epiphany · gifts of the Magi</div>
+                  <div>· <strong>Jan 19</strong> — St. Wulfstan of Worcester</div>
+                  <div>· <strong>Jan 25</strong> — Conversion of St. Paul</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌧 February</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Solmonað · Sun Month (returning light)</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Feb 2</strong> — Candlemas · candles blessed for the year</div>
+                  <div>· <strong>Feb 13</strong> — Shrove Tuesday · Henry VIII jousts at court with the motto "declare je nos" — open declaration of love for Anne Boleyn</div>
+                  <div>· <strong>Feb 14</strong> — St. Valentine · Ash Wednesday this year</div>
+                  <div>· <strong>Feb–Mar</strong> — Lent begins · 40 days of fasting</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:var(--gold-m);">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌱 March</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Hreðmonað · Hertha\'s Month (Earth Mother)</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Mar 1</strong> — St. David of Wales</div>
+                  <div>· <strong>Mar 17</strong> — St. Patrick</div>
+                  <div>· <strong style="color:var(--gold-m);">Mar 25 — Lady Day · QUARTER DAY · English New Year (1526 begins legally)</strong></div>
+                  <div>· Rents due · servants hired · ploughing of spring fields</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:#7a1c1c;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">⚔ April</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Easter-monað · Easter Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Apr 1</strong> — Easter Day · resurrection of Christ</div>
+                  <div>· <strong style="color:#7a1c1c;">Apr 21</strong> — First Battle of Panipat · Mughal Empire founded</div>
+                  <div>· <strong>Apr 23</strong> — St. George\'s Day · feast of England\'s patron</div>
+                  <div>· <strong style="color:#7a1c1c;">Apr 23</strong> — Suleiman departs Constantinople with 100,000 men</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:#7a1c1c;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌸 May</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Þrimilcemonað · Three-Milkings Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>May 1</strong> — May Day · maypoles raised across England</div>
+                  <div>· <strong>May 3</strong> — Invention of the Holy Cross</div>
+                  <div>· <strong style="color:#7a1c1c;">May 22</strong> — League of Cognac signed · Pope, France, Venice, Florence, Milan vs Charles V</div>
+                  <div>· Ascension Day (40 days after Easter)</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:var(--gold-m);">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">☀ June</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Æmonað · Joy Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· Whitsun / Pentecost · descent of the Holy Spirit</div>
+                  <div>· <strong>Jun 23</strong> — St. John\'s Eve · bonfires lit across England</div>
+                  <div>· <strong style="color:var(--gold-m);">Jun 24 — Midsummer · Nativity of St. John the Baptist</strong></div>
+                  <div>· Sheep-shearing season · the wool harvest</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌾 July</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Hēymonað · Hay Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Jul 7</strong> — Translation of St. Thomas Becket</div>
+                  <div>· <strong>Jul 15</strong> — St. Swithun · "if it rains, forty days more"</div>
+                  <div>· <strong>Jul 22</strong> — Mary Magdalene</div>
+                  <div>· Hay-making begins · the harvest year turns</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:#7a1c1c;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌾 August</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Weodmonað · Weed Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Aug 1</strong> — Lammas Day · loaves of new bread blessed at church</div>
+                  <div>· <strong>Aug 24</strong> — St. Bartholomew · summer\'s end · Bartholomew Fair, London</div>
+                  <div>· <strong style="color:#7a1c1c;">Aug 29 — BATTLE OF MOHÁCS · King Louis II of Hungary killed · Hungarian army destroyed by Suleiman</strong></div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:var(--gold-m);">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🍂 September</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Hāligmonað · Holy Month</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Sep 14</strong> — Exaltation of the Holy Cross</div>
+                  <div>· <strong>Sep 21</strong> — St. Matthew</div>
+                  <div>· <strong style="color:var(--gold-m);">Sep 29 — Michaelmas · QUARTER DAY · St. Michael &amp; All Angels</strong></div>
+                  <div>· Rents due · Michaelmas geese feasted</div>
+                  <div>· <strong style="color:#7a1c1c;">Sep 10</strong> — Suleiman enters Buda · Hungary subjugated</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🍁 October</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Winterfylleð · Winter\'s Full Moon</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Oct 13</strong> — Translation of Edward the Confessor</div>
+                  <div>· <strong>Oct 18</strong> — St. Luke the Evangelist</div>
+                  <div>· <strong>Oct 25</strong> — St. Crispin &amp; Crispian · feast of shoemakers · later immortalised by Henry V at Agincourt</div>
+                  <div>· Apple harvest · cider pressing</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">🌫 November</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Blōtmonað · Blood Month (the slaughter)</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· <strong>Nov 1</strong> — All Saints (All Hallows)</div>
+                  <div>· <strong>Nov 2</strong> — All Souls · prayers for the dead</div>
+                  <div>· <strong>Nov 11</strong> — Martinmas · St. Martin · cattle slaughtered for the winter, beef salted and smoked</div>
+                  <div>· <strong>Nov 30</strong> — St. Andrew · patron of Scotland</div>
+                </div>
+              </div>
+
+              <div class="cal-month-card" style="background:var(--parch2);border:1.5px solid var(--border2);border-radius:4px;padding:10px;border-color:var(--gold-m);">
+                <div style="font-family:var(--fellsc);font-size:15px;color:var(--ink);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;">⛄ December</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);font-style:italic;margin-bottom:6px;">Ærra Geola · Before Yule</div>
+                <div style="font-size:11px;color:var(--ink2);line-height:1.5;">
+                  <div>· Advent begins · 4 Sundays of preparation</div>
+                  <div>· <strong>Dec 6</strong> — St. Nicholas · gifts to children begin</div>
+                  <div>· <strong>Dec 21</strong> — St. Thomas · winter solstice · shortest day</div>
+                  <div>· <strong style="color:var(--gold-m);">Dec 25 — Christmas · QUARTER DAY · twelve days of feasting begin</strong></div>
+                  <div>· <strong>Dec 28</strong> — Holy Innocents</div>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border2);font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;letter-spacing:0.06em;text-transform:uppercase;">
+              The Four Quarter Days · Lady Day · Midsummer · Michaelmas · Christmas
+            </div>
+            <div style="font-family:var(--fell);font-size:11px;color:var(--ink3);text-align:center;font-style:italic;margin-top:4px;">Rents are owed. Servants are hired. Contracts begin and end.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /two-column layout -->
 
   </div>
 </div>
@@ -1883,7 +2049,7 @@ const BIOS={
 const HISTORICAL_CONFLICT_CALENDAR = {
 
  'Spring 1526':[
-  {id:`c1`,status:`nearby`,name:`Bandit Raids — Whittlesey Fens`,loc:`📍 Cambridgeshire, England`,year:`1525–ongoing`,miles:`0 miles`,travel:`Home territory`,snippet:`Black Tom of the Mere leads ~30 discharged soldiers raiding fen road merchants. Three robberies on the Peterborough road this month.`,title:`Bandit Raids on the Fen Roads`,sub:`Cambridgeshire · Spring 1526`,travelNote:`Home.`,body:`<div class="modal-section"><div class="modal-st">The Situation</div><div class="modal-body"><p>Winter floods have receded and Black Tom's men are active again. The Bishop of Ely's steward has written to the sheriff. The sheriff has not replied. Local bands are forming.</p></div></div>`},
+  {id:`c1`,status:`nearby`,name:`Bandit Raids — Whittlesey Fens`,loc:`📍 Cambridgeshire, England`,year:`1525–ongoing`,miles:`0 miles`,travel:`Home territory`,snippet:`Black Tom of the Mere leads ~30 discharged soldiers raiding fen road merchants. Three robberies on the Peterborough road this month.`,title:`Bandit Raids on the Fen Roads`,sub:`Cambridgeshire · Spring 1526`,travelNote:`Home.`,body:`<div class="modal-section"><div class="modal-st">Black Tom of the Mere</div><div class="modal-body"><p>Tom Maltby — known to the fen folk as Black Tom of the Mere — was a billman in Henry VIII's 1513 French expedition. He fought at the Battle of the Spurs near Thérouanne, took a French pike to the face that left him scarred from cheek to jaw, and came home in 1514 to a wife who had buried him in absence and remarried, and to a small plot of fen pasture his brother had sold without his consent. By 1518 he had fallen into the company of demobilised soldiers around Peterborough, drinking and feuding. By 1522 the first robberies of wool merchants on the Peterborough road were laid at his door. By 1525 he had perhaps thirty men under his loose command — most of them, like himself, veterans of the wars in France or Scotland with no land, no trade, and grievances against the gentry.</p></div></div><div class="modal-section"><div class="modal-st">The Bandits</div><div class="modal-body"><p>The band moves between three or four camps in the deeper fen — flat, reedy, ankle-deep, defensible because anyone not born to the country gets lost in it within an hour. They strike merchant convoys on the Peterborough–Ely road, the Whittlesey causeway, and the drove roads to Cambridge. Their targets are wool factors, fish traders, and the occasional cleric. They take goods, occasionally horses, sometimes a hostage for ransom. They have killed at least four men in the last year — two merchants, a guard, and a parish constable who tried to question one of their lookouts at the Crowland inn.</p><p>What makes them dangerous is not their numbers but their organisation. Black Tom learned discipline in the king's army. He posts sentries. He scouts the roads days in advance. He pays informers — innkeepers, ostlers, even a man in the Bishop's own household, it is whispered.</p></div></div><div class="modal-section"><div class="modal-st">What the Sheriff Has Done</div><div class="modal-body"><p>Nothing. The Sheriff of Cambridgeshire is Sir John Hynde, who lives at Madingley near Cambridge and rarely visits the fen country. The Bishop of Ely's steward has written three letters since Michaelmas requesting royal commissioners. No reply has come. The honest reading is that the King's government has bigger problems — the French war just ended, the King's Great Matter is beginning, and a few wool merchants robbed in a fen no one important visits are not a priority in Westminster.</p><p>The dishonest reading is that Black Tom pays better protection than the Sheriff demands in taxes. Whittlesey townsfolk have come to their own conclusion: if the law will not defend them, they will defend themselves.</p></div></div><div class="modal-section"><div class="modal-st">Key Facts</div><div class="modal-fact"><span class="modal-fk">Leader</span><span class="modal-fv">Tom Maltby ("Black Tom") — former king's billman, ~38 years old</span></div><div class="modal-fact"><span class="modal-fk">Strength</span><span class="modal-fv">~30 men, mostly former soldiers</span></div><div class="modal-fact"><span class="modal-fk">Base</span><span class="modal-fv">Deep fen camps — known only to locals</span></div><div class="modal-fact"><span class="modal-fk">Kills</span><span class="modal-fv">≥4 confirmed in the last 12 months</span></div><div class="modal-fact"><span class="modal-fk">Government response</span><span class="modal-fv">None. Sheriff of Cambridgeshire has not replied to the Bishop\'s steward.</span></div><div class="modal-fact"><span class="modal-fk">Local response</span><span class="modal-fv">The Whittlesey Defense Band forms in response to this — Spring 1526</span></div></div>`},
   {id:`c2`,status:`upcoming`,name:`Ottoman March on Hungary Begins`,loc:`📍 Ottoman Empire → Hungary`,year:`April 23, 1526 — departing now`,miles:`~1,150 miles`,travel:`6–8 weeks by land`,snippet:`Suleiman the Magnificent departs Constantinople April 23rd with 100,000 men and 300 guns. Hungary has 25,000 and no allies. The outcome is not in doubt.`,title:`Ottoman Invasion of Hungary — 1526`,sub:`Constantinople → Mohács · Spring–Summer 1526`,travelNote:`Whittlesey → London → Calais → Rhine road → Vienna → Mohács on the Danube.`,body:`<div class="modal-section"><div class="modal-st">The March Begins</div><div class="modal-body"><p>Suleiman departed April 23rd. He has already taken Belgrade (1521) and Rhodes (1522). King Louis II of Hungary is 20 years old with 25,000 men against 100,000. Every Christian prince has been asked for help. None have sent armies. The battle will come in August at Mohács.</p></div></div><div class="modal-section"><div class="modal-st">Key Facts</div><div class="modal-fact"><span class="modal-fk">Ottoman force</span><span class="modal-fv">~100,000 men, 300 guns</span></div><div class="modal-fact"><span class="modal-fk">Hungarian force</span><span class="modal-fv">~25,000 — no allies</span></div><div class="modal-fact"><span class="modal-fv">Battle of Mohács — August 29, 1526</span></div></div>`},
   {id:`c3`,status:`active`,name:`League of Cognac — Forming Against Habsburg`,loc:`📍 Cognac, France`,year:`May 22, 1526`,miles:`~680 miles`,travel:`3–4 weeks by land`,snippet:`Pope Clement VII, Francis I, Venice, Florence and Milan secretly organise against Charles V. The Italian Wars resume. The Sack of Rome is one year away.`,title:`The League of Cognac — May 1526`,sub:`France · May 1526`,travelNote:`Whittlesey → Calais → Paris → south to Cognac.`,body:`<div class="modal-section"><div class="modal-st">The Alliance</div><div class="modal-body"><p>Francis I repudiated the Treaty of Madrid the moment he crossed into France. Now Pope, Venice, Florence, and Milan join France against Charles V. War in Italy resumes within months.</p></div></div><div class="modal-section"><div class="modal-st">Key Facts</div><div class="modal-fact"><span class="modal-fk">Declared</span><span class="modal-fv">May 22, 1526</span></div><div class="modal-fact"><span class="modal-fk">Coming</span><span class="modal-fv">Sack of Rome — May 1527</span></div></div>`},
   {id:`c4`,status:`active`,name:`Battle of Panipat — Mughal Empire Founded`,loc:`📍 Panipat, Northern India`,year:`April 21, 1526`,miles:`~5,500 miles by sea`,travel:`6–18 months — unreachable`,snippet:`Babur defeated Ibrahim Lodi with field artillery three weeks ago. The Delhi Sultanate is destroyed. A new empire — the Mughal — has just been born.`,title:`First Battle of Panipat — April 21, 1526`,sub:`Northern India · April 1526`,travelNote:`No English route. Portuguese monopoly on the Cape of Good Hope route.`,body:`<div class="modal-section"><div class="modal-st">A New Empire</div><div class="modal-body"><p>Babur of Kabul met 100,000 men with 12,000 and Ottoman-trained artillery. The guns routed the war elephants. The Delhi Sultanate fell in hours. The Mughal Empire — which will rule India for three centuries — was born on April 21st. The news will not reach England for months.</p></div></div>`},
