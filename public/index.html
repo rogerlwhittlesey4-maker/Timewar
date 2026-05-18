@@ -793,6 +793,50 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   </div>
 
 
+
+  <!-- WORLD BRIEFER + COUNCIL CHAMBER — side-by-side 2-col layout -->
+  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <!-- WORLD BRIEFER -->
+    <div class="parch-panel ai-panel" style="background:#1a1610;border-color:var(--border3);flex:1;display:flex;flex-direction:column;">
+      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+        <div class="sec-title" style="color:var(--parch3);border-color:var(--border3);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
+        <div class="ai-msgs briefer-msgs" id="briefer-msgs">
+          <div class="cm-entry cm-briefer">
+            <div class="cm-speaker">Royal Herald <span class="rank-tag">world report</span></div>
+            <div class="cm-text">Press "Generate Briefing" after each season to receive a historically accurate world report — what is happening across Europe and beyond, and what it means for your band in Whittlesey.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="ai-btn" id="briefer-btn" onclick="generateBriefing()" style="border-color:var(--border2);background:#2a2010;color:var(--parch3);">📜 Generate Season Briefing</button>
+          <span class="ai-clear" onclick="clearBriefings()" style="color:var(--border2);align-self:center;">clear</span>
+        </div>
+      </div>
+    </div>      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+      <!-- COUNCIL CHAMBER -->
+      <div class="parch-panel ai-panel" style="flex:1;display:flex;flex-direction:column;">
+        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+          <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
+          <div class="ai-msgs" id="council-msgs" style="flex:1;max-height:none;min-height:0;">
+            <div class="cm-entry cm-ai">
+              <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
+              <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
+            </div>
+          </div>
+          <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
+          <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
+            <div class="ai-input-wrap">
+              <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
+              <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
+            </div>
+            <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
   <!-- RECRUIT TRACKER -->
   <!-- ══ RP + ROSTER SIDE BY SIDE ══ -->
   <div style="display:flex;gap:8px;margin-bottom:12px;align-items:flex-start;">
@@ -890,52 +934,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
     </div>
   </div>
-
-
-  <!-- WORLD BRIEFER + COUNCIL CHAMBER — side-by-side 2-col layout -->
-  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-    <!-- WORLD BRIEFER -->
-    <div class="parch-panel ai-panel" style="background:#1a1610;border-color:var(--border3);flex:1;display:flex;flex-direction:column;">
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-        <div class="sec-title" style="color:var(--parch3);border-color:var(--border3);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
-        <div class="ai-msgs briefer-msgs" id="briefer-msgs">
-          <div class="cm-entry cm-briefer">
-            <div class="cm-speaker">Royal Herald <span class="rank-tag">world report</span></div>
-            <div class="cm-text">Press "Generate Briefing" after each season to receive a historically accurate world report — what is happening across Europe and beyond, and what it means for your band in Whittlesey.</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <button class="ai-btn" id="briefer-btn" onclick="generateBriefing()" style="border-color:var(--border2);background:#2a2010;color:var(--parch3);">📜 Generate Season Briefing</button>
-          <span class="ai-clear" onclick="clearBriefings()" style="color:var(--border2);align-self:center;">clear</span>
-        </div>
-      </div>
-    </div>      </div>
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-      <!-- COUNCIL CHAMBER -->
-      <div class="parch-panel ai-panel" style="flex:1;display:flex;flex-direction:column;">
-        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-          <div class="sec-title">📜 Council Chamber — Speak to your Band</div>
-          <div class="ai-msgs" id="council-msgs" style="flex:1;max-height:none;min-height:0;">
-            <div class="cm-entry cm-ai">
-              <div class="cm-speaker">The Chronicler <span class="rank-tag">narrator</span></div>
-              <div class="cm-text">The fire crackles in the hall of Whittlesey. Your men sit around the long table — Ralph, Thomas, John, and William — awaiting your word, Commander. What business brings the band together this night?</div>
-            </div>
-          </div>
-          <span class="ai-clear" onclick="clearCouncil()">Clear council log</span>
-          <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
-            <div class="ai-input-wrap">
-              <div class="ai-hint">Address your men, hold a meeting, send scouts, roleplay any event in the world of 1526.</div>
-              <textarea class="ai-textarea" id="council-input" placeholder="e.g. 'Call the band together to discuss the Ottoman advance on Hungary...' or 'Ralph, what did you see on the fen road this morning?'" rows="3"></textarea>
-            </div>
-            <button class="ai-btn" id="council-btn" onclick="sendCouncil()">Speak ↗</button>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
-
-
 
   <!-- THE BATTLE CONTRACT — full inner-section width, below WB+CC, above Markets -->
   <div class="parch-panel" style="margin-bottom:14px;">
