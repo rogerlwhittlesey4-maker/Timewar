@@ -229,6 +229,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .scout-bg-panel .ai-clear{color:#c4dae6 !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
 .scout-bg-panel .ai-btn{background:rgba(8,12,20,0.7) !important;color:#b8d8e8 !important;border-color:#285080 !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
 .scout-bg-panel .ai-btn:hover{background:#285080 !important;color:#fff !important;}
+/* Debrief — image backdrop: forest-green chronicler palette */
+.debrief-bg-panel .cm-ai{background:rgba(10,16,8,0.65);border-color:rgba(112,192,112,0.3);}
+.debrief-bg-panel .cm-user{background:rgba(20,40,15,0.65);border-color:rgba(160,200,140,0.3);}
+.debrief-bg-panel .cm-text{color:#e3f0d8;font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,0.65);}
+.debrief-bg-panel .cm-speaker{color:#a0d080;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.debrief-bg-panel .cm-user .cm-speaker{color:#bce0a0;}
+.debrief-bg-panel .cm-speaker .rank-tag{color:#a8d4a0;}
+.debrief-bg-panel .ai-hint{color:#c4dec0;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.debrief-bg-panel .ai-textarea{background:rgba(8,16,8,0.7);border-color:rgba(160,208,128,0.3);color:#e3f0d8;font-style:normal;}
+.debrief-bg-panel .ai-textarea::placeholder{color:rgba(180,220,164,0.5);}
+.debrief-bg-panel .ai-textarea:focus{border-color:#70c070;}
+.debrief-bg-panel .ai-clear{color:#c4dec0 !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.debrief-bg-panel .ai-btn{background:rgba(8,16,8,0.7) !important;color:#a0d080 !important;border-color:#2a5a1a !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.debrief-bg-panel .ai-btn:hover{background:#2a5a1a !important;color:#fff !important;}
 .briefer-bg-panel::after{border-color:rgba(243,233,210,0.25);}
 .ai-clear:hover{color:var(--blood-m);}
 .typing-dots{display:flex;gap:3px;align-items:center;padding:3px 0;}
@@ -1263,11 +1277,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
       <!-- THE DEBRIEF — Post trade retrospect -->
-      <div class="parch-panel ai-panel" style="border-color:#2a4a1a;flex:1;display:flex;flex-direction:column;">
-        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-          <div class="sec-title" style="color:#70c070;">📊 The Debrief — After Action Report</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Post-trade analysis and lessons. Describe what happened — win or loss — and get honest retrospective feedback.</div>
-          <div class="ai-msgs" id="debrief-msgs" style="flex:1;max-height:none;min-height:0;">
+      <div class="parch-panel ai-panel debrief-bg-panel" style="border-color:#2a4a1a;flex:1;display:flex;flex-direction:column;background-image:linear-gradient(rgba(10,18,8,0.40),rgba(8,12,6,0.65)),url('debrief-bg.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;">
+        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;background:transparent;">
+          <div class="sec-title" style="color:#a0d080;border-bottom-color:rgba(160,208,128,0.35);background:rgba(10,16,8,0.55);padding:6px 10px;border-radius:3px;letter-spacing:0.08em;text-shadow:0 1px 2px rgba(0,0,0,0.8);">📊 The Debrief — After Action Report</div>
+          <div style="font-family:var(--mono);font-size:8px;color:#bcd8a8;margin-bottom:6px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Post-trade analysis and lessons. Describe what happened — win or loss — and get honest retrospective feedback.</div>
+          <div class="ai-msgs" id="debrief-msgs" style="flex:1;max-height:none;min-height:0;background:transparent !important;border-color:rgba(160,208,128,0.15);">
             <div class="cm-entry cm-ai">
               <div class="cm-speaker">The Chronicler <span class="rank-tag">after action</span></div>
               <div class="cm-text">The battle is done. Before the band rests, we account for what happened. Tell me the trade — entry, exit, what the chart showed, what you were thinking, and what the result was. A commander who does not debrief his engagements will repeat the same mistakes until they cost him everything.</div>
