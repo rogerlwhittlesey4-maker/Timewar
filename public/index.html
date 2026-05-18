@@ -824,12 +824,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
     <!-- WORLD BRIEFER -->
-    <div class="parch-panel ai-panel briefer-bg-panel" style="border-color:var(--border3);flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;">
-      <!-- Layered backdrop: aged-paper fill + map (contained, no crop) + warm overlay + vignette -->
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, #5a3a18 0%, #2a1c0c 80%, #14100a 100%);z-index:0;"></div>
-      <div style="position:absolute;inset:0;background-image:url('world-map-1526.png');background-size:contain;background-position:center;background-repeat:no-repeat;filter:sepia(0.75) saturate(0.7) contrast(0.95) brightness(0.85);z-index:1;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(rgba(101,67,33,0.22),rgba(60,40,20,0.32)),radial-gradient(ellipse at center, transparent 50%, rgba(20,12,6,0.55) 100%);z-index:2;pointer-events:none;"></div>
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;position:relative;z-index:3;background:transparent;">
+    <div class="parch-panel ai-panel briefer-bg-panel" style="border-color:var(--border3);flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;background-image:linear-gradient(rgba(60,40,20,0.35),rgba(20,12,6,0.55)),url('world-map-1526.png');background-size:cover;background-position:center;background-repeat:no-repeat;">
+      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;background:transparent;">
         <div class="sec-title" style="color:#f5dba0;border-bottom-color:rgba(243,233,210,0.35);background:rgba(20,12,6,0.6);padding:6px 10px;border-radius:3px;letter-spacing:0.08em;text-shadow:0 1px 2px rgba(0,0,0,0.8);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
         <div class="ai-msgs briefer-msgs" id="briefer-msgs" style="background:transparent !important;border-color:rgba(243,233,210,0.15);">
           <div class="cm-entry cm-briefer">
