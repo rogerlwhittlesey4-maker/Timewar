@@ -851,8 +851,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         </div>
       </div>
 
-      <!-- Hidden but present roster-grid for JS compatibility -->
-      <div class="roster-grid" id="roster-grid" style="display:none;"></div>
+<!-- (roster-grid moved into Discipline Console) -->
     </div>
 
   </div>
@@ -1029,11 +1028,21 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           <div id="t1-checklist-status" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">0 / 8 — checklist not complete</div>
         </div>
 
-        <!-- RIGHT: TRADE LOG INPUT -->
-        <div style="flex:1;min-width:280px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
-          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">LOG THIS TRADE</div>
+        <!-- RIGHT: BATTLE LOG INPUT (merged with Log a Battle) -->
+        <div style="flex:1;min-width:300px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">LOG THIS BATTLE (TRADE)</div>
+
+          <!-- Trade discipline fields (Risk Officer reads these) -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;font-size:12px;color:#3a2818;">
-            <label>Setup<br><input id="t1-f-setup" type="text" placeholder="ORB / VWAP / FB / PDL" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>Setup<br>
+              <select id="f-setup" style="width:100%;padding:3px 5px;font-family:var(--fell);">
+                <option value="ORB">Opening Range Breakout</option>
+                <option value="VWAP">VWAP Reclaim</option>
+                <option value="FB">Failed Breakdown</option>
+                <option value="PD">Prior Day Level</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </label>
             <label>Direction<br>
               <select id="t1-f-dir" style="width:100%;padding:3px 5px;font-family:var(--fell);">
                 <option value="long">long</option><option value="short">short</option>
@@ -1044,23 +1053,37 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
             <label>Target<br><input id="t1-f-target" type="number" step="0.25" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
             <label>R:R (auto)<br><input id="t1-f-rr" type="text" readonly style="width:100%;padding:3px 5px;font-family:var(--fell);background:#e9dec2;"></label>
             <label>Outcome<br>
-              <select id="t1-f-outcome" style="width:100%;padding:3px 5px;font-family:var(--fell);">
+              <select id="f-outcome" onchange="updatePreview()" style="width:100%;padding:3px 5px;font-family:var(--fell);">
                 <option value="">— pending —</option>
-                <option value="win">win (target)</option>
-                <option value="loss">loss (stop)</option>
-                <option value="scratch">scratch</option>
-                <option value="partial">partial</option>
+                <option value="WIN">Victory (Win)</option>
+                <option value="LOSS">Defeat (Loss)</option>
               </select>
             </label>
-            <label>P&amp;L $<br><input id="t1-f-pnl" type="number" step="0.01" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
-            <label style="grid-column:1 / span 2;">Notes / emotion<br><textarea id="t1-f-notes" rows="2" placeholder="What I saw, what I felt, what I'd do differently" style="width:100%;padding:3px 5px;font-family:var(--fell);"></textarea></label>
+            <label>P&amp;L $ (positive)<br><input id="f-pnl" type="number" step="0.01" min="0" oninput="updatePreview()" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label>Contract<br>
+              <select id="f-contract" style="width:100%;padding:3px 5px;font-family:var(--fell);">
+                <option value="MES">MES</option><option value="ES">ES</option><option value="MNQ">MNQ</option><option value="NQ">NQ</option><option value="CL">CL</option><option value="GC">GC</option>
+              </select>
+            </label>
+            <label>Enemy / Adversary<br><input id="f-enemy" type="text" placeholder="Fen Road Bandits" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label style="grid-column:1 / span 2;">Season / Time<br><input id="f-season" type="text" placeholder="(blank = current season)" style="width:100%;padding:3px 5px;font-family:var(--fell);"></label>
+            <label style="grid-column:1 / span 2;">Chronicle Notes / Emotion<br><textarea id="f-notes" rows="2" placeholder="What I saw, what I felt, what I'd do differently..." style="width:100%;padding:3px 5px;font-family:var(--fell);"></textarea></label>
           </div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
-            <button id="t1-submit-btn" disabled onclick="t1SubmitTrade()" style="flex:1;padding:8px 12px;background:#2a4a1a;color:#a0c070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #3a5a2a;cursor:pointer;border-radius:2px;opacity:0.4;">⚔ SUBMIT TRADE</button>
+
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+            <button id="t1-submit-btn" disabled onclick="t1SubmitTrade()" style="flex:1;padding:8px 12px;background:#2a4a1a;color:#a0c070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #3a5a2a;cursor:pointer;border-radius:2px;opacity:0.4;">⚔ COMMIT TO BATTLE</button>
             <button onclick="t1ResetChecklist()" style="padding:8px 10px;background:#4a3a1a;color:#d0b070;font-family:var(--fellsc);letter-spacing:0.08em;border:1.5px solid #6a4a2a;cursor:pointer;border-radius:2px;">Reset</button>
           </div>
           <div id="t1-submit-msg" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">complete the checklist to enable submit</div>
         </div>
+      </div>
+
+      <!-- BAND / ROSTER — double-click cards to deploy soldiers to this battle -->
+      <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;margin-bottom:12px;">
+        <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">⚔ DEPLOY THE BAND — double-click any soldier card to send him into battle</div>
+        <div class="sel-bar" id="sel-bar">No men deployed — double-click soldier cards to send them into battle</div>
+        <div class="roster-grid" id="roster-grid"></div>
+        <div class="split-box" id="split-preview">Deploy men and enter a P&amp;L to preview the split...</div>
       </div>
 
       <!-- RISK OFFICER VERDICT BOX (shown after each Submit attempt) -->
@@ -1165,66 +1188,25 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
-  <!-- SCOUT REPORT + LOG A BATTLE — side-by-side -->
-  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-    <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
-    <div class="parch-panel ai-panel" style="border-color:#285080;flex:1;display:flex;flex-direction:column;">
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-        <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
-        <div class="ai-msgs" id="scout-msgs" style="flex:1;max-height:none;min-height:0;">
-          <div class="cm-entry cm-ai">
-            <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
-            <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
-          </div>
-        </div>
-        <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
-        <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
-          <div class="ai-input-wrap">
-            <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
-            <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
-          </div>
-          <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
+  <!-- THE SCOUT REPORT — standalone, full width (Log a Battle merged into Discipline Console) -->
+  <div class="parch-panel ai-panel" style="border-color:#285080;margin-bottom:14px;">
+    <div class="p-inner">
+      <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
+      <div class="ai-msgs" id="scout-msgs" style="max-height:260px;">
+        <div class="cm-entry cm-ai">
+          <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
+          <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
         </div>
       </div>
-    </div>
-    </div>
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-    <!-- BATTLE LOG FORM -->
-    <div class="parch-panel log-panel" style="flex:1;display:flex;flex-direction:column;">
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-        <div class="sec-title">✦ Log a Battle (Trade)</div>
-        <div class="sel-bar" id="sel-bar">No men deployed — double-click soldier cards to send them into battle</div>
-        <div class="form-row fr3">
-          <div class="field"><label>Season / Time ET &amp; MT</label><input type="text" id="f-season" placeholder="Spring 1526 · 6:45 PM ET / 4:45 PM MT"></div>
-          <div class="field"><label>Outcome</label>
-            <select id="f-outcome" onchange="updatePreview()">
-              <option value="">Select...</option>
-              <option value="WIN">Victory (Win)</option>
-              <option value="LOSS">Defeat (Loss)</option>
-            </select>
-          </div>
-          <div class="field"><label>P&amp;L $ (positive)</label><input type="number" id="f-pnl" placeholder="50.00" step="0.01" min="0.01" oninput="updatePreview()"></div>
+      <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
+      <div class="ai-input-row" style="margin-top:5px;">
+        <div class="ai-input-wrap">
+          <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
+          <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
         </div>
-        <div class="form-row fr4">
-          <div class="field"><label>Contract</label>
-            <select id="f-contract"><option value="MES">MES</option><option value="ES">ES</option><option value="MNQ">MNQ</option><option value="NQ">NQ</option><option value="CL">CL</option><option value="GC">GC</option></select>
-          </div>
-          <div class="field"><label>Setup</label>
-            <select id="f-setup"><option value="ORB">Opening Range Breakout</option><option value="VWAP">VWAP Reclaim</option><option value="FB">Failed Breakdown</option><option value="PD">Prior Day Level</option><option value="OTHER">Other</option></select>
-          </div>
-          <div class="field"><label>Enemy / Adversary</label><input type="text" id="f-enemy" placeholder="Fen Road Bandits"></div>
-          <div class="field"><label>Chronicle Notes</label><textarea id="f-notes" placeholder="Describe the skirmish..."></textarea></div>
-        </div>
-        <div class="split-box" id="split-preview">Deploy men and enter a P&amp;L to preview the split...</div>
-        <div class="form-btns">
-          <button class="btn go" onclick="logBattle()">⚔ Commit to Battle</button>
-          <button class="btn" onclick="clearForm()">Clear</button>
-          <button class="btn dng" onclick="clearAll()">🗑 Purge All</button>
-        </div>
+        <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
       </div>
-    </div>
     </div>
   </div>
 
@@ -4849,13 +4831,19 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
   }
   window.t1ResetChecklist = function(){
     document.querySelectorAll('.t1-chk').forEach(b=>b.checked=false);
-    ['t1-f-setup','t1-f-entry','t1-f-stop','t1-f-target','t1-f-rr','t1-f-pnl','t1-f-notes'].forEach(id=>{
+    ['t1-f-entry','t1-f-stop','t1-f-target','t1-f-rr','f-pnl','f-notes','f-enemy','f-season'].forEach(id=>{
       const el=document.getElementById(id); if(el) el.value='';
     });
-    const oc=document.getElementById('t1-f-outcome'); if(oc) oc.value='';
+    const oc=document.getElementById('f-outcome'); if(oc) oc.value='';
     const dir=document.getElementById('t1-f-dir'); if(dir) dir.value='long';
+    const setup=document.getElementById('f-setup'); if(setup) setup.value='ORB';
+    const contract=document.getElementById('f-contract'); if(contract) contract.value='MES';
+    // Reset split-preview placeholder
+    const sp=document.getElementById('split-preview');
+    if(sp) sp.innerHTML='Deploy men and enter a P&amp;L to preview the split...';
     t1UpdateChecklistStatus();
     t1UpdateRR();
+    t1HideVerdict();
   };
 
   // ── AUTO R:R CALCULATION ─────────────────────────────────────
@@ -4881,21 +4869,29 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
   let t1PendingDraft = null;   // trade being reviewed by Risk Officer
 
   function t1GatherDraft(){
-    const setup=document.getElementById('t1-f-setup').value.trim();
-    const dir=document.getElementById('t1-f-dir').value;
-    const entry=document.getElementById('t1-f-entry').value;
-    const stop=document.getElementById('t1-f-stop').value;
-    const target=document.getElementById('t1-f-target').value;
-    const rr=document.getElementById('t1-f-rr').value;
-    const outcome=document.getElementById('t1-f-outcome').value;
-    const pnl=parseFloat(document.getElementById('t1-f-pnl').value)||0;
-    const notes=document.getElementById('t1-f-notes').value.trim();
-    if(!setup){ alert('Setup name required'); return null; }
+    const setup    = (document.getElementById('f-setup')||{}).value || 'OTHER';
+    const dir      = (document.getElementById('t1-f-dir')||{}).value || 'long';
+    const entry    = (document.getElementById('t1-f-entry')||{}).value || '';
+    const stop     = (document.getElementById('t1-f-stop')||{}).value || '';
+    const target   = (document.getElementById('t1-f-target')||{}).value || '';
+    const rr       = (document.getElementById('t1-f-rr')||{}).value || '';
+    const outcome  = (document.getElementById('f-outcome')||{}).value || '';
+    const pnl      = parseFloat((document.getElementById('f-pnl')||{}).value) || 0;
+    const contract = (document.getElementById('f-contract')||{}).value || 'MES';
+    const enemy    = ((document.getElementById('f-enemy')||{}).value || '').trim() || 'Unknown Adversary';
+    const season   = ((document.getElementById('f-season')||{}).value || '').trim() || (typeof S!=='undefined' ? S.currentSeason : '');
+    const notes    = ((document.getElementById('f-notes')||{}).value || '').trim();
+    // Game-state validation (merged from old logBattle)
+    if(!outcome){ alert('Choose an outcome (Victory or Defeat) before committing the trade.'); return null; }
+    if(!pnl || pnl <= 0){ alert('Enter a positive P&L (the dollar amount won or lost on this trade).'); return null; }
+    const selMen = (typeof S!=='undefined' && Array.isArray(S.selectedMen)) ? S.selectedMen.map(id=>S.men.find(m=>m.id===id)).filter(Boolean) : [];
+    if(!selMen.length){ alert('Double-click at least one soldier to deploy him into this battle before committing.'); return null; }
     return {
       id: Date.now(),
       date: t1Today(),
       time: new Date().toLocaleTimeString('en-US',{hour12:true,timeZone:'America/New_York'}),
-      setup, dir, entry, stop, target, rr, outcome, pnl, notes
+      setup, dir, entry, stop, target, rr, outcome, pnl, contract, enemy, season, notes,
+      menIds: selMen.map(m=>m.id)
     };
   }
 
@@ -5090,21 +5086,87 @@ Render your verdict now.`;
     t1CommitTrade(draft, 'override');
   };
 
-  // ── COMMIT TRADE TO LOG + CHRONICLE ──────────────────────────
+  // ── COMMIT TRADE TO LOG + CHRONICLE + GAME STATE (merged Log a Battle) ──
   function t1CommitTrade(draft, reviewState){
     draft.riskOfficer = reviewState; // 'approved' | 'override' | 'unreviewed' | 'unreviewed-error'
+
+    // 1) Persist to Tier 1 trade log
     const all = t1Load();
     all.unshift(draft);
     t1Save(all);
+
+    // 2) Run the full Log-a-Battle game effects (HP/XP/treasury/season/toasts)
+    //    This block is what the old logBattle() used to do, inlined here so
+    //    the Discipline Console is now the single source of battle truth.
+    try{
+      if(typeof S === 'undefined') throw new Error('game state S not available');
+      const sel = (draft.menIds||[]).map(id=>S.men.find(m=>m.id===id)).filter(Boolean);
+      if(sel.length){
+        const totalHp = sel.reduce((s,m)=>s+m.hp, 0) || 1;
+        const promos=[], deaths=[], results=[];
+        sel.forEach(m=>{
+          const share = (m.hp/totalHp) * draft.pnl;
+          if(draft.outcome === 'WIN'){
+            m.hp = Math.min(m.maxHp, m.hp + share);
+            m.xp += share;
+            const p = (typeof checkPromo==='function') ? checkPromo(m) : false;
+            if(p) promos.push({...m});
+            results.push({name:m.name, share:+share.toFixed(2), type:'win', promoted:p});
+          } else {
+            m.hp = Math.max(0, m.hp - share);
+            m.scars++;
+            if(m.hp <= 0){ m.dead = true; deaths.push({...m}); }
+            results.push({name:m.name, share:+share.toFixed(2), type:'loss', dead:m.hp<=0});
+          }
+          m.hp = parseFloat(m.hp.toFixed(4));
+          m.xp = parseFloat(m.xp.toFixed(4));
+        });
+        S.treasury += (draft.outcome === 'WIN' ? draft.pnl : -draft.pnl);
+        S.seasons++;
+        if(draft.outcome === 'WIN'){ S.wins++; if(typeof awardRP === 'function') awardRP(draft.pnl, draft.enemy, draft.season); }
+        else S.losses++;
+        if(typeof advanceSeason === 'function') advanceSeason();
+        // Auto-refresh world conflicts via AI each turn (preserved from original logBattle)
+        try{ if(typeof aiRefreshConflicts === 'function') aiRefreshConflicts(); }catch(e){}
+        S.battles.unshift({
+          id: draft.id || Date.now(),
+          season: draft.season,
+          outcome: draft.outcome,
+          pnl: (draft.outcome === 'WIN' ? draft.pnl : -draft.pnl),
+          contract: draft.contract,
+          setup: draft.setup,
+          enemy: draft.enemy,
+          notes: draft.notes,
+          men: results,
+          riskOfficer: reviewState
+        });
+        S.selectedMen = [];
+        if(typeof save === 'function') save();
+        // Refresh season labels in header
+        const lbl = document.getElementById('briefer-season-label'); if(lbl) lbl.textContent = S.currentSeason;
+        const sav = document.getElementById('save-season-display'); if(sav) sav.textContent = S.currentSeason;
+        const lss = document.getElementById('left-season-sub'); if(lss) lss.textContent = S.currentSeason+' · Click any conflict for full account';
+        // Toasts for promotions and deaths
+        if(typeof showToast === 'function'){
+          promos.forEach(m=>showToast('⬆ Promotion!', m.name+' promoted to '+(typeof rankId==='function'?rankId(m):'')+' — '+(typeof rankName==='function'?rankName(m):'')+'!', false));
+          deaths.forEach(m=>showToast('☩ Fallen', m.name+' has fallen in battle.', true));
+        }
+        if(typeof render === 'function') render();
+      }
+    }catch(e){ console.warn('[t1Commit] game-state update failed:', e.message); }
+
+    // 3) Chronicle entry
     try{
       const outLabel = draft.outcome ? (' ['+draft.outcome+']') : ' [pending]';
-      const pnlStr = draft.pnl ? (' · P&L $'+Number(draft.pnl).toFixed(2)) : '';
-      const tag = reviewState==='override' ? ' [OVERRIDE]' : (reviewState==='unreviewed' || reviewState==='unreviewed-error' ? ' [unreviewed]' : '');
-      const summary = (draft.setup||'(no setup)')+' '+draft.dir+outLabel+tag+' · entry '+draft.entry+' / stop '+draft.stop+' / target '+draft.target+' (R:R '+(draft.rr||'—')+')'+pnlStr+(draft.notes?(' — '+draft.notes):'');
+      const pnlStr   = draft.pnl ? (' · P&L $'+Number(draft.pnl).toFixed(2)) : '';
+      const tag      = reviewState==='override' ? ' [OVERRIDE]' : (reviewState==='unreviewed'||reviewState==='unreviewed-error' ? ' [unreviewed]' : '');
+      const summary  = (draft.setup||'(no setup)')+' '+draft.dir+outLabel+tag+' · '+(draft.contract||'')+' vs '+(draft.enemy||'')+' · entry '+draft.entry+' / stop '+draft.stop+' / target '+draft.target+' (R:R '+(draft.rr||'—')+')'+pnlStr+(draft.notes?(' — '+draft.notes):'');
       if(typeof window.chronicleAdd === 'function'){
-        window.chronicleAdd('trade','trade','Discipline Console','live trade',summary);
+        window.chronicleAdd('trade','trade','Discipline Console','live trade', summary);
       }
     }catch(_){}
+
+    // 4) Reset form
     t1ResetChecklist();
     t1Render();
   }
