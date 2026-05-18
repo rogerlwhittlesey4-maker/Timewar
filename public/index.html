@@ -1028,6 +1028,12 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           <div id="t1-checklist-status" style="margin-top:6px;font-size:11px;color:#8a2a20;font-style:italic;">0 / 8 — checklist not complete</div>
         </div>
 
+        <!-- DEPLOYED-MEN SUB-PANEL — visible roster of who's been sent to this battle -->
+        <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;margin-top:12px;">
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">⚔ DEPLOYED FOR THIS BATTLE</div>
+          <div id="t1-deployed-list" style="font-size:12.5px;color:#3a2818;line-height:1.55;font-style:italic;color:var(--ink4);">No men deployed yet — double-click any soldier card below to send him into battle.</div>
+        </div>
+
         <!-- RIGHT: BATTLE LOG INPUT (merged with Log a Battle) -->
         <div style="flex:1;min-width:300px;background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;">
           <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">LOG THIS BATTLE (TRADE)</div>
@@ -1188,50 +1194,52 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   </div>
 
-  <!-- THE SCOUT REPORT — standalone, full width (Log a Battle merged into Discipline Console) -->
-  <div class="parch-panel ai-panel" style="border-color:#285080;margin-bottom:14px;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
-      <div class="ai-msgs" id="scout-msgs" style="max-height:260px;">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
-          <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
+  <!-- SCOUT REPORT + DEBRIEF — side-by-side (matches WB+CC pattern) -->
+  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+      <!-- THE SCOUT REPORT — Pre/During Trade AI assistance -->
+      <div class="parch-panel ai-panel" style="border-color:#285080;flex:1;display:flex;flex-direction:column;">
+        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+          <div class="sec-title" style="color:#7ab0d0;">🔭 The Scout Report — Battle Intelligence</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Pre-trade and in-trade AI guidance. Describe what you see on the chart — get a tactically grounded response.</div>
+          <div class="ai-msgs" id="scout-msgs" style="flex:1;max-height:none;min-height:0;">
+            <div class="cm-entry cm-ai">
+              <div class="cm-speaker">The Scout <span class="rank-tag">field intelligence</span></div>
+              <div class="cm-text">The scouts are ready, Commander. Describe the terrain — where is price relative to VWAP? Are the EMAs aligned? What is volume doing? What setup are you seeing? I will give you my honest read before you commit the band to the field.</div>
+            </div>
+          </div>
+          <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
+          <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
+            <div class="ai-input-wrap">
+              <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
+              <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
+            </div>
+            <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
+          </div>
         </div>
-      </div>
-      <span class="ai-clear" onclick="clearAIBox('scout-msgs','The Scout','field intelligence','The scouts are ready. Describe the chart terrain and I will give you my honest read.')">Clear</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">e.g. "Price just reclaimed VWAP on the 5min, EMAs crossed bullish, volume spike on the break. Thinking long."</div>
-          <textarea class="ai-textarea" id="scout-input" placeholder="Describe the chart — what are you seeing before this trade?" rows="2"></textarea>
-        </div>
-        <button class="ai-btn" id="scout-btn" onclick="sendGenericAI('scout')" style="border-color:#285080;background:#0e1820;color:#7ab0d0;">Report ↗</button>
       </div>
     </div>
-  </div>
-
-
-
-
-
-  <!-- THE DEBRIEF — Post trade retrospect -->
-  <div class="parch-panel ai-panel" style="border-color:#2a4a1a;">
-    <div class="p-inner">
-      <div class="sec-title" style="color:#70c070;">📊 The Debrief — After Action Report</div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Post-trade analysis and lessons. Describe what happened — win or loss — and get honest retrospective feedback.</div>
-      <div class="ai-msgs" id="debrief-msgs" style="max-height:200px;">
-        <div class="cm-entry cm-ai">
-          <div class="cm-speaker">The Chronicler <span class="rank-tag">after action</span></div>
-          <div class="cm-text">The battle is done. Before the band rests, we account for what happened. Tell me the trade — entry, exit, what the chart showed, what you were thinking, and what the result was. A commander who does not debrief his engagements will repeat the same mistakes until they cost him everything.</div>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+      <!-- THE DEBRIEF — Post trade retrospect -->
+      <div class="parch-panel ai-panel" style="border-color:#2a4a1a;flex:1;display:flex;flex-direction:column;">
+        <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
+          <div class="sec-title" style="color:#70c070;">📊 The Debrief — After Action Report</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--ink4);margin-bottom:6px;">Post-trade analysis and lessons. Describe what happened — win or loss — and get honest retrospective feedback.</div>
+          <div class="ai-msgs" id="debrief-msgs" style="flex:1;max-height:none;min-height:0;">
+            <div class="cm-entry cm-ai">
+              <div class="cm-speaker">The Chronicler <span class="rank-tag">after action</span></div>
+              <div class="cm-text">The battle is done. Before the band rests, we account for what happened. Tell me the trade — entry, exit, what the chart showed, what you were thinking, and what the result was. A commander who does not debrief his engagements will repeat the same mistakes until they cost him everything.</div>
+            </div>
+          </div>
+          <span class="ai-clear" onclick="clearAIBox('debrief-msgs','The Chronicler','after action','Tell me the trade. A commander who does not debrief his engagements will repeat the same mistakes.')">Clear</span>
+          <div class="ai-input-row" style="margin-top:auto;flex-shrink:0;padding-top:5px;">
+            <div class="ai-input-wrap">
+              <div class="ai-hint">e.g. "Took a VWAP reclaim long, got stopped out for -$45. Price looked good but volume wasn't there. Moved my stop too tight."</div>
+              <textarea class="ai-textarea" id="debrief-input" placeholder="Describe the trade — what happened, what you saw, what you did, what the result was..." rows="2"></textarea>
+            </div>
+            <button class="ai-btn" id="debrief-btn" onclick="sendGenericAI('debrief')" style="border-color:#2a4a1a;background:#141e10;color:#70c070;">Debrief ↗</button>
+          </div>
         </div>
-      </div>
-      <span class="ai-clear" onclick="clearAIBox('debrief-msgs','The Chronicler','after action','Tell me the trade. A commander who does not debrief his engagements will repeat the same mistakes.')">Clear</span>
-      <div class="ai-input-row" style="margin-top:5px;">
-        <div class="ai-input-wrap">
-          <div class="ai-hint">e.g. "Took a VWAP reclaim long, got stopped out for -$45. Price looked good but volume wasn't there. Moved my stop too tight."</div>
-          <textarea class="ai-textarea" id="debrief-input" placeholder="Describe the trade — what happened, what you saw, what you did, what the result was..." rows="2"></textarea>
-        </div>
-        <button class="ai-btn" id="debrief-btn" onclick="sendGenericAI('debrief')" style="border-color:#2a4a1a;background:#141e10;color:#70c070;">Debrief ↗</button>
       </div>
     </div>
   </div>
@@ -2868,9 +2876,42 @@ function updateSelBar(){
   {const _el_sel_bar=document.getElementById('sel-bar');if(_el_sel_bar)_el_sel_bar.textContent=sel.length===0
     ?'No men deployed — double-click soldier cards above to send them into battle'
     :'⚔ Deployed: '+sel.map(m=>m.name+' (HP:'+m.hp.toFixed(0)+')').join(' · ')}
+  // Also render the deployed-men sub-panel inside the Tier 1 Discipline Console
+  const dep = document.getElementById('t1-deployed-list');
+  if(dep){
+    if(sel.length === 0){
+      dep.innerHTML = 'No men deployed yet — double-click any soldier card below to send him into battle.';
+      dep.style.fontStyle = 'italic';
+      dep.style.color = 'var(--ink4)';
+    } else {
+      const pnl  = parseFloat((document.getElementById('f-pnl')||{}).value) || 0;
+      const outc = (document.getElementById('f-outcome')||{}).value || '';
+      const totalHp = sel.reduce((s,m)=>s+m.hp, 0) || 1;
+      dep.style.fontStyle = 'normal';
+      dep.style.color = '#3a2818';
+      dep.innerHTML = sel.map(m => {
+        const pct = (m.hp/totalHp*100).toFixed(0);
+        const rank = (typeof rankId === 'function') ? rankId(m) : '';
+        let shareTxt = '';
+        if(pnl > 0 && outc){
+          const share = (m.hp/totalHp)*pnl;
+          if(outc === 'WIN'){
+            const nh = Math.min(m.maxHp, m.hp + share);
+            shareTxt = ' · <span style="color:#2a5a1a;font-weight:600;">+$'+share.toFixed(2)+' XP</span> · HP '+m.hp.toFixed(0)+'→'+nh.toFixed(0);
+          } else {
+            const nh = Math.max(0, m.hp - share);
+            shareTxt = ' · <span style="color:#8a2a20;font-weight:600;">−$'+share.toFixed(2)+' HP</span> '+m.hp.toFixed(0)+'→'+nh.toFixed(0)+(nh<=0?' <strong style="color:#b03030;">⚠ FALLS</strong>':'');
+          }
+        }
+        return '<div style="padding:4px 0;border-bottom:1px dotted var(--border);display:flex;align-items:baseline;gap:6px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:10px;">'+rank+'</span> <strong>'+m.name+'</strong> <span style="color:var(--ink4);font-size:11px;">('+pct+'%)</span> '+shareTxt+'</div>';
+      }).join('');
+    }
+  }
 }
 
 function updatePreview(){
+  // Keep the deployed-men sub-panel's share preview in sync with pnl/outcome edits
+  try{ updateSelBar(); }catch(_){}
   const box=document.getElementById('split-preview');
   const outcome=document.getElementById('f-outcome').value;
   const pnl=parseFloat(document.getElementById('f-pnl').value);
