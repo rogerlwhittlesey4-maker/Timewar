@@ -974,6 +974,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           <input id="t1-risk-officer-toggle" type="checkbox" checked> RISK OFFICER ENFORCEMENT
           <span id="t1-risk-officer-state" style="color:#5a8050;font-family:var(--mono);font-size:11px;">ARMED</span>
         </label>
+        <button onclick="t1WipeTestData()" title="Removes all Tier 1 trades + Risk Officer chronicle entries + resets balance to $500. Does not touch Council/Scout/Briefer/Debrief/Log a Battle." style="padding:4px 10px;background:#3a1a14;color:#e9c4a8;font-family:var(--fellsc);letter-spacing:0.06em;border:1px solid #6a3a2a;cursor:pointer;border-radius:2px;font-size:10px;">🧹 RESET TEST DATA</button>
       </div>
 
       <!-- ROW 1: SESSION CLOCK / COUNTERS / DAILY P&L -->
@@ -5261,6 +5262,29 @@ Render your verdict now.`;
     const bBan = document.getElementById('t1-blackout-banner');
     if(bBan) bBan.style.display = blackout ? 'block' : 'none';
   }
+
+  // ── RESET TEST DATA (one-click cleanup) ──────────────────────
+  window.t1WipeTestData = function(){
+    if(!confirm('Wipe ALL Tier 1 trades and Risk Officer chronicle entries, and reset balance to $500?\n\nThis preserves Council/Scout/Briefer/Debrief/Log a Battle entries and does not touch your character or game state.')) return;
+    const beforeTrades = JSON.parse(localStorage.getItem('timewar_t1_trades_v1')||'[]').length;
+    localStorage.setItem('timewar_t1_trades_v1', '[]');
+    let removedChron = 0;
+    try{
+      const S = JSON.parse(localStorage.getItem('timewar_v7')||'{}');
+      if(Array.isArray(S.chronicle)){
+        const before = S.chronicle.length;
+        S.chronicle = S.chronicle.filter(e => !(
+          (e.source === 'contract' && (e.speakerName === 'Risk Officer' || /override/i.test(e.speakerTag||''))) ||
+          (e.source === 'trade'    && e.speakerName === 'Discipline Console')
+        ));
+        removedChron = before - S.chronicle.length;
+        localStorage.setItem('timewar_v7', JSON.stringify(S));
+      }
+    }catch(e){ console.warn('chronicle scrub failed:', e); }
+    localStorage.setItem('timewar_t1_balance_v1', '500');
+    alert('Wiped '+beforeTrades+' trade(s) and '+removedChron+' chronicle entr(ies). Balance reset to $500. Reloading...');
+    location.reload();
+  };
 
   // ── WIRE IT UP ───────────────────────────────────────────────
   function t1Init(){
