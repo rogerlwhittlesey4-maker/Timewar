@@ -207,6 +207,15 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .council-bg-panel .ai-btn{background:rgba(8,6,3,0.7);color:#f5dba0;border-color:#c9a227;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
 .council-bg-panel .ai-btn:hover{background:#c9a227;color:#1a1208;}
 .council-bg-panel::after{border-color:rgba(243,233,210,0.25);}
+/* World Briefer — aged-map backdrop: cream text on dark translucent bubbles, parchment-gold accents */
+.briefer-bg-panel .cm-briefer{background:rgba(20,12,6,0.65);border:1px solid rgba(201,162,39,0.4);border-radius:3px;padding:8px 10px;}
+.briefer-bg-panel .cm-briefer .cm-speaker{color:#e9c47a;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.briefer-bg-panel .cm-briefer .cm-text{color:#f3e9d2;font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
+.briefer-bg-panel .cm-briefer .cm-speaker .rank-tag{color:#d0b070;}
+.briefer-bg-panel .ai-btn{background:rgba(20,12,6,0.7) !important;color:#f5dba0 !important;border-color:#c9a227 !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.briefer-bg-panel .ai-btn:hover{background:#c9a227 !important;color:#1a1208 !important;}
+.briefer-bg-panel .ai-clear{color:#d8c89a !important;text-shadow:0 1px 2px rgba(0,0,0,0.7);}
+.briefer-bg-panel::after{border-color:rgba(243,233,210,0.25);}
 .ai-clear:hover{color:var(--blood-m);}
 .typing-dots{display:flex;gap:3px;align-items:center;padding:3px 0;}
 .typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--ink4);animation:blink 1.2s infinite;}
@@ -815,10 +824,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;min-height:640px;">
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
     <!-- WORLD BRIEFER -->
-    <div class="parch-panel ai-panel" style="background:#1a1610;border-color:var(--border3);flex:1;display:flex;flex-direction:column;">
-      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-        <div class="sec-title" style="color:var(--parch3);border-color:var(--border3);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
-        <div class="ai-msgs briefer-msgs" id="briefer-msgs">
+    <div class="parch-panel ai-panel briefer-bg-panel" style="border-color:var(--border3);flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;">
+      <!-- Layered backdrop: aged-paper fill + map (contained, no crop) + warm overlay + vignette -->
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, #5a3a18 0%, #2a1c0c 80%, #14100a 100%);z-index:0;"></div>
+      <div style="position:absolute;inset:0;background-image:url('world-map-1526.png');background-size:contain;background-position:center;background-repeat:no-repeat;filter:sepia(0.75) saturate(0.7) contrast(0.95) brightness(0.85);z-index:1;"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(rgba(101,67,33,0.22),rgba(60,40,20,0.32)),radial-gradient(ellipse at center, transparent 50%, rgba(20,12,6,0.55) 100%);z-index:2;pointer-events:none;"></div>
+      <div class="p-inner" style="flex:1;display:flex;flex-direction:column;position:relative;z-index:3;background:transparent;">
+        <div class="sec-title" style="color:#f5dba0;border-bottom-color:rgba(243,233,210,0.35);background:rgba(20,12,6,0.6);padding:6px 10px;border-radius:3px;letter-spacing:0.08em;text-shadow:0 1px 2px rgba(0,0,0,0.8);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
+        <div class="ai-msgs briefer-msgs" id="briefer-msgs" style="background:transparent !important;border-color:rgba(243,233,210,0.15);">
           <div class="cm-entry cm-briefer">
             <div class="cm-speaker">Royal Herald <span class="rank-tag">world report</span></div>
             <div class="cm-text">Press "Generate Briefing" after each season to receive a historically accurate world report — what is happening across Europe and beyond, and what it means for your band in Whittlesey.</div>
