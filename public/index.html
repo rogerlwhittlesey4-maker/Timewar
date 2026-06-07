@@ -718,6 +718,41 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .wow-levelup-toast .lvlup-flash{font-size:22px;color:#f0d0ff;text-shadow:0 0 12px rgba(255,180,255,0.9);margin-bottom:8px;letter-spacing:0.14em;}
 .wow-levelup-toast .lvlup-num{font-size:36px;color:#fff;margin:8px 0;text-shadow:0 0 16px rgba(255,140,255,0.9);}
 @keyframes wow-levelup-pop{0%{transform:translate(-50%,-30%) scale(0.4);opacity:0;}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}30%{transform:translate(-50%,-50%) scale(1.0);opacity:1;}80%{transform:translate(-50%,-50%) scale(1.0);opacity:1;}100%{transform:translate(-50%,-70%) scale(0.85);opacity:0;}}
+/* ═════════ Workout Logger Modal ═════════ */
+.workout-modal{position:fixed;inset:0;background:rgba(10,6,8,0.88);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px;}
+.workout-modal.show{display:flex;}
+.workout-modal-content{background:linear-gradient(180deg,#2a1a08,#1a1208);border:3px solid #c9a227;border-radius:8px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;color:#f3e9d2;box-shadow:0 0 30px rgba(201,162,39,0.5),0 12px 40px rgba(0,0,0,0.7);position:relative;font-family:var(--fell);}
+.workout-modal-content::-webkit-scrollbar{width:8px;}
+.workout-modal-content::-webkit-scrollbar-thumb{background:#8a6d3b;border-radius:3px;}
+.wkm-header{background:linear-gradient(180deg,#3a2818,#1a1208);padding:12px 18px;border-bottom:2px solid #c9a227;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2;}
+.wkm-title{font-family:var(--fellsc);font-size:16px;color:#f5dba0;letter-spacing:0.1em;text-shadow:1px 1px 2px rgba(0,0,0,0.8);}
+.wkm-close{cursor:pointer;color:#c9a227;font-size:18px;background:transparent;border:1px solid #8a6d3b;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);}
+.wkm-close:hover{background:#c9a227;color:#1a1208;}
+.wkm-body{padding:14px 20px;}
+.wkm-section-title{font-family:var(--fellsc);font-size:12px;color:#c9a227;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid #8a6d3b;padding-bottom:3px;margin:14px 0 6px;}
+.wkm-section-title:first-child{margin-top:0;}
+.wkm-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;}
+@media(max-width:520px){.wkm-grid{grid-template-columns:1fr;}}
+.wkm-row{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:2px;font-size:12.5px;}
+.wkm-row:hover{background:rgba(201,162,39,0.08);}
+.wkm-row-name{flex:1;color:#e9d8b0;}
+.wkm-row-unit{font-family:var(--mono);font-size:10px;color:#8a7a4a;}
+.wkm-row input[type=number]{width:62px;padding:3px 5px;background:#0a0608;border:1px solid #5a4a2a;color:#f5dba0;font-family:var(--mono);font-size:12px;border-radius:2px;text-align:right;}
+.wkm-row input[type=number]:focus{outline:none;border-color:#c9a227;}
+.wkm-footer{position:sticky;bottom:0;background:linear-gradient(180deg,#1a1208,#2a1a08);padding:14px 20px;border-top:2px solid #c9a227;display:flex;justify-content:space-between;align-items:center;}
+.wkm-total{font-family:var(--fellsc);font-size:18px;color:#a0d080;text-shadow:1px 1px 2px rgba(0,0,0,0.8);}
+.wkm-total-num{font-size:28px;letter-spacing:0.05em;}
+.wkm-buttons{display:flex;gap:8px;}
+.wkm-btn{font-family:var(--fellsc);font-size:11px;letter-spacing:0.08em;padding:8px 14px;border-radius:3px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.7);}
+.wkm-btn-cancel{background:linear-gradient(180deg,#4a3a1a,#2a1a08);color:#d0b070;border:1px solid #6a4a2a;}
+.wkm-btn-cancel:hover{background:linear-gradient(180deg,#5a4a2a,#3a2a18);color:#fff;}
+.wkm-btn-submit{background:linear-gradient(180deg,#3a4a18,#1a2a08);color:#a0d080;border:1.5px solid #6a8a3a;}
+.wkm-btn-submit:hover{background:linear-gradient(180deg,#4a5a28,#2a3a18);color:#fff;}
+.wkm-btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+.wkm-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.wkm-preset{font-family:var(--mono);font-size:10px;padding:3px 8px;background:rgba(201,162,39,0.12);border:1px solid #8a6d3b;color:#c9a227;border-radius:2px;cursor:pointer;}
+.wkm-preset:hover{background:rgba(201,162,39,0.28);color:#fff;}
+
 
 .wow-char-titlebar{display:flex;justify-content:space-between;align-items:center;font-family:var(--fellsc);font-size:16px;color:#C9A227;padding:2px 4px 6px;border-bottom:1px solid #8B6914;margin-bottom:10px;}
 .wow-char-titlebar .wow-x{font-family:var(--mono);font-size:14px;color:#8a7a4a;cursor:pointer;padding:0 6px;border:1px solid #5a4520;border-radius:2px;}
@@ -6336,15 +6371,127 @@ function renderCharEXPBar(flash){
   // Note: the existing 'wow-xp' stat row is intentionally NOT touched here — that stat shows trade XP.
 }
 
-window.logCharWorkout = function(){
-  const choice = prompt('Workout intensity?\n1 = Light (+15 EXP)\n2 = Medium (+25 EXP)\n3 = Heavy (+40 EXP)\n(Cancel = skip)', '2');
-  if(!choice) return;
-  const map = {'1':15, '2':25, '3':40};
-  const xp = map[choice.trim()] || 25;
-  CHAR_EXP.workouts.unshift({ ts: Date.now(), xp });
-  if(CHAR_EXP.workouts.length > 500) CHAR_EXP.workouts.length = 500;
-  addCharEXP(xp, 'Workout (+' + xp + ')');
+// Workout exercise catalog — balanced EXP per unit. Base anchor: 1 pushup = 1 EXP.
+// Calorie/effort equivalence rough but consistent. Adjust freely.
+const WORKOUT_EXERCISES = [
+  { section: 'Calisthenics (per rep)', items: [
+    { id:'pushups',         name:'Pushups',              unit:'reps',  xp:1 },
+    { id:'squats',          name:'Squats (bodyweight)',  unit:'reps',  xp:1 },
+    { id:'situps',          name:'Sit-ups',              unit:'reps',  xp:1 },
+    { id:'crunches',        name:'Crunches',             unit:'reps',  xp:0.8 },
+    { id:'lunges',          name:'Lunges (per leg)',     unit:'reps',  xp:1 },
+    { id:'pullups',         name:'Pull-ups',             unit:'reps',  xp:5 },
+    { id:'chinups',         name:'Chin-ups',             unit:'reps',  xp:4 },
+    { id:'dips',            name:'Dips',                 unit:'reps',  xp:3 },
+    { id:'burpees',         name:'Burpees',              unit:'reps',  xp:4 },
+    { id:'jumpingjacks',    name:'Jumping Jacks',        unit:'reps',  xp:0.5 },
+    { id:'mountainclimbers',name:'Mountain Climbers',    unit:'reps',  xp:0.5 },
+    { id:'diamondpushups',  name:'Diamond Pushups',      unit:'reps',  xp:1.5 },
+  ]},
+  { section: 'Static Holds & Conditioning (per minute)', items: [
+    { id:'plank',           name:'Plank',                unit:'min',   xp:30 },
+    { id:'wallsit',         name:'Wall Sit',             unit:'min',   xp:25 },
+    { id:'jumprope',        name:'Jump Rope',            unit:'min',   xp:15 },
+  ]},
+  { section: 'Cardio (per mile / unit)', items: [
+    { id:'sprint',          name:'Sprint Intervals',     unit:'miles', xp:350 },
+    { id:'run',             name:'Run',                  unit:'miles', xp:250 },
+    { id:'jog',             name:'Jog',                  unit:'miles', xp:180 },
+    { id:'briskwalk',       name:'Brisk Walk',           unit:'miles', xp:100 },
+    { id:'walk',            name:'Walk (casual)',        unit:'miles', xp:60 },
+    { id:'cycling',         name:'Cycling',              unit:'miles', xp:80 },
+    { id:'hike',            name:'Hike (with elevation)',unit:'miles', xp:150 },
+    { id:'swim',            name:'Swimming Laps (25m)',  unit:'laps',  xp:8 },
+    { id:'stairs',          name:'Stair Flights',        unit:'flights',xp:3 },
+  ]},
+];
+const WORKOUT_PRESETS = [
+  { name:'Morning Mile Run',  values:{ run:1 } },
+  { name:'PT Set (50/50/50)', values:{ pushups:50, situps:50, squats:50 } },
+  { name:'Quick Five',         values:{ pushups:20, squats:20, situps:20, lunges:10 } },
+  { name:'Plank + Walk',       values:{ plank:2, walk:1 } },
+];
+
+let WORKOUT_DRAFT = {};
+
+window.openWorkoutModal = function(){
+  WORKOUT_DRAFT = {};
+  renderWorkoutModal();
+  document.getElementById('workout-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
 };
+window.closeWorkoutModal = function(){
+  document.getElementById('workout-modal').classList.remove('show');
+  document.body.style.overflow = '';
+};
+window.applyWorkoutPreset = function(idx){
+  const p = WORKOUT_PRESETS[idx];
+  if(!p) return;
+  Object.entries(p.values).forEach(([id, val]) => {
+    WORKOUT_DRAFT[id] = val;
+    const inp = document.getElementById('wkm-input-' + id);
+    if(inp) inp.value = val;
+  });
+  updateWorkoutTotal();
+};
+window.updateWorkoutDraft = function(id, value){
+  const n = parseFloat(value);
+  WORKOUT_DRAFT[id] = (isFinite(n) && n > 0) ? n : 0;
+  updateWorkoutTotal();
+};
+
+function workoutTotalEXP(){
+  let total = 0;
+  WORKOUT_EXERCISES.forEach(sec => sec.items.forEach(it => {
+    const v = WORKOUT_DRAFT[it.id] || 0;
+    total += v * it.xp;
+  }));
+  return Math.round(total);
+}
+function updateWorkoutTotal(){
+  const total = workoutTotalEXP();
+  const totalEl = document.getElementById('wkm-total-num');
+  const submitEl = document.getElementById('wkm-submit');
+  if(totalEl) totalEl.textContent = total.toLocaleString();
+  if(submitEl) submitEl.disabled = total <= 0;
+}
+
+function renderWorkoutModal(){
+  const body = document.getElementById('wkm-body');
+  if(!body) return;
+  const presetsHtml = '<div class="wkm-section-title">Quick Presets</div><div class="wkm-presets">' +
+    WORKOUT_PRESETS.map((p,i) => `<button class="wkm-preset" onclick="applyWorkoutPreset(${i})">${p.name}</button>`).join('') +
+    '</div>';
+  const sectionsHtml = WORKOUT_EXERCISES.map(sec => {
+    const itemsHtml = sec.items.map(it => `<div class="wkm-row">
+      <span class="wkm-row-name">${it.name}</span>
+      <span class="wkm-row-unit">×${it.xp}</span>
+      <input type="number" min="0" step="${it.xp < 1 ? '1' : '1'}" id="wkm-input-${it.id}" value="${WORKOUT_DRAFT[it.id]||''}" placeholder="${it.unit}" oninput="updateWorkoutDraft('${it.id}', this.value)">
+    </div>`).join('');
+    return `<div class="wkm-section-title">${sec.section}</div><div class="wkm-grid">${itemsHtml}</div>`;
+  }).join('');
+  body.innerHTML = presetsHtml + sectionsHtml;
+  updateWorkoutTotal();
+}
+
+window.submitWorkout = function(){
+  const total = workoutTotalEXP();
+  if(total <= 0) return;
+  // Build a compact summary string of what was done
+  const parts = [];
+  WORKOUT_EXERCISES.forEach(sec => sec.items.forEach(it => {
+    const v = WORKOUT_DRAFT[it.id] || 0;
+    if(v > 0) parts.push(v + ' ' + it.name);
+  }));
+  const summary = parts.join(', ');
+  CHAR_EXP.workouts.unshift({ ts: Date.now(), xp: total, detail: summary });
+  if(CHAR_EXP.workouts.length > 500) CHAR_EXP.workouts.length = 500;
+  addCharEXP(total, 'Workout: ' + summary);
+  closeWorkoutModal();
+};
+
+// Replace the old simple logCharWorkout so the button now opens the modal
+window.logCharWorkout = window.openWorkoutModal;
 
 // On load: award EXP for any preComplete quest that hasn't been awarded yet
 Object.values(QUEST_DATA).forEach(cat => {
@@ -7051,6 +7198,24 @@ Render your verdict now.`;
   }
 })();
 </script>
+
+<!-- ═════════ WORKOUT LOGGER MODAL ═════════ -->
+<div class="workout-modal" id="workout-modal" onclick="if(event.target===this)closeWorkoutModal()">
+  <div class="workout-modal-content">
+    <div class="wkm-header">
+      <div class="wkm-title">💪 LOG WORKOUT — Real-Life EXP</div>
+      <button class="wkm-close" onclick="closeWorkoutModal()">✕</button>
+    </div>
+    <div class="wkm-body" id="wkm-body"><!-- exercises rendered by JS --></div>
+    <div class="wkm-footer">
+      <div class="wkm-total">Total: <span class="wkm-total-num" id="wkm-total-num">0</span> EXP</div>
+      <div class="wkm-buttons">
+        <button class="wkm-btn wkm-btn-cancel" onclick="closeWorkoutModal()">Cancel</button>
+        <button class="wkm-btn wkm-btn-submit" id="wkm-submit" onclick="submitWorkout()" disabled>⚔ Log Workout</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
