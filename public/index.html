@@ -6226,7 +6226,36 @@ if(typeof CHAR_EXP.xp !== 'number') CHAR_EXP.xp = 0;
 if(!CHAR_EXP.completedQuests) CHAR_EXP.completedQuests = {};   // {questId: xp_awarded}
 if(!Array.isArray(CHAR_EXP.workouts)) CHAR_EXP.workouts = [];   // [{date, xp}]
 function charExpSave(){ localStorage.setItem(CHAR_EXP_KEY, JSON.stringify(CHAR_EXP)); }
-function xpForLevel(lvl){ return 200 * lvl; }  // Lvl 1->2 = 200, 2->3 = 400, etc.
+// ── WoW Classic 1.12 XP table (XP required to advance from level N to N+1) ──
+// Source: original Vanilla XP requirements, levels 1 through 59. Level 60 = max.
+const WOW_CLASSIC_XP_TO_NEXT = [
+    400,   900,  1400,  2100,  2800,  3600,  4500,  5400,  6500,  7600,   // 1->2 ... 10->11
+   8800, 10100, 11400, 12900, 14400, 16000, 17700, 19400, 21300, 23200,   // 11->12 ... 20->21
+  25200, 27300, 29400, 31700, 34000, 36400, 38900, 41400, 44000, 46600,   // 21->22 ... 30->31
+  49400, 52200, 55100, 58000, 61000, 64000, 67100, 70200, 73400, 76600,   // 31->32 ... 40->41
+  79900, 83200, 86500, 89900, 93300, 96800,100300,103800,107400,111000,   // 41->42 ... 50->51
+ 114600,118200,121900,125600,129300,133000,136800,140600,144400,      0   // 51->52 ... 59->60, 60=MAX
+];
+const WOW_MAX_LEVEL = 60;
+function xpForLevel(lvl){
+  if(lvl >= WOW_MAX_LEVEL) return Infinity;
+  return WOW_CLASSIC_XP_TO_NEXT[lvl-1];
+}
+// One-time migration: if user is on the old (200*N) curve, recompute level/xp from total earned EXP
+if(CHAR_EXP.formulaVersion !== 'classic-v1'){
+  let total = 0;
+  Object.values(CHAR_EXP.completedQuests || {}).forEach(x => total += (x||0));
+  (CHAR_EXP.workouts || []).forEach(w => total += (w.xp||0));
+  CHAR_EXP.level = 1;
+  CHAR_EXP.xp = total;
+  while(CHAR_EXP.xp >= xpForLevel(CHAR_EXP.level) && CHAR_EXP.level < WOW_MAX_LEVEL){
+    CHAR_EXP.xp -= xpForLevel(CHAR_EXP.level);
+    CHAR_EXP.level++;
+  }
+  if(CHAR_EXP.level >= WOW_MAX_LEVEL){ CHAR_EXP.level = WOW_MAX_LEVEL; CHAR_EXP.xp = 0; }
+  CHAR_EXP.formulaVersion = 'classic-v1';
+  charExpSave();
+}
 
 function findQuestById(qid){
   for(const cat of Object.values(QUEST_DATA)){
@@ -6255,12 +6284,14 @@ function awardEXPIfQuestComplete(questId){
 
 function addCharEXP(amount, source){
   CHAR_EXP.xp += amount;
-  // Handle level up / level down
-  while(CHAR_EXP.xp >= xpForLevel(CHAR_EXP.level)){
+  // Handle level up / level down (capped at WOW_MAX_LEVEL)
+  while(CHAR_EXP.xp >= xpForLevel(CHAR_EXP.level) && CHAR_EXP.level < WOW_MAX_LEVEL){
     CHAR_EXP.xp -= xpForLevel(CHAR_EXP.level);
     CHAR_EXP.level++;
     showLevelUpToast(CHAR_EXP.level);
   }
+  // Once at max level, the bar stays full and xp doesn't accumulate
+  if(CHAR_EXP.level >= WOW_MAX_LEVEL){ CHAR_EXP.level = WOW_MAX_LEVEL; CHAR_EXP.xp = 0; }
   while(CHAR_EXP.xp < 0 && CHAR_EXP.level > 1){
     CHAR_EXP.level--;
     CHAR_EXP.xp += xpForLevel(CHAR_EXP.level);
@@ -6283,6 +6314,15 @@ function renderCharEXPBar(flash){
   const fillEl = document.getElementById('wow-exp-bar-fill');
   const textEl = document.getElementById('wow-exp-bar-text');
   if(!lvlEl || !fillEl || !textEl) return;
+  if(CHAR_EXP.level >= WOW_MAX_LEVEL){
+    lvlEl.textContent = 'Lvl ' + WOW_MAX_LEVEL;
+    lvlEl.style.background = 'linear-gradient(180deg,#c9a227,#8a6d3b)';
+    lvlEl.style.color = '#1a1208';
+    fillEl.style.right = '0%';
+    fillEl.style.background = 'linear-gradient(180deg,#f0d070 0%,#c9a227 50%,#8a6d3b 100%)';
+    textEl.textContent = '✦ MAX LEVEL ✦';
+    return;
+  }
   const need = xpForLevel(CHAR_EXP.level);
   const pct = Math.max(0, Math.min(100, (CHAR_EXP.xp / need) * 100));
   lvlEl.textContent = 'Lvl ' + CHAR_EXP.level;
@@ -6290,12 +6330,10 @@ function renderCharEXPBar(flash){
   textEl.textContent = CHAR_EXP.xp.toLocaleString() + ' / ' + need.toLocaleString() + ' EXP (' + pct.toFixed(0) + '%)';
   if(flash){
     fillEl.classList.remove('flash');
-    void fillEl.offsetWidth;  // reflow
+    void fillEl.offsetWidth;
     fillEl.classList.add('flash');
   }
-  // Sync the existing "Experience" stat row to show character EXP instead of S.men[0].xp confusion
-  const wowXpEl = document.getElementById('wow-xp');
-  if(wowXpEl) wowXpEl.textContent = CHAR_EXP.xp.toLocaleString() + ' / ' + need.toLocaleString();
+  // Note: the existing 'wow-xp' stat row is intentionally NOT touched here — that stat shows trade XP.
 }
 
 window.logCharWorkout = function(){
