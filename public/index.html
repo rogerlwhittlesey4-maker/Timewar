@@ -704,6 +704,56 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .wow-char-titlebar{display:flex;justify-content:space-between;align-items:center;font-family:var(--fellsc);font-size:16px;color:#C9A227;padding:2px 4px 6px;border-bottom:1px solid #8B6914;margin-bottom:10px;}
 .wow-char-titlebar .wow-x{font-family:var(--mono);font-size:14px;color:#8a7a4a;cursor:pointer;padding:0 6px;border:1px solid #5a4520;border-radius:2px;}
 .wow-tabs{display:flex;gap:0;margin-bottom:10px;border-bottom:2px solid #8B6914;}
+/* ═════════ WoW Classic-style Quest Log ═════════ */
+.wow-quest-log{background:#1a1208;border:3px solid #c9a227;border-radius:6px;margin-top:14px;box-shadow:0 4px 14px rgba(0,0,0,0.5);position:relative;overflow:hidden;}
+.wow-quest-log::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(201,162,39,0.02) 2px,rgba(201,162,39,0.02) 4px);pointer-events:none;}
+.wql-titlebar{background:linear-gradient(180deg,#3a2818,#1a1208);color:#f5dba0;font-family:var(--fellsc);font-size:14px;letter-spacing:0.1em;padding:8px 14px;border-bottom:2px solid #c9a227;display:flex;justify-content:space-between;align-items:center;text-shadow:1px 1px 2px rgba(0,0,0,0.8);}
+.wql-titlebar .wow-x{font-family:var(--mono);font-size:14px;color:#8a6d3b;cursor:default;}
+.wql-body{display:grid;grid-template-columns:280px 1fr;gap:0;background:#0e0a04;}
+@media(max-width:700px){.wql-body{grid-template-columns:1fr;}}
+.wql-list{background:#1a1208;border-right:2px solid #c9a227;padding:10px 8px;max-height:520px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c9a227 #1a1208;}
+.wql-list::-webkit-scrollbar{width:8px;}
+.wql-list::-webkit-scrollbar-track{background:#1a1208;}
+.wql-list::-webkit-scrollbar-thumb{background:#8a6d3b;border-radius:3px;}
+.wql-category{margin-bottom:6px;}
+.wql-cat-header{font-family:var(--fellsc);font-size:13px;color:#f5dba0;padding:6px 10px;background:linear-gradient(180deg,#3a2818,#2a1810);border:1px solid #8a6d3b;border-radius:3px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:0.06em;user-select:none;text-shadow:1px 1px 2px rgba(0,0,0,0.7);}
+.wql-cat-header:hover{background:linear-gradient(180deg,#4a3220,#3a2818);}
+.wql-cat-progress{font-family:var(--mono);font-size:10px;color:#c9a227;}
+.wql-quests{padding:2px 0 6px 12px;}
+.wql-quest{font-family:var(--fell);font-size:12.5px;padding:4px 8px;margin:2px 0;cursor:pointer;border-radius:2px;display:flex;justify-content:space-between;align-items:center;border-left:2px solid transparent;}
+.wql-quest:hover{background:rgba(201,162,39,0.15);}
+.wql-quest.active{background:rgba(201,162,39,0.25);border-left-color:#f5dba0;}
+.wql-quest-name{flex:1;}
+.wql-quest-level{font-family:var(--mono);font-size:9px;margin-right:6px;padding:1px 4px;background:rgba(0,0,0,0.4);border-radius:2px;}
+/* WoW Classic level colors */
+.wql-q-gray{color:#9d9d9d;}
+.wql-q-green{color:#1eff00;}
+.wql-q-yellow{color:#ffff00;}
+.wql-q-orange{color:#ff8000;}
+.wql-q-red{color:#ff4040;}
+.wql-quest-icon{font-size:11px;margin-right:4px;}
+.wql-cat-locked .wql-cat-header{opacity:0.6;}
+/* Quest details (right pane) */
+.wql-detail{background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0.95  0 0 0 0 0.84  0 0 0 0 0.65  0 0 0 0.08 0"/></filter><rect width="100" height="100" fill="%23f5e3b8" filter="url(%23n)"/></svg>');background-color:#f5e3b8;color:#3a2810;padding:18px 22px;font-family:var(--fell);max-height:520px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c9a227 transparent;}
+.wql-detail::-webkit-scrollbar{width:8px;}
+.wql-detail::-webkit-scrollbar-thumb{background:#8a6d3b;border-radius:3px;}
+.wql-detail-empty{font-style:italic;color:#8a6d3b;text-align:center;padding:60px 20px;font-size:13px;}
+.wql-detail-title{font-family:var(--fellsc);font-size:18px;color:#3a2810;border-bottom:2px solid #c9a227;padding-bottom:8px;margin-bottom:10px;letter-spacing:0.04em;}
+.wql-detail-level{display:inline-block;font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.08);padding:2px 8px;border-radius:2px;margin-bottom:10px;}
+.wql-detail-desc{font-size:13.5px;line-height:1.7;color:#3a2810;margin-bottom:14px;font-style:italic;}
+.wql-detail-section-title{font-family:var(--fellsc);font-size:13px;color:#5a3010;letter-spacing:0.06em;border-bottom:1px solid #c9a227;padding-bottom:3px;margin:14px 0 8px;text-transform:uppercase;}
+.wql-detail-objective{font-size:13px;padding:5px 4px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-radius:2px;}
+.wql-detail-objective:hover{background:rgba(201,162,39,0.15);}
+.wql-detail-objective.done{color:#1a5010;text-decoration:line-through;font-style:italic;}
+.wql-detail-objective input[type=checkbox]{margin-top:3px;flex-shrink:0;cursor:pointer;}
+.wql-detail-reward{font-size:12.5px;color:#3a2810;padding:3px 0;}
+.wql-detail-reward::before{content:'⚜ ';color:#a87a14;}
+.wql-detail-status{margin-top:14px;padding:8px 12px;text-align:center;font-family:var(--fellsc);font-size:13px;letter-spacing:0.06em;border-radius:3px;}
+.wql-status-progress{background:rgba(201,162,39,0.2);border:1px solid #c9a227;color:#5a3010;}
+.wql-status-ready{background:rgba(255,128,0,0.2);border:1px solid #ff8000;color:#5a3010;animation:wql-pulse 2s ease-in-out infinite;}
+.wql-status-complete{background:rgba(0,128,0,0.18);border:1px solid #408040;color:#1a5010;}
+@keyframes wql-pulse{0%,100%{box-shadow:0 0 4px rgba(255,128,0,0.4);}50%{box-shadow:0 0 12px rgba(255,128,0,0.8);}}
+
 .wow-tab{flex:1;padding:5px 0;text-align:center;background:#1a1208;border:1px solid #5a4520;border-bottom:none;font-family:var(--fellsc);font-size:10px;color:#8a7a4a;cursor:pointer;letter-spacing:0.04em;}
 .wow-tab.active{background:#2a2010;color:#C9A227;border-color:#8B6914;position:relative;top:1px;}
 .wow-tab:hover{color:#d0b070;}
@@ -1731,6 +1781,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     </div>
     <!-- /two-column layout -->
+
+    <!-- ═════════ QUEST LOG (WoW Classic style) — under the character box ═════════ -->
+    <div class="wow-quest-log" id="wow-quest-log">
+      <div class="wql-titlebar">
+        <span>📜 Quest Log</span>
+        <span class="wow-x" title="Decorative">✕</span>
+      </div>
+      <div class="wql-body">
+        <div class="wql-list" id="wql-list"></div>
+        <div class="wql-detail" id="wql-detail">
+          <div class="wql-detail-empty">Select a quest to view its details, objectives, and rewards.</div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -5913,6 +5977,267 @@ function renderWowSkills(){
 
 // Pre-render in case user lands directly on those tabs
 document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); renderWowSkills(); });
+
+// ═════════ QUEST LOG DATA + LOGIC ═════════
+const QUEST_DATA = {
+  electrical: {
+    name: 'Electrical',
+    icon: '⚡',
+    color: '#ffcc40',
+    quests: [
+      { id:'el-osha10', title:'Complete OSHA 10 Safety Course', level:'Apprentice', color:'green',
+        summary:'Earn the OSHA 10-hour Construction safety certification — the foundational safety credential for any electrical apprenticeship or trade work.',
+        objectives:['Enroll in an authorized OSHA 10 course','Complete all 10 hours of instruction','Pass the final safety assessment','Receive OSHA 10 card (valid 5 years)'],
+        rewards:['+50 XP Body / Mastery skill','OSHA 10 certification','Eligible for electrical apprenticeship'] },
+      { id:'el-apprentice', title:'Enter Electrical Apprenticeship', level:'Apprentice', color:'green',
+        summary:'Begin a formal apprenticeship program through IBEW Local 640 (Phoenix), an independent shop, or NECA-affiliated training. Apprenticeships in Arizona typically run 4 years (~8,000 hours) of on-the-job training paired with classroom instruction.',
+        objectives:['Apply to IBEW Local 640 or independent shop','Pass aptitude / interview / drug screen','Sign apprenticeship agreement','Begin Year 1 on-the-job training'],
+        rewards:['Apprentice wage scale begins','+100 XP Body','Pathway to Journeyman'] },
+      { id:'el-y2', title:'Complete Years 1–2 of Apprenticeship', level:'Apprentice', color:'yellow',
+        summary:'Accumulate 4,000 hours of supervised field experience plus 288+ hours of classroom (Codeology, theory, motors, lighting). The first two years build the fundamentals of safe residential and commercial wiring.',
+        objectives:['Log 2,000 hours Year 1 field work','Complete Year 1 classroom and lab','Log 2,000 hours Year 2 field work','Complete Year 2 classroom (motors, transformers)','Pass mid-program competency review'],
+        rewards:['Wage step-up','+200 XP Mastery','Eligible to sit junior tickets'] },
+      { id:'el-y4', title:'Complete Years 3–4 of Apprenticeship', level:'Journeyman-bound', color:'orange',
+        summary:'Final two years of apprenticeship — advanced NEC, conduit bending, grounding, motor controls, instrumentation. Total program: 8,000 hours field + ~576 hours classroom.',
+        objectives:['Log 2,000 hours Year 3 field work','Complete advanced NEC coursework','Log 2,000 hours Year 4 field work','Complete final-year capstone project','Receive completion certificate'],
+        rewards:['Journeyman-eligible status','+400 XP','Trade competency unlocked'] },
+      { id:'el-jw-exam', title:'Pass Journeyman Electrician Exam', level:'Journeyman', color:'orange',
+        summary:'Sit and pass the state/IBEW journeyman exam. Tests NEC code, blueprint reading, calculations, safety, and trade theory. Most candidates study 3–6 months before sitting.',
+        objectives:['Order current NEC code book','Take 3 full-length practice exams (80%+ each)','Schedule and pay exam fee','Pass journeyman written exam','Receive journeyman card'],
+        rewards:['Journeyman wage','+500 XP','Title: Journeyman Electrician'] },
+      { id:'el-roc', title:'Earn Arizona ROC Electrical Contractor License', level:'Master', color:'red',
+        summary:'After ~4+ years of journeyman experience, qualify for an Arizona Registrar of Contractors (ROC) license — C-11 Commercial Electrical or R-11 Residential. Allows you to pull permits and run your own jobs.',
+        objectives:['Document 4 years journeyman experience','Submit ROC application','Pass Arizona Statutes & Rules exam','Pass C-11 or R-11 trade exam','Secure $5K license bond','Receive ROC license'],
+        rewards:['+1000 XP','Title: Licensed Electrical Contractor','Right to run own jobs in Arizona'] },
+    ]
+  },
+  wwt: {
+    name: 'Wastewater Operator',
+    icon: '💧',
+    color: '#80c0e0',
+    quests: [
+      { id:'wwt-course', title:'Complete ADEQ-Approved Wastewater Treatment Course', level:'Trainee', color:'green',
+        summary:'Take a state-approved training course covering the fundamentals of wastewater treatment processes — biological treatment, secondary clarification, disinfection, sludge handling, lab basics.',
+        objectives:['Enroll in ADEQ-approved course (e.g. ASU, Rio Salado, Water and Wastewater Institute)','Complete required hours of instruction','Pass course final assessment'],
+        rewards:['+75 XP','Course completion certificate','Eligible for Grade 1 exam'] },
+      { id:'wwt-g1', title:'Pass Grade 1 ADEQ Wastewater Treatment Exam', level:'Grade 1', color:'green',
+        summary:'Grade 1 is the entry-level certification for Arizona wastewater treatment plant operators. Tests basic plant operations, math, sampling, and regulatory knowledge.',
+        objectives:['Submit ADEQ application + fee','Schedule exam through ABC (Assoc. Boards of Cert.)','Pass Grade 1 exam (70%+ typical)','Receive Grade 1 certification'],
+        rewards:['+150 XP','Title: Grade 1 Wastewater Operator','Operate or assist at small WWTP'] },
+      { id:'wwt-g2', title:'Pass Grade 2 Wastewater Treatment Exam', level:'Grade 2', color:'yellow',
+        summary:'Grade 2 requires 1+ year operating experience plus passing the more rigorous Grade 2 exam. Covers process control, troubleshooting, advanced math.',
+        objectives:['Accrue 1 year operating experience post Grade 1','Submit application','Pass Grade 2 ABC exam','Receive Grade 2 certification'],
+        rewards:['+250 XP','Wage step-up','Title: Grade 2 Wastewater Operator'] },
+      { id:'wwt-g3', title:'Pass Grade 3 Wastewater Treatment Exam', level:'Grade 3', color:'orange',
+        summary:'Grade 3 covers higher-capacity plants and advanced biological treatment. Requires substantial field experience plus passing the Grade 3 exam.',
+        objectives:['Accrue 3 years total operating experience','Submit application','Pass Grade 3 ABC exam','Receive Grade 3 certification'],
+        rewards:['+400 XP','Title: Grade 3 Wastewater Operator','Lead operator eligibility'] },
+      { id:'wwt-g4', title:'Pass Grade 4 Wastewater Treatment Exam (Highest)', level:'Grade 4', color:'red',
+        summary:'Grade 4 is the highest classification for Arizona wastewater treatment. Required for chief operators at the largest plants. Heavy emphasis on plant management, regulatory compliance, and advanced process control.',
+        objectives:['Accrue 4+ years total experience','Bachelor\'s degree OR additional experience','Submit application','Pass Grade 4 ABC exam','Receive Grade 4 certification'],
+        rewards:['+800 XP','Title: Grade 4 Chief Wastewater Operator','Qualify as plant Chief Operator'] },
+    ]
+  },
+  wwc: {
+    name: 'Wastewater Collections',
+    icon: '🚧',
+    color: '#a07050',
+    quests: [
+      { id:'wwc-course', title:'Complete Collections System Training', level:'Trainee', color:'green',
+        summary:'Learn the fundamentals of wastewater collection systems — gravity sewers, lift stations, manholes, CCTV inspection, root and grease control, confined space safety.',
+        objectives:['Enroll in approved collections course','Complete required hours','Pass course assessment'],
+        rewards:['+75 XP','Course certificate','Eligible for Grade 1 collections exam'] },
+      { id:'wwc-g1', title:'Pass Grade 1 Collections Exam', level:'Grade 1', color:'green',
+        summary:'Entry-level certification for collection system operators. Covers basic sewer operations, safety (especially confined space and H2S), maintenance, hydraulics.',
+        objectives:['Submit ADEQ application','Schedule exam','Pass Grade 1 collections exam','Receive certification'],
+        rewards:['+150 XP','Title: Grade 1 Collections Operator'] },
+      { id:'wwc-g2', title:'Pass Grade 2 Collections Exam', level:'Grade 2', color:'yellow',
+        summary:'Requires 1+ year field experience plus the Grade 2 exam. Covers lift station operations, CCTV, troubleshooting blockages, and small-system management.',
+        objectives:['Accrue 1 year field experience','Submit application','Pass Grade 2 exam','Receive certification'],
+        rewards:['+250 XP','Title: Grade 2 Collections Operator'] },
+      { id:'wwc-g3', title:'Pass Grade 3 Collections Exam', level:'Grade 3', color:'orange',
+        summary:'Larger and more complex collection systems. Includes advanced hydraulics, capacity analysis, infiltration/inflow studies, regulatory compliance.',
+        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
+        rewards:['+400 XP','Title: Grade 3 Collections Operator','Lead operator eligibility'] },
+      { id:'wwc-g4', title:'Pass Grade 4 Collections Exam (Highest)', level:'Grade 4', color:'red',
+        summary:'Highest classification for wastewater collections. Required for chief operators of large municipal sewer systems.',
+        objectives:['Accrue 4+ years experience','Submit application','Pass Grade 4 exam','Receive certification'],
+        rewards:['+800 XP','Title: Grade 4 Chief Collections Operator'] },
+    ]
+  },
+  wtr: {
+    name: 'Water Operator',
+    icon: '🚰',
+    color: '#a0d0ff',
+    quests: [
+      { id:'wtr-course', title:'Complete ADEQ-Approved Water Treatment Course', level:'Trainee', color:'green',
+        summary:'Take a state-approved drinking water treatment course covering coagulation, sedimentation, filtration, disinfection (chlorine/chloramines/UV), corrosion control, and SDWA compliance.',
+        objectives:['Enroll in approved course','Complete required hours','Pass final assessment'],
+        rewards:['+75 XP','Course completion','Eligible for Grade 1 exam'] },
+      { id:'wtr-g1', title:'Pass Grade 1 Water Treatment Exam', level:'Grade 1', color:'green',
+        summary:'Entry-level drinking water treatment operator. Covers basic plant operations, sampling, lab analysis, disinfection, and SDWA basics.',
+        objectives:['Submit ADEQ application','Schedule ABC exam','Pass Grade 1 exam','Receive certification'],
+        rewards:['+150 XP','Title: Grade 1 Water Operator'] },
+      { id:'wtr-g2', title:'Pass Grade 2 Water Treatment Exam', level:'Grade 2', color:'yellow',
+        summary:'Requires 1+ year experience. Covers more complex treatment processes, chemistry, and regulatory compliance.',
+        objectives:['Accrue 1 year experience','Submit application','Pass Grade 2 exam','Receive certification'],
+        rewards:['+250 XP','Title: Grade 2 Water Operator'] },
+      { id:'wtr-g3', title:'Pass Grade 3 Water Treatment Exam', level:'Grade 3', color:'orange',
+        summary:'Mid-to-large plants. Advanced disinfection byproduct control, membrane treatment, advanced chemistry.',
+        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
+        rewards:['+400 XP','Title: Grade 3 Water Operator','Lead operator eligibility'] },
+      { id:'wtr-g4', title:'Pass Grade 4 Water Treatment Exam (Highest)', level:'Grade 4', color:'red',
+        summary:'Highest classification. Required for chief operators at the largest drinking water plants.',
+        objectives:['Accrue 4+ years experience','Bachelor\'s degree OR additional experience','Submit application','Pass Grade 4 exam','Receive certification'],
+        rewards:['+800 XP','Title: Grade 4 Chief Water Operator','Qualify as plant Chief Operator'] },
+    ]
+  },
+  wdist: {
+    name: 'Water Distribution',
+    icon: '🔧',
+    color: '#80d080',
+    quests: [
+      { id:'wdist-course', title:'Complete Distribution System Training', level:'Trainee', color:'green',
+        summary:'Learn drinking water distribution fundamentals — pumps, storage tanks, valves, hydrants, mains, cross-connection control, sampling, disinfectant residuals.',
+        objectives:['Enroll in approved course','Complete required hours','Pass course assessment'],
+        rewards:['+75 XP','Course certificate','Eligible for Grade 1 distribution exam'] },
+      { id:'wdist-g1', title:'Pass Grade 1 Distribution Exam', level:'Grade 1', color:'green',
+        summary:'Entry-level distribution operator. Covers basic distribution operations, hydraulics, leak detection, valve exercising, customer service connections.',
+        objectives:['Submit ADEQ application','Schedule ABC exam','Pass Grade 1 exam','Receive certification'],
+        rewards:['+150 XP','Title: Grade 1 Distribution Operator'] },
+      { id:'wdist-g2', title:'Pass Grade 2 Distribution Exam', level:'Grade 2', color:'yellow',
+        summary:'Requires 1+ year field experience. Covers larger systems, multiple pressure zones, storage tank management.',
+        objectives:['Accrue 1 year field experience','Submit application','Pass Grade 2 exam','Receive certification'],
+        rewards:['+250 XP','Title: Grade 2 Distribution Operator'] },
+      { id:'wdist-g3', title:'Pass Grade 3 Distribution Exam', level:'Grade 3', color:'orange',
+        summary:'Larger distribution systems. Advanced hydraulics modeling, water quality management, regulatory compliance.',
+        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
+        rewards:['+400 XP','Title: Grade 3 Distribution Operator','Lead operator eligibility'] },
+      { id:'wdist-g4', title:'Pass Grade 4 Distribution Exam (Highest)', level:'Grade 4', color:'red',
+        summary:'Highest classification. Required for chief operators of large municipal water distribution systems.',
+        objectives:['Accrue 4+ years experience','Submit application','Pass Grade 4 exam','Receive certification'],
+        rewards:['+800 XP','Title: Grade 4 Chief Distribution Operator'] },
+    ]
+  },
+};
+
+const QUEST_STATE_KEY = 'timewar_quest_state_v1';
+function questLoadState(){ try{ return JSON.parse(localStorage.getItem(QUEST_STATE_KEY)||'{}'); }catch(e){ return {}; } }
+function questSaveState(s){ localStorage.setItem(QUEST_STATE_KEY, JSON.stringify(s)); }
+let QUEST_STATE = questLoadState();
+if(!QUEST_STATE.expanded) QUEST_STATE.expanded = { electrical:true };
+if(!QUEST_STATE.objectives) QUEST_STATE.objectives = {};  // {questId: [bool,bool,...]}
+if(!QUEST_STATE.selectedQuest) QUEST_STATE.selectedQuest = null;
+
+function questObjectivesDone(quest){
+  const arr = QUEST_STATE.objectives[quest.id] || [];
+  const doneCount = quest.objectives.filter((_,i)=>arr[i]).length;
+  return { doneCount, total: quest.objectives.length, complete: doneCount === quest.objectives.length };
+}
+function questCategoryProgress(cat){
+  let done = 0, total = 0;
+  cat.quests.forEach(q => {
+    const s = questObjectivesDone(q);
+    total += s.total;
+    done += s.doneCount;
+  });
+  return { done, total };
+}
+
+window.toggleQuestCategory = function(catKey){
+  QUEST_STATE.expanded[catKey] = !QUEST_STATE.expanded[catKey];
+  questSaveState(QUEST_STATE);
+  renderQuestList();
+};
+window.selectQuest = function(questId){
+  QUEST_STATE.selectedQuest = questId;
+  questSaveState(QUEST_STATE);
+  renderQuestList();
+  renderQuestDetail();
+};
+window.toggleQuestObjective = function(questId, idx){
+  if(!QUEST_STATE.objectives[questId]) QUEST_STATE.objectives[questId] = [];
+  QUEST_STATE.objectives[questId][idx] = !QUEST_STATE.objectives[questId][idx];
+  questSaveState(QUEST_STATE);
+  renderQuestList();
+  renderQuestDetail();
+};
+
+function renderQuestList(){
+  const list = document.getElementById('wql-list');
+  if(!list) return;
+  list.innerHTML = Object.entries(QUEST_DATA).map(([catKey, cat]) => {
+    const expanded = !!QUEST_STATE.expanded[catKey];
+    const prog = questCategoryProgress(cat);
+    const quests = cat.quests.map(q => {
+      const s = questObjectivesDone(q);
+      const isActive = QUEST_STATE.selectedQuest === q.id;
+      let icon = '◯';
+      if(s.complete) icon = '✓';
+      else if(s.doneCount > 0) icon = '⊙';
+      const colorClass = 'wql-q-' + (s.complete ? 'gray' : q.color);
+      return `<div class="wql-quest ${isActive?'active':''}" onclick="selectQuest('${q.id}')">
+        <span class="wql-quest-icon ${colorClass}">${icon}</span>
+        <span class="wql-quest-name ${colorClass}">${q.title}</span>
+        <span class="wql-quest-level ${colorClass}">${q.level}</span>
+      </div>`;
+    }).join('');
+    return `<div class="wql-category">
+      <div class="wql-cat-header" onclick="toggleQuestCategory('${catKey}')">
+        <span>${expanded?'▼':'▶'} ${cat.icon} ${cat.name}</span>
+        <span class="wql-cat-progress">${prog.done}/${prog.total}</span>
+      </div>
+      ${expanded ? `<div class="wql-quests">${quests}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderQuestDetail(){
+  const detail = document.getElementById('wql-detail');
+  if(!detail) return;
+  if(!QUEST_STATE.selectedQuest){
+    detail.innerHTML = '<div class="wql-detail-empty">Select a quest to view its details, objectives, and rewards.</div>';
+    return;
+  }
+  let quest = null, cat = null;
+  for(const [k,c] of Object.entries(QUEST_DATA)){
+    const q = c.quests.find(q => q.id === QUEST_STATE.selectedQuest);
+    if(q){ quest = q; cat = c; break; }
+  }
+  if(!quest){
+    detail.innerHTML = '<div class="wql-detail-empty">Quest not found.</div>';
+    return;
+  }
+  const objArr = QUEST_STATE.objectives[quest.id] || [];
+  const s = questObjectivesDone(quest);
+  const objHtml = quest.objectives.map((o,i) => {
+    const done = !!objArr[i];
+    return `<div class="wql-detail-objective ${done?'done':''}" onclick="toggleQuestObjective('${quest.id}',${i})">
+      <input type="checkbox" ${done?'checked':''} onclick="event.stopPropagation();toggleQuestObjective('${quest.id}',${i})">
+      <span>${o} ${done?'(done)':`(${quest.objectives.filter((_,j)=>j<=i&&objArr[j]).length}/${i+1})`}</span>
+    </div>`;
+  }).join('');
+  let statusBlock = '';
+  if(s.complete){
+    statusBlock = '<div class="wql-detail-status wql-status-complete">✓ QUEST COMPLETE</div>';
+  } else if(s.doneCount === quest.objectives.length - 1 && quest.objectives.length > 1){
+    statusBlock = '<div class="wql-detail-status wql-status-ready">! READY TO COMPLETE — one objective remaining</div>';
+  } else if(s.doneCount > 0){
+    statusBlock = `<div class="wql-detail-status wql-status-progress">⏳ IN PROGRESS — ${s.doneCount} of ${s.total} objectives complete</div>`;
+  } else {
+    statusBlock = '<div class="wql-detail-status wql-status-progress">⚜ AVAILABLE — begin when ready</div>';
+  }
+  detail.innerHTML = `<div class="wql-detail-title">${cat.icon} ${quest.title}</div>
+    <div class="wql-detail-level wql-q-${quest.color}">${quest.level} · ${cat.name}</div>
+    <div class="wql-detail-desc">${quest.summary}</div>
+    <div class="wql-detail-section-title">Objectives</div>
+    ${objHtml}
+    <div class="wql-detail-section-title">Rewards</div>
+    ${quest.rewards.map(r => `<div class="wql-detail-reward">${r}</div>`).join('')}
+    ${statusBlock}`;
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ renderQuestList(); renderQuestDetail(); });
 </script>
 
 
