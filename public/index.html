@@ -701,6 +701,24 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
 /* ── WoW Classic-style Character Window ── */
 .wow-char-window{background:linear-gradient(180deg,#1a1208 0%,#2a1a08 50%,#1a1208 100%);border:3px solid #8B6914;border-radius:6px;padding:14px;max-width:760px;margin:14px auto;box-shadow:0 0 0 1px #3a2810,inset 0 0 16px rgba(0,0,0,0.5);}
+/* ═════════ WoW Classic-style Character EXP bar ═════════ */
+.wow-exp-bar-wrap{margin:12px 0 4px;padding:6px 8px;background:#0a0608;border:2px solid #4a3a18;border-radius:4px;display:flex;align-items:center;gap:10px;font-family:var(--fellsc);box-shadow:inset 0 0 8px rgba(0,0,0,0.7);}
+.wow-exp-level{flex-shrink:0;font-size:13px;color:#f5dba0;letter-spacing:0.06em;text-shadow:1px 1px 2px rgba(0,0,0,0.8);padding:2px 8px;background:linear-gradient(180deg,#3a2818,#1a1208);border:1px solid #c9a227;border-radius:3px;}
+.wow-exp-bar{flex:1;height:18px;background:#1a0e20;border:1px solid #2a1a40;border-radius:2px;position:relative;overflow:hidden;box-shadow:inset 0 0 6px rgba(0,0,0,0.8);}
+.wow-exp-bar-fill{position:absolute;inset:0 100% 0 0;background:linear-gradient(180deg,#9050d0 0%,#6030a0 50%,#4020a0 100%);box-shadow:inset 0 1px 3px rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4);transition:right 0.8s cubic-bezier(.4,1,.4,1);}
+.wow-exp-bar-fill.flash{animation:wow-exp-flash 0.6s ease-out;}
+@keyframes wow-exp-flash{0%{box-shadow:inset 0 1px 3px rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4),0 0 30px rgba(180,120,255,0.9);}100%{box-shadow:inset 0 1px 3px rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4),0 0 0 rgba(180,120,255,0);}}
+.wow-exp-bar-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.95),1px 1px 2px rgba(0,0,0,0.95);letter-spacing:0.04em;z-index:2;pointer-events:none;}
+.wow-workout-btn{flex-shrink:0;font-family:var(--fellsc);font-size:11px;letter-spacing:0.06em;background:linear-gradient(180deg,#3a4a18,#1a2a08);color:#a0d080;border:1px solid #6a8a3a;border-radius:3px;padding:5px 11px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.7);transition:all 0.15s;}
+.wow-workout-btn:hover{background:linear-gradient(180deg,#4a5a28,#2a3a18);color:#fff;}
+.wow-exp-source-hint{font-family:var(--mono);font-size:9px;color:#6a5a3a;margin-top:3px;text-align:center;font-style:italic;}
+.wow-exp-source-hint strong{color:#a0a0d0;}
+/* Level-up toast */
+.wow-levelup-toast{position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(180deg,#3a1a4a,#1a0a2a);border:3px solid #c050ff;border-radius:8px;padding:24px 36px;color:#fff;font-family:var(--fellsc);text-align:center;font-size:14px;letter-spacing:0.08em;box-shadow:0 0 60px rgba(192,80,255,0.7),0 10px 30px rgba(0,0,0,0.7);pointer-events:none;animation:wow-levelup-pop 2.6s cubic-bezier(.2,.8,.4,1) forwards;}
+.wow-levelup-toast .lvlup-flash{font-size:22px;color:#f0d0ff;text-shadow:0 0 12px rgba(255,180,255,0.9);margin-bottom:8px;letter-spacing:0.14em;}
+.wow-levelup-toast .lvlup-num{font-size:36px;color:#fff;margin:8px 0;text-shadow:0 0 16px rgba(255,140,255,0.9);}
+@keyframes wow-levelup-pop{0%{transform:translate(-50%,-30%) scale(0.4);opacity:0;}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}30%{transform:translate(-50%,-50%) scale(1.0);opacity:1;}80%{transform:translate(-50%,-50%) scale(1.0);opacity:1;}100%{transform:translate(-50%,-70%) scale(0.85);opacity:0;}}
+
 .wow-char-titlebar{display:flex;justify-content:space-between;align-items:center;font-family:var(--fellsc);font-size:16px;color:#C9A227;padding:2px 4px 6px;border-bottom:1px solid #8B6914;margin-bottom:10px;}
 .wow-char-titlebar .wow-x{font-family:var(--mono);font-size:14px;color:#8a7a4a;cursor:pointer;padding:0 6px;border:1px solid #5a4520;border-radius:2px;}
 .wow-tabs{display:flex;gap:0;margin-bottom:10px;border-bottom:2px solid #8B6914;}
@@ -1580,6 +1598,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
 
     </div>
+
+    <!-- ═══ CHARACTER EXP BAR (WoW Classic style) — under the paper doll ═══ -->
+    <div class="wow-exp-bar-wrap" id="wow-exp-bar-wrap">
+      <div class="wow-exp-level" id="wow-exp-level">Lvl 1</div>
+      <div class="wow-exp-bar">
+        <div class="wow-exp-bar-fill" id="wow-exp-bar-fill"></div>
+        <div class="wow-exp-bar-text" id="wow-exp-bar-text">0 / 200 EXP (0%)</div>
+      </div>
+      <button class="wow-workout-btn" id="wow-workout-btn" onclick="logCharWorkout()">💪 Log Workout</button>
+    </div>
+    <div class="wow-exp-source-hint">Character <strong>EXP</strong> ← quests &amp; workouts. (PvP <strong>XP</strong> below is reserved for trade engagements.)</div>
 
     <!-- BOTTOM: weapon row (Main Hand, Off Hand, Ranged) -->
     <div class="wow-weapons-row">
@@ -5985,37 +6014,37 @@ const QUEST_DATA = {
     icon: '⚡',
     color: '#ffcc40',
     quests: [
-      { id:'el-osha10', title:'Complete OSHA 10 Safety Course', level:'Universal', color:'green',
+      { id:'el-osha10', xp:50, title:'Complete OSHA 10 Safety Course', level:'Universal', color:'green',
         summary:'Earn the OSHA 10-hour Construction safety certification — the foundational safety credential required (or strongly preferred) for any electrical apprenticeship in both Oklahoma and Alaska.',
         objectives:['Enroll in an authorized OSHA 10 course','Complete all 10 hours of instruction','Pass the final safety assessment','Receive OSHA 10 card (valid 5 years)'],
         rewards:['+50 XP Body / Mastery','OSHA 10 certification','Eligible for apprenticeship enrollment'] },
 
-      { id:'el-ok-apprentice', title:'Enroll in Oklahoma Electrical Apprenticeship', level:'OK Apprentice', color:'yellow',
+      { id:'el-ok-apprentice', xp:100, title:'Enroll in Oklahoma Electrical Apprenticeship', level:'OK Apprentice', color:'yellow',
         summary:'Begin a formal Oklahoma electrical apprenticeship. Oklahoma requires that electricians work under a licensed master/contractor and complete a state-recognized apprenticeship before sitting the journeyman exam. Programs available through IBEW Local 1141 (Oklahoma City), IEC Oklahoma, or independent shops.',
         objectives:['Research IBEW Local 1141 (OKC) vs IEC Oklahoma vs independent shop pathways','Apply / interview / aptitude / drug screen','Sign apprenticeship indenture with the Oklahoma Construction Industries Board (CIB)','Begin Year 1 OJT — log hours with Oklahoma CIB'],
         rewards:['Apprentice wage scale','+100 XP','OK Journeyman pathway opened'] },
 
-      { id:'el-ok-finish', title:'Complete Oklahoma Apprenticeship (8,000 hrs)', level:'OK Apprentice', color:'orange',
+      { id:'el-ok-finish', xp:400, title:'Complete Oklahoma Apprenticeship (8,000 hrs)', level:'OK Apprentice', color:'orange',
         summary:'Oklahoma requires 8,000 hours of supervised on-the-job training plus the associated classroom hours before sitting the journeyman exam. Typically 4 years.',
         objectives:['Log 2,000 hrs Year 1 (Oklahoma CIB)','Log 2,000 hrs Year 2','Log 2,000 hrs Year 3','Log 2,000 hrs Year 4','Complete all required classroom hours','Receive program completion certificate'],
         rewards:['Eligible for Oklahoma Journeyman exam','+400 XP'] },
 
-      { id:'el-ok-journeyman', title:'Pass Oklahoma Journeyman Electrician Exam', level:'OK Journeyman', color:'red',
+      { id:'el-ok-journeyman', xp:500, title:'Pass Oklahoma Journeyman Electrician Exam', level:'OK Journeyman', color:'red',
         summary:'Sit the Oklahoma Construction Industries Board (CIB) journeyman electrician exam — tests NEC, Oklahoma statutes, blueprint reading, and trade calculations.',
         objectives:['Submit Oklahoma CIB application + fee','Take 3 full-length practice exams (80%+)','Schedule and pass Oklahoma journeyman exam','Receive OK Journeyman Electrician license'],
         rewards:['+500 XP','Title: Oklahoma Journeyman Electrician','Eligible to pull permits under master in OK'] },
 
-      { id:'el-ak-apprentice', title:'Enroll in Alaska Electrical Apprenticeship', level:'AK Apprentice', color:'yellow',
+      { id:'el-ak-apprentice', xp:100, title:'Enroll in Alaska Electrical Apprenticeship', level:'AK Apprentice', color:'yellow',
         summary:'Begin a formal Alaska electrical apprenticeship. Alaska is administered by the Alaska Department of Labor & Workforce Development. Programs available through IBEW Local 1547 (Anchorage / statewide) or the Alaska Joint Electrical Apprenticeship and Training Trust (AJEATT).',
         objectives:['Research IBEW Local 1547 / AJEATT vs independent','Apply / interview / aptitude / drug screen','Register apprenticeship with Alaska DOLWD','Begin Year 1 OJT — log hours with the AK apprenticeship coordinator'],
         rewards:['AK apprentice wage scale','+100 XP','AK Journeyman pathway opened'] },
 
-      { id:'el-ak-finish', title:'Complete Alaska Apprenticeship (8,000 hrs)', level:'AK Apprentice', color:'orange',
+      { id:'el-ak-finish', xp:400, title:'Complete Alaska Apprenticeship (8,000 hrs)', level:'AK Apprentice', color:'orange',
         summary:'Alaska requires 8,000 hours OJT plus 144 hrs/year classroom for a 4-year apprenticeship. Hours can sometimes transfer between Oklahoma and Alaska programs — verify with both apprenticeship coordinators.',
         objectives:['Log 2,000 hrs Year 1 (Alaska DOLWD)','Log 2,000 hrs Year 2','Log 2,000 hrs Year 3','Log 2,000 hrs Year 4','Complete classroom hours','Receive program completion certificate'],
         rewards:['Eligible for Alaska Journeyman exam','+400 XP'] },
 
-      { id:'el-ak-journeyman', title:'Pass Alaska Certificate of Fitness — Journeyman Electrician', level:'AK Journeyman', color:'red',
+      { id:'el-ak-journeyman', xp:500, title:'Pass Alaska Certificate of Fitness — Journeyman Electrician', level:'AK Journeyman', color:'red',
         summary:'Sit the Alaska "Certificate of Fitness — Journeyman Electrician" exam administered by the Alaska Department of Labor. Tests NEC, Alaska statutes, and trade calculations.',
         objectives:['Submit Alaska DOL Certificate of Fitness application','Take 3 practice exams (80%+)','Schedule and pass Alaska journeyman exam','Receive AK Certificate of Fitness — Journeyman'],
         rewards:['+500 XP','Title: Alaska Journeyman Electrician','Eligible to wire in Alaska under master'] },
@@ -6027,27 +6056,27 @@ const QUEST_DATA = {
     icon: '💧',
     color: '#80c0e0',
     quests: [
-      { id:'wwt-az2-current', title:'Hold AZ Wastewater Operator Grade II (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
+      { id:'wwt-az2-current', xp:200, title:'Hold AZ Wastewater Operator Grade II (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
         summary:'Your Arizona ADEQ Wastewater Treatment Operator Grade II — already earned. This is the basis for reciprocity into Oklahoma and (via California) into Alaska.',
         objectives:['Pass ADEQ Grade I Wastewater Treatment exam','Accrue 1 year operating experience','Pass ADEQ Grade II Wastewater Treatment exam','Hold active Grade II certification'],
         rewards:['Title: AZ Grade II Wastewater Operator','Reciprocity foundation for OK and CA exam eligibility'] },
 
-      { id:'wwt-ok-recip', title:'Apply for Oklahoma Wastewater Operator Reciprocity (Grade II)', level:'OK Reciprocity', color:'green',
+      { id:'wwt-ok-recip', xp:200, title:'Apply for Oklahoma Wastewater Operator Reciprocity (Grade II)', level:'OK Reciprocity', color:'green',
         summary:'Oklahoma DEQ accepts ADEQ certifications through a reciprocity application. Submit the OK DEQ reciprocity form with proof of your active AZ Grade II — typically issued within 30-60 days without additional exam.',
         objectives:['Download OK DEQ Operator Certification reciprocity application','Request official letter of standing from ADEQ','Submit application + fee + AZ verification to OK DEQ','Receive OK Wastewater Operator Grade II'],
         rewards:['+200 XP','Title: OK Grade II Wastewater Operator','Authorized to operate in Oklahoma'] },
 
-      { id:'wwt-ca-register', title:'Register for California Wastewater Grade II Examination', level:'CA Exam Prep', color:'yellow',
+      { id:'wwt-ca-register', xp:100, title:'Register for California Wastewater Grade II Examination', level:'CA Exam Prep', color:'yellow',
         summary:'California State Water Resources Control Board (SWRCB) administers the Grade II exam. Test in CA because Alaska only accepts CA Grade II (not AZ Grade II) at face value for full Grade II reciprocity.',
         objectives:['Verify CA SWRCB application requirements','Document your AZ operating experience + education','Submit CA Grade II application + fee','Schedule the California exam date'],
         rewards:['+100 XP','CA exam admission ticket'] },
 
-      { id:'wwt-ca-pass', title:'Pass California Grade II Wastewater Treatment Exam', level:'CA Grade II', color:'orange',
+      { id:'wwt-ca-pass', xp:400, title:'Pass California Grade II Wastewater Treatment Exam', level:'CA Grade II', color:'orange',
         summary:'The California SWRCB Grade II written exam covers treatment processes, math, lab, safety, regulatory framework. Recommend 2-3 months of study using the SWRCB "Need to Know Criteria" study guide.',
         objectives:['Order the SWRCB Grade II study guide + Sacramento State manuals','Complete 100+ practice problems','Take 2 full-length practice exams','Travel to CA test site','Pass CA Grade II Wastewater Treatment exam'],
         rewards:['+400 XP','Title: CA Grade II Wastewater Operator','AK reciprocity unlocked'] },
 
-      { id:'wwt-ak-recip', title:'Apply CA → AK Wastewater Operator Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+      { id:'wwt-ak-recip', xp:500, title:'Apply CA → AK Wastewater Operator Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
         summary:'Alaska DEC accepts California Grade II at face value for full Alaska Grade II — the route around the AZ→AK downgrade problem. Submit reciprocity application after CA Grade II is in hand.',
         objectives:['Download Alaska DEC operator reciprocity form','Request letter of standing from CA SWRCB','Submit Alaska reciprocity application + fee','Receive Alaska Grade II Wastewater Operator certification'],
         rewards:['+500 XP','Title: AK Grade II Wastewater Operator','Authorized to operate at AK Grade II level'] },
@@ -6059,22 +6088,22 @@ const QUEST_DATA = {
     icon: '🚧',
     color: '#a07050',
     quests: [
-      { id:'wwc-az1-current', title:'Hold AZ Wastewater Collections Grade I (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
+      { id:'wwc-az1-current', xp:150, title:'Hold AZ Wastewater Collections Grade I (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
         summary:'Your Arizona ADEQ Wastewater Collections Grade I — already earned. Basis for reciprocity into Oklahoma and Alaska.',
         objectives:['Complete approved collections training','Pass ADEQ Grade I Collections exam','Hold active Grade I certification'],
         rewards:['Title: AZ Grade I Collections Operator','Reciprocity foundation for OK and AK'] },
 
-      { id:'wwc-ok-recip', title:'Apply for Oklahoma Collections Reciprocity (Grade I)', level:'OK Reciprocity', color:'green',
+      { id:'wwc-ok-recip', xp:150, title:'Apply for Oklahoma Collections Reciprocity (Grade I)', level:'OK Reciprocity', color:'green',
         summary:'Submit OK DEQ reciprocity application with proof of active AZ Grade I Collections. Typically issued without additional exam.',
         objectives:['Request letter of standing from ADEQ for Collections','Submit OK DEQ Operator Cert reciprocity application + fee','Receive OK Wastewater Collections Grade I'],
         rewards:['+150 XP','Title: OK Grade I Collections Operator'] },
 
-      { id:'wwc-ak-recip', title:'Apply for Alaska Collections Reciprocity (Grade I)', level:'AK Reciprocity', color:'green',
+      { id:'wwc-ak-recip', xp:150, title:'Apply for Alaska Collections Reciprocity (Grade I)', level:'AK Reciprocity', color:'green',
         summary:'Submit Alaska DEC reciprocity application with proof of active AZ Grade I Collections. Grade I to Grade I reciprocity is straightforward.',
         objectives:['Request letter of standing from ADEQ for Collections','Submit Alaska DEC reciprocity application + fee','Receive Alaska Grade I Collections certification'],
         rewards:['+150 XP','Title: AK Grade I Collections Operator'] },
 
-      { id:'wwc-az2-future', title:'(Stretch) Test up to AZ Collections Grade II', level:'AZ Grade II', color:'yellow',
+      { id:'wwc-az2-future', xp:300, title:'(Stretch) Test up to AZ Collections Grade II', level:'AZ Grade II', color:'yellow',
         summary:'Optional next step — sit ADEQ Grade II Collections exam to upgrade. Requires 1 year experience as Grade I.',
         objectives:['Accrue 1 year as Grade I Collections','Submit ADEQ Grade II Collections application','Pass Grade II Collections exam','Apply OK + AK reciprocity for Grade II upgrade'],
         rewards:['+300 XP','Title: AZ Grade II Collections Operator','Higher reciprocity ceiling'] },
@@ -6086,22 +6115,22 @@ const QUEST_DATA = {
     icon: '🚰',
     color: '#a0d0ff',
     quests: [
-      { id:'wtr-ca-register', title:'Register for California Water Treatment Grade II Examination', level:'CA Exam Prep', color:'yellow',
+      { id:'wtr-ca-register', xp:100, title:'Register for California Water Treatment Grade II Examination', level:'CA Exam Prep', color:'yellow',
         summary:'California SWRCB Drinking Water Treatment Operator T2 exam — same CA-route reciprocity strategy as wastewater. Test in CA, reciprocate to AK, and apply for OK at the same time.',
         objectives:['Verify CA SWRCB T2 requirements (experience + education hours)','Document any prior water-side coursework or shadowing','Submit CA T2 application + fee','Schedule CA T2 exam'],
         rewards:['+100 XP','CA T2 admission ticket'] },
 
-      { id:'wtr-ca-pass', title:'Pass California Grade II Water Treatment (T2) Exam', level:'CA T2', color:'orange',
+      { id:'wtr-ca-pass', xp:400, title:'Pass California Grade II Water Treatment (T2) Exam', level:'CA T2', color:'orange',
         summary:'CA T2 covers coagulation, sedimentation, filtration, disinfection, distribution interface, regulatory (SDWA), math. Study using SWRCB T2 study guide + Sacramento State T2 manual.',
         objectives:['Order SWRCB T2 study guide + Sacramento State T2 manual','Complete 100+ practice problems','Take 2 full-length practice exams','Pass CA T2 exam'],
         rewards:['+400 XP','Title: CA T2 Water Operator','AK + OK reciprocity unlocked'] },
 
-      { id:'wtr-ak-recip', title:'Apply CA → AK Water Treatment Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+      { id:'wtr-ak-recip', xp:500, title:'Apply CA → AK Water Treatment Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
         summary:'Alaska DEC accepts California T2 at face value for full AK Water Treatment Operator Grade II.',
         objectives:['Letter of standing from CA SWRCB (water side)','Submit Alaska DEC reciprocity application + fee','Receive AK Grade II Water Operator certification'],
         rewards:['+500 XP','Title: AK Grade II Water Operator'] },
 
-      { id:'wtr-ok-recip', title:'Apply for Oklahoma Water Operator Reciprocity', level:'OK Reciprocity', color:'green',
+      { id:'wtr-ok-recip', xp:300, title:'Apply for Oklahoma Water Operator Reciprocity', level:'OK Reciprocity', color:'green',
         summary:'Once you hold CA T2 (or AZ Grade II if you also test there later), apply to OK DEQ for water operator reciprocity.',
         objectives:['Verify OK DEQ water operator reciprocity requirements','Letter of standing from issuing state','Submit OK DEQ application + fee','Receive OK Water Operator certification'],
         rewards:['+300 XP','Title: OK Grade II Water Operator'] },
@@ -6113,22 +6142,22 @@ const QUEST_DATA = {
     icon: '🔧',
     color: '#80d080',
     quests: [
-      { id:'wdist-ca-register', title:'Register for California Water Distribution Grade II Examination', level:'CA Exam Prep', color:'yellow',
+      { id:'wdist-ca-register', xp:100, title:'Register for California Water Distribution Grade II Examination', level:'CA Exam Prep', color:'yellow',
         summary:'California SWRCB Drinking Water Distribution Operator D2 exam — paired companion to T2. Test in CA, reciprocate to AK and OK.',
         objectives:['Verify CA SWRCB D2 application requirements','Document any prior distribution experience','Submit CA D2 application + fee','Schedule CA D2 exam'],
         rewards:['+100 XP','CA D2 admission ticket'] },
 
-      { id:'wdist-ca-pass', title:'Pass California Grade II Water Distribution (D2) Exam', level:'CA D2', color:'orange',
+      { id:'wdist-ca-pass', xp:400, title:'Pass California Grade II Water Distribution (D2) Exam', level:'CA D2', color:'orange',
         summary:'CA D2 covers distribution system hydraulics, storage, pumping, leak detection, cross-connection control, water quality maintenance, regulatory.',
         objectives:['Order SWRCB D2 study guide + Sacramento State D2 manual','Complete 100+ practice problems','Take 2 full-length practice exams','Pass CA D2 exam'],
         rewards:['+400 XP','Title: CA D2 Water Distribution Operator'] },
 
-      { id:'wdist-ak-recip', title:'Apply CA → AK Water Distribution Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+      { id:'wdist-ak-recip', xp:500, title:'Apply CA → AK Water Distribution Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
         summary:'Alaska DEC accepts California D2 at face value for full AK Water Distribution Operator Grade II.',
         objectives:['Letter of standing from CA SWRCB (distribution side)','Submit Alaska DEC reciprocity application + fee','Receive AK Grade II Water Distribution certification'],
         rewards:['+500 XP','Title: AK Grade II Water Distribution Operator'] },
 
-      { id:'wdist-ok-recip', title:'Apply for Oklahoma Water Distribution Reciprocity', level:'OK Reciprocity', color:'green',
+      { id:'wdist-ok-recip', xp:300, title:'Apply for Oklahoma Water Distribution Reciprocity', level:'OK Reciprocity', color:'green',
         summary:'Apply OK DEQ for water distribution operator reciprocity using CA D2 (or AZ if you test there).',
         objectives:['Verify OK DEQ distribution operator reciprocity requirements','Letter of standing from issuing state','Submit OK DEQ application + fee','Receive OK Water Distribution certification'],
         rewards:['+300 XP','Title: OK Grade II Water Distribution Operator'] },
@@ -6183,9 +6212,118 @@ window.toggleQuestObjective = function(questId, idx){
   if(!QUEST_STATE.objectives[questId]) QUEST_STATE.objectives[questId] = [];
   QUEST_STATE.objectives[questId][idx] = !QUEST_STATE.objectives[questId][idx];
   questSaveState(QUEST_STATE);
+  // Award character EXP when a quest transitions to fully complete
+  try{ awardEXPIfQuestComplete(questId); }catch(e){}
   renderQuestList();
   renderQuestDetail();
 };
+
+// ═════════ CHARACTER EXP BAR ═════════
+const CHAR_EXP_KEY = 'timewar_char_exp_v1';
+let CHAR_EXP = (function(){ try{ return JSON.parse(localStorage.getItem(CHAR_EXP_KEY)||'{}'); }catch(e){ return {}; } })();
+if(typeof CHAR_EXP.level !== 'number') CHAR_EXP.level = 1;
+if(typeof CHAR_EXP.xp !== 'number') CHAR_EXP.xp = 0;
+if(!CHAR_EXP.completedQuests) CHAR_EXP.completedQuests = {};   // {questId: xp_awarded}
+if(!Array.isArray(CHAR_EXP.workouts)) CHAR_EXP.workouts = [];   // [{date, xp}]
+function charExpSave(){ localStorage.setItem(CHAR_EXP_KEY, JSON.stringify(CHAR_EXP)); }
+function xpForLevel(lvl){ return 200 * lvl; }  // Lvl 1->2 = 200, 2->3 = 400, etc.
+
+function findQuestById(qid){
+  for(const cat of Object.values(QUEST_DATA)){
+    const q = cat.quests.find(q => q.id === qid);
+    if(q) return q;
+  }
+  return null;
+}
+
+function awardEXPIfQuestComplete(questId){
+  const arr = QUEST_STATE.objectives[questId] || [];
+  const quest = findQuestById(questId);
+  if(!quest) return;
+  const complete = arr.length === quest.objectives.length && arr.every(Boolean);
+  if(complete && !CHAR_EXP.completedQuests[questId]){
+    const xp = quest.xp || 100;
+    CHAR_EXP.completedQuests[questId] = xp;
+    addCharEXP(xp, 'Quest: ' + quest.title);
+  } else if(!complete && CHAR_EXP.completedQuests[questId]){
+    // User un-checked an objective on a previously-complete quest — claw back the XP
+    const xp = CHAR_EXP.completedQuests[questId];
+    delete CHAR_EXP.completedQuests[questId];
+    addCharEXP(-xp, 'Quest reverted: ' + quest.title);
+  }
+}
+
+function addCharEXP(amount, source){
+  CHAR_EXP.xp += amount;
+  // Handle level up / level down
+  while(CHAR_EXP.xp >= xpForLevel(CHAR_EXP.level)){
+    CHAR_EXP.xp -= xpForLevel(CHAR_EXP.level);
+    CHAR_EXP.level++;
+    showLevelUpToast(CHAR_EXP.level);
+  }
+  while(CHAR_EXP.xp < 0 && CHAR_EXP.level > 1){
+    CHAR_EXP.level--;
+    CHAR_EXP.xp += xpForLevel(CHAR_EXP.level);
+  }
+  if(CHAR_EXP.xp < 0) CHAR_EXP.xp = 0;
+  charExpSave();
+  renderCharEXPBar(true);
+}
+
+function showLevelUpToast(newLvl){
+  const t = document.createElement('div');
+  t.className = 'wow-levelup-toast';
+  t.innerHTML = '<div class="lvlup-flash">✦ LEVEL UP ✦</div><div class="lvlup-num">Level ' + newLvl + '</div><div style="font-size:11px;color:#d0a0ff;">Roger Lee Whittlesey IV</div>';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2700);
+}
+
+function renderCharEXPBar(flash){
+  const lvlEl = document.getElementById('wow-exp-level');
+  const fillEl = document.getElementById('wow-exp-bar-fill');
+  const textEl = document.getElementById('wow-exp-bar-text');
+  if(!lvlEl || !fillEl || !textEl) return;
+  const need = xpForLevel(CHAR_EXP.level);
+  const pct = Math.max(0, Math.min(100, (CHAR_EXP.xp / need) * 100));
+  lvlEl.textContent = 'Lvl ' + CHAR_EXP.level;
+  fillEl.style.right = (100 - pct) + '%';
+  textEl.textContent = CHAR_EXP.xp.toLocaleString() + ' / ' + need.toLocaleString() + ' EXP (' + pct.toFixed(0) + '%)';
+  if(flash){
+    fillEl.classList.remove('flash');
+    void fillEl.offsetWidth;  // reflow
+    fillEl.classList.add('flash');
+  }
+  // Sync the existing "Experience" stat row to show character EXP instead of S.men[0].xp confusion
+  const wowXpEl = document.getElementById('wow-xp');
+  if(wowXpEl) wowXpEl.textContent = CHAR_EXP.xp.toLocaleString() + ' / ' + need.toLocaleString();
+}
+
+window.logCharWorkout = function(){
+  const choice = prompt('Workout intensity?\n1 = Light (+15 EXP)\n2 = Medium (+25 EXP)\n3 = Heavy (+40 EXP)\n(Cancel = skip)', '2');
+  if(!choice) return;
+  const map = {'1':15, '2':25, '3':40};
+  const xp = map[choice.trim()] || 25;
+  CHAR_EXP.workouts.unshift({ ts: Date.now(), xp });
+  if(CHAR_EXP.workouts.length > 500) CHAR_EXP.workouts.length = 500;
+  addCharEXP(xp, 'Workout (+' + xp + ')');
+};
+
+// On load: award EXP for any preComplete quest that hasn't been awarded yet
+Object.values(QUEST_DATA).forEach(cat => {
+  cat.quests.forEach(q => {
+    if(q.preComplete && !CHAR_EXP.completedQuests[q.id]){
+      const xp = q.xp || 100;
+      CHAR_EXP.completedQuests[q.id] = xp;
+      CHAR_EXP.xp += xp;
+      while(CHAR_EXP.xp >= xpForLevel(CHAR_EXP.level)){
+        CHAR_EXP.xp -= xpForLevel(CHAR_EXP.level);
+        CHAR_EXP.level++;
+      }
+    }
+  });
+});
+charExpSave();
+
 
 function renderQuestList(){
   const list = document.getElementById('wql-list');
@@ -6261,7 +6399,7 @@ function renderQuestDetail(){
     ${statusBlock}`;
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{ renderQuestList(); renderQuestDetail(); });
+document.addEventListener('DOMContentLoaded', ()=>{ renderQuestList(); renderQuestDetail(); renderCharEXPBar(false); });
 </script>
 
 
