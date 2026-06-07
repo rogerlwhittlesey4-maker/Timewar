@@ -871,7 +871,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="display:flex;gap:14px;align-items:center;">
         <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);" id="map-utc-clock">UTC --:--:--</span>
         <a href="https://lanrat.github.io/day-night-map/" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">day/night ↗</a>
-        <a href="https://www.windy.com/?temp,32.6,-109.93,7" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
+        <a href="https://www.windy.com/?temp,35.47,-97.52,7" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--border3);text-decoration:none;">windy ↗</a>
       </div>
     </div>
 
@@ -894,7 +894,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div style="flex:1;min-width:0;position:relative;">
         <div style="background:#0a0d14;padding:3px 8px;font-family:var(--mono);font-size:8px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border3);">🌤 Live Weather</div>
         <iframe
-          src="https://embed.windy.com/embed2.html?lat=32.6&lon=-109.93&detailLat=32.6&detailLon=-109.93&width=650&height=320&zoom=7&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+          src="https://embed.windy.com/embed2.html?lat=35.47&lon=-97.52&detailLat=35.47&detailLon=-97.52&width=650&height=320&zoom=7&level=surface&overlay=temp&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
           style="width:100%;height:320px;border:none;display:block;pointer-events:auto;"
           title="Live Windy weather map"
           allowfullscreen>
@@ -5981,142 +5981,157 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderWowReputation(); rende
 // ═════════ QUEST LOG DATA + LOGIC ═════════
 const QUEST_DATA = {
   electrical: {
-    name: 'Electrical',
+    name: 'Electrical (OK + AK)',
     icon: '⚡',
     color: '#ffcc40',
     quests: [
-      { id:'el-osha10', title:'Complete OSHA 10 Safety Course', level:'Apprentice', color:'green',
-        summary:'Earn the OSHA 10-hour Construction safety certification — the foundational safety credential for any electrical apprenticeship or trade work.',
+      { id:'el-osha10', title:'Complete OSHA 10 Safety Course', level:'Universal', color:'green',
+        summary:'Earn the OSHA 10-hour Construction safety certification — the foundational safety credential required (or strongly preferred) for any electrical apprenticeship in both Oklahoma and Alaska.',
         objectives:['Enroll in an authorized OSHA 10 course','Complete all 10 hours of instruction','Pass the final safety assessment','Receive OSHA 10 card (valid 5 years)'],
-        rewards:['+50 XP Body / Mastery skill','OSHA 10 certification','Eligible for electrical apprenticeship'] },
-      { id:'el-apprentice', title:'Enter Electrical Apprenticeship', level:'Apprentice', color:'green',
-        summary:'Begin a formal apprenticeship program through IBEW Local 640 (Phoenix), an independent shop, or NECA-affiliated training. Apprenticeships in Arizona typically run 4 years (~8,000 hours) of on-the-job training paired with classroom instruction.',
-        objectives:['Apply to IBEW Local 640 or independent shop','Pass aptitude / interview / drug screen','Sign apprenticeship agreement','Begin Year 1 on-the-job training'],
-        rewards:['Apprentice wage scale begins','+100 XP Body','Pathway to Journeyman'] },
-      { id:'el-y2', title:'Complete Years 1–2 of Apprenticeship', level:'Apprentice', color:'yellow',
-        summary:'Accumulate 4,000 hours of supervised field experience plus 288+ hours of classroom (Codeology, theory, motors, lighting). The first two years build the fundamentals of safe residential and commercial wiring.',
-        objectives:['Log 2,000 hours Year 1 field work','Complete Year 1 classroom and lab','Log 2,000 hours Year 2 field work','Complete Year 2 classroom (motors, transformers)','Pass mid-program competency review'],
-        rewards:['Wage step-up','+200 XP Mastery','Eligible to sit junior tickets'] },
-      { id:'el-y4', title:'Complete Years 3–4 of Apprenticeship', level:'Journeyman-bound', color:'orange',
-        summary:'Final two years of apprenticeship — advanced NEC, conduit bending, grounding, motor controls, instrumentation. Total program: 8,000 hours field + ~576 hours classroom.',
-        objectives:['Log 2,000 hours Year 3 field work','Complete advanced NEC coursework','Log 2,000 hours Year 4 field work','Complete final-year capstone project','Receive completion certificate'],
-        rewards:['Journeyman-eligible status','+400 XP','Trade competency unlocked'] },
-      { id:'el-jw-exam', title:'Pass Journeyman Electrician Exam', level:'Journeyman', color:'orange',
-        summary:'Sit and pass the state/IBEW journeyman exam. Tests NEC code, blueprint reading, calculations, safety, and trade theory. Most candidates study 3–6 months before sitting.',
-        objectives:['Order current NEC code book','Take 3 full-length practice exams (80%+ each)','Schedule and pay exam fee','Pass journeyman written exam','Receive journeyman card'],
-        rewards:['Journeyman wage','+500 XP','Title: Journeyman Electrician'] },
-      { id:'el-roc', title:'Earn Arizona ROC Electrical Contractor License', level:'Master', color:'red',
-        summary:'After ~4+ years of journeyman experience, qualify for an Arizona Registrar of Contractors (ROC) license — C-11 Commercial Electrical or R-11 Residential. Allows you to pull permits and run your own jobs.',
-        objectives:['Document 4 years journeyman experience','Submit ROC application','Pass Arizona Statutes & Rules exam','Pass C-11 or R-11 trade exam','Secure $5K license bond','Receive ROC license'],
-        rewards:['+1000 XP','Title: Licensed Electrical Contractor','Right to run own jobs in Arizona'] },
+        rewards:['+50 XP Body / Mastery','OSHA 10 certification','Eligible for apprenticeship enrollment'] },
+
+      { id:'el-ok-apprentice', title:'Enroll in Oklahoma Electrical Apprenticeship', level:'OK Apprentice', color:'yellow',
+        summary:'Begin a formal Oklahoma electrical apprenticeship. Oklahoma requires that electricians work under a licensed master/contractor and complete a state-recognized apprenticeship before sitting the journeyman exam. Programs available through IBEW Local 1141 (Oklahoma City), IEC Oklahoma, or independent shops.',
+        objectives:['Research IBEW Local 1141 (OKC) vs IEC Oklahoma vs independent shop pathways','Apply / interview / aptitude / drug screen','Sign apprenticeship indenture with the Oklahoma Construction Industries Board (CIB)','Begin Year 1 OJT — log hours with Oklahoma CIB'],
+        rewards:['Apprentice wage scale','+100 XP','OK Journeyman pathway opened'] },
+
+      { id:'el-ok-finish', title:'Complete Oklahoma Apprenticeship (8,000 hrs)', level:'OK Apprentice', color:'orange',
+        summary:'Oklahoma requires 8,000 hours of supervised on-the-job training plus the associated classroom hours before sitting the journeyman exam. Typically 4 years.',
+        objectives:['Log 2,000 hrs Year 1 (Oklahoma CIB)','Log 2,000 hrs Year 2','Log 2,000 hrs Year 3','Log 2,000 hrs Year 4','Complete all required classroom hours','Receive program completion certificate'],
+        rewards:['Eligible for Oklahoma Journeyman exam','+400 XP'] },
+
+      { id:'el-ok-journeyman', title:'Pass Oklahoma Journeyman Electrician Exam', level:'OK Journeyman', color:'red',
+        summary:'Sit the Oklahoma Construction Industries Board (CIB) journeyman electrician exam — tests NEC, Oklahoma statutes, blueprint reading, and trade calculations.',
+        objectives:['Submit Oklahoma CIB application + fee','Take 3 full-length practice exams (80%+)','Schedule and pass Oklahoma journeyman exam','Receive OK Journeyman Electrician license'],
+        rewards:['+500 XP','Title: Oklahoma Journeyman Electrician','Eligible to pull permits under master in OK'] },
+
+      { id:'el-ak-apprentice', title:'Enroll in Alaska Electrical Apprenticeship', level:'AK Apprentice', color:'yellow',
+        summary:'Begin a formal Alaska electrical apprenticeship. Alaska is administered by the Alaska Department of Labor & Workforce Development. Programs available through IBEW Local 1547 (Anchorage / statewide) or the Alaska Joint Electrical Apprenticeship and Training Trust (AJEATT).',
+        objectives:['Research IBEW Local 1547 / AJEATT vs independent','Apply / interview / aptitude / drug screen','Register apprenticeship with Alaska DOLWD','Begin Year 1 OJT — log hours with the AK apprenticeship coordinator'],
+        rewards:['AK apprentice wage scale','+100 XP','AK Journeyman pathway opened'] },
+
+      { id:'el-ak-finish', title:'Complete Alaska Apprenticeship (8,000 hrs)', level:'AK Apprentice', color:'orange',
+        summary:'Alaska requires 8,000 hours OJT plus 144 hrs/year classroom for a 4-year apprenticeship. Hours can sometimes transfer between Oklahoma and Alaska programs — verify with both apprenticeship coordinators.',
+        objectives:['Log 2,000 hrs Year 1 (Alaska DOLWD)','Log 2,000 hrs Year 2','Log 2,000 hrs Year 3','Log 2,000 hrs Year 4','Complete classroom hours','Receive program completion certificate'],
+        rewards:['Eligible for Alaska Journeyman exam','+400 XP'] },
+
+      { id:'el-ak-journeyman', title:'Pass Alaska Certificate of Fitness — Journeyman Electrician', level:'AK Journeyman', color:'red',
+        summary:'Sit the Alaska "Certificate of Fitness — Journeyman Electrician" exam administered by the Alaska Department of Labor. Tests NEC, Alaska statutes, and trade calculations.',
+        objectives:['Submit Alaska DOL Certificate of Fitness application','Take 3 practice exams (80%+)','Schedule and pass Alaska journeyman exam','Receive AK Certificate of Fitness — Journeyman'],
+        rewards:['+500 XP','Title: Alaska Journeyman Electrician','Eligible to wire in Alaska under master'] },
     ]
   },
+
   wwt: {
     name: 'Wastewater Operator',
     icon: '💧',
     color: '#80c0e0',
     quests: [
-      { id:'wwt-course', title:'Complete ADEQ-Approved Wastewater Treatment Course', level:'Trainee', color:'green',
-        summary:'Take a state-approved training course covering the fundamentals of wastewater treatment processes — biological treatment, secondary clarification, disinfection, sludge handling, lab basics.',
-        objectives:['Enroll in ADEQ-approved course (e.g. ASU, Rio Salado, Water and Wastewater Institute)','Complete required hours of instruction','Pass course final assessment'],
-        rewards:['+75 XP','Course completion certificate','Eligible for Grade 1 exam'] },
-      { id:'wwt-g1', title:'Pass Grade 1 ADEQ Wastewater Treatment Exam', level:'Grade 1', color:'green',
-        summary:'Grade 1 is the entry-level certification for Arizona wastewater treatment plant operators. Tests basic plant operations, math, sampling, and regulatory knowledge.',
-        objectives:['Submit ADEQ application + fee','Schedule exam through ABC (Assoc. Boards of Cert.)','Pass Grade 1 exam (70%+ typical)','Receive Grade 1 certification'],
-        rewards:['+150 XP','Title: Grade 1 Wastewater Operator','Operate or assist at small WWTP'] },
-      { id:'wwt-g2', title:'Pass Grade 2 Wastewater Treatment Exam', level:'Grade 2', color:'yellow',
-        summary:'Grade 2 requires 1+ year operating experience plus passing the more rigorous Grade 2 exam. Covers process control, troubleshooting, advanced math.',
-        objectives:['Accrue 1 year operating experience post Grade 1','Submit application','Pass Grade 2 ABC exam','Receive Grade 2 certification'],
-        rewards:['+250 XP','Wage step-up','Title: Grade 2 Wastewater Operator'] },
-      { id:'wwt-g3', title:'Pass Grade 3 Wastewater Treatment Exam', level:'Grade 3', color:'orange',
-        summary:'Grade 3 covers higher-capacity plants and advanced biological treatment. Requires substantial field experience plus passing the Grade 3 exam.',
-        objectives:['Accrue 3 years total operating experience','Submit application','Pass Grade 3 ABC exam','Receive Grade 3 certification'],
-        rewards:['+400 XP','Title: Grade 3 Wastewater Operator','Lead operator eligibility'] },
-      { id:'wwt-g4', title:'Pass Grade 4 Wastewater Treatment Exam (Highest)', level:'Grade 4', color:'red',
-        summary:'Grade 4 is the highest classification for Arizona wastewater treatment. Required for chief operators at the largest plants. Heavy emphasis on plant management, regulatory compliance, and advanced process control.',
-        objectives:['Accrue 4+ years total experience','Bachelor\'s degree OR additional experience','Submit application','Pass Grade 4 ABC exam','Receive Grade 4 certification'],
-        rewards:['+800 XP','Title: Grade 4 Chief Wastewater Operator','Qualify as plant Chief Operator'] },
+      { id:'wwt-az2-current', title:'Hold AZ Wastewater Operator Grade II (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
+        summary:'Your Arizona ADEQ Wastewater Treatment Operator Grade II — already earned. This is the basis for reciprocity into Oklahoma and (via California) into Alaska.',
+        objectives:['Pass ADEQ Grade I Wastewater Treatment exam','Accrue 1 year operating experience','Pass ADEQ Grade II Wastewater Treatment exam','Hold active Grade II certification'],
+        rewards:['Title: AZ Grade II Wastewater Operator','Reciprocity foundation for OK and CA exam eligibility'] },
+
+      { id:'wwt-ok-recip', title:'Apply for Oklahoma Wastewater Operator Reciprocity (Grade II)', level:'OK Reciprocity', color:'green',
+        summary:'Oklahoma DEQ accepts ADEQ certifications through a reciprocity application. Submit the OK DEQ reciprocity form with proof of your active AZ Grade II — typically issued within 30-60 days without additional exam.',
+        objectives:['Download OK DEQ Operator Certification reciprocity application','Request official letter of standing from ADEQ','Submit application + fee + AZ verification to OK DEQ','Receive OK Wastewater Operator Grade II'],
+        rewards:['+200 XP','Title: OK Grade II Wastewater Operator','Authorized to operate in Oklahoma'] },
+
+      { id:'wwt-ca-register', title:'Register for California Wastewater Grade II Examination', level:'CA Exam Prep', color:'yellow',
+        summary:'California State Water Resources Control Board (SWRCB) administers the Grade II exam. Test in CA because Alaska only accepts CA Grade II (not AZ Grade II) at face value for full Grade II reciprocity.',
+        objectives:['Verify CA SWRCB application requirements','Document your AZ operating experience + education','Submit CA Grade II application + fee','Schedule the California exam date'],
+        rewards:['+100 XP','CA exam admission ticket'] },
+
+      { id:'wwt-ca-pass', title:'Pass California Grade II Wastewater Treatment Exam', level:'CA Grade II', color:'orange',
+        summary:'The California SWRCB Grade II written exam covers treatment processes, math, lab, safety, regulatory framework. Recommend 2-3 months of study using the SWRCB "Need to Know Criteria" study guide.',
+        objectives:['Order the SWRCB Grade II study guide + Sacramento State manuals','Complete 100+ practice problems','Take 2 full-length practice exams','Travel to CA test site','Pass CA Grade II Wastewater Treatment exam'],
+        rewards:['+400 XP','Title: CA Grade II Wastewater Operator','AK reciprocity unlocked'] },
+
+      { id:'wwt-ak-recip', title:'Apply CA → AK Wastewater Operator Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+        summary:'Alaska DEC accepts California Grade II at face value for full Alaska Grade II — the route around the AZ→AK downgrade problem. Submit reciprocity application after CA Grade II is in hand.',
+        objectives:['Download Alaska DEC operator reciprocity form','Request letter of standing from CA SWRCB','Submit Alaska reciprocity application + fee','Receive Alaska Grade II Wastewater Operator certification'],
+        rewards:['+500 XP','Title: AK Grade II Wastewater Operator','Authorized to operate at AK Grade II level'] },
     ]
   },
+
   wwc: {
     name: 'Wastewater Collections',
     icon: '🚧',
     color: '#a07050',
     quests: [
-      { id:'wwc-course', title:'Complete Collections System Training', level:'Trainee', color:'green',
-        summary:'Learn the fundamentals of wastewater collection systems — gravity sewers, lift stations, manholes, CCTV inspection, root and grease control, confined space safety.',
-        objectives:['Enroll in approved collections course','Complete required hours','Pass course assessment'],
-        rewards:['+75 XP','Course certificate','Eligible for Grade 1 collections exam'] },
-      { id:'wwc-g1', title:'Pass Grade 1 Collections Exam', level:'Grade 1', color:'green',
-        summary:'Entry-level certification for collection system operators. Covers basic sewer operations, safety (especially confined space and H2S), maintenance, hydraulics.',
-        objectives:['Submit ADEQ application','Schedule exam','Pass Grade 1 collections exam','Receive certification'],
-        rewards:['+150 XP','Title: Grade 1 Collections Operator'] },
-      { id:'wwc-g2', title:'Pass Grade 2 Collections Exam', level:'Grade 2', color:'yellow',
-        summary:'Requires 1+ year field experience plus the Grade 2 exam. Covers lift station operations, CCTV, troubleshooting blockages, and small-system management.',
-        objectives:['Accrue 1 year field experience','Submit application','Pass Grade 2 exam','Receive certification'],
-        rewards:['+250 XP','Title: Grade 2 Collections Operator'] },
-      { id:'wwc-g3', title:'Pass Grade 3 Collections Exam', level:'Grade 3', color:'orange',
-        summary:'Larger and more complex collection systems. Includes advanced hydraulics, capacity analysis, infiltration/inflow studies, regulatory compliance.',
-        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
-        rewards:['+400 XP','Title: Grade 3 Collections Operator','Lead operator eligibility'] },
-      { id:'wwc-g4', title:'Pass Grade 4 Collections Exam (Highest)', level:'Grade 4', color:'red',
-        summary:'Highest classification for wastewater collections. Required for chief operators of large municipal sewer systems.',
-        objectives:['Accrue 4+ years experience','Submit application','Pass Grade 4 exam','Receive certification'],
-        rewards:['+800 XP','Title: Grade 4 Chief Collections Operator'] },
+      { id:'wwc-az1-current', title:'Hold AZ Wastewater Collections Grade I (CURRENT)', level:'Achieved', color:'gray', preComplete:true,
+        summary:'Your Arizona ADEQ Wastewater Collections Grade I — already earned. Basis for reciprocity into Oklahoma and Alaska.',
+        objectives:['Complete approved collections training','Pass ADEQ Grade I Collections exam','Hold active Grade I certification'],
+        rewards:['Title: AZ Grade I Collections Operator','Reciprocity foundation for OK and AK'] },
+
+      { id:'wwc-ok-recip', title:'Apply for Oklahoma Collections Reciprocity (Grade I)', level:'OK Reciprocity', color:'green',
+        summary:'Submit OK DEQ reciprocity application with proof of active AZ Grade I Collections. Typically issued without additional exam.',
+        objectives:['Request letter of standing from ADEQ for Collections','Submit OK DEQ Operator Cert reciprocity application + fee','Receive OK Wastewater Collections Grade I'],
+        rewards:['+150 XP','Title: OK Grade I Collections Operator'] },
+
+      { id:'wwc-ak-recip', title:'Apply for Alaska Collections Reciprocity (Grade I)', level:'AK Reciprocity', color:'green',
+        summary:'Submit Alaska DEC reciprocity application with proof of active AZ Grade I Collections. Grade I to Grade I reciprocity is straightforward.',
+        objectives:['Request letter of standing from ADEQ for Collections','Submit Alaska DEC reciprocity application + fee','Receive Alaska Grade I Collections certification'],
+        rewards:['+150 XP','Title: AK Grade I Collections Operator'] },
+
+      { id:'wwc-az2-future', title:'(Stretch) Test up to AZ Collections Grade II', level:'AZ Grade II', color:'yellow',
+        summary:'Optional next step — sit ADEQ Grade II Collections exam to upgrade. Requires 1 year experience as Grade I.',
+        objectives:['Accrue 1 year as Grade I Collections','Submit ADEQ Grade II Collections application','Pass Grade II Collections exam','Apply OK + AK reciprocity for Grade II upgrade'],
+        rewards:['+300 XP','Title: AZ Grade II Collections Operator','Higher reciprocity ceiling'] },
     ]
   },
+
   wtr: {
     name: 'Water Operator',
     icon: '🚰',
     color: '#a0d0ff',
     quests: [
-      { id:'wtr-course', title:'Complete ADEQ-Approved Water Treatment Course', level:'Trainee', color:'green',
-        summary:'Take a state-approved drinking water treatment course covering coagulation, sedimentation, filtration, disinfection (chlorine/chloramines/UV), corrosion control, and SDWA compliance.',
-        objectives:['Enroll in approved course','Complete required hours','Pass final assessment'],
-        rewards:['+75 XP','Course completion','Eligible for Grade 1 exam'] },
-      { id:'wtr-g1', title:'Pass Grade 1 Water Treatment Exam', level:'Grade 1', color:'green',
-        summary:'Entry-level drinking water treatment operator. Covers basic plant operations, sampling, lab analysis, disinfection, and SDWA basics.',
-        objectives:['Submit ADEQ application','Schedule ABC exam','Pass Grade 1 exam','Receive certification'],
-        rewards:['+150 XP','Title: Grade 1 Water Operator'] },
-      { id:'wtr-g2', title:'Pass Grade 2 Water Treatment Exam', level:'Grade 2', color:'yellow',
-        summary:'Requires 1+ year experience. Covers more complex treatment processes, chemistry, and regulatory compliance.',
-        objectives:['Accrue 1 year experience','Submit application','Pass Grade 2 exam','Receive certification'],
-        rewards:['+250 XP','Title: Grade 2 Water Operator'] },
-      { id:'wtr-g3', title:'Pass Grade 3 Water Treatment Exam', level:'Grade 3', color:'orange',
-        summary:'Mid-to-large plants. Advanced disinfection byproduct control, membrane treatment, advanced chemistry.',
-        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
-        rewards:['+400 XP','Title: Grade 3 Water Operator','Lead operator eligibility'] },
-      { id:'wtr-g4', title:'Pass Grade 4 Water Treatment Exam (Highest)', level:'Grade 4', color:'red',
-        summary:'Highest classification. Required for chief operators at the largest drinking water plants.',
-        objectives:['Accrue 4+ years experience','Bachelor\'s degree OR additional experience','Submit application','Pass Grade 4 exam','Receive certification'],
-        rewards:['+800 XP','Title: Grade 4 Chief Water Operator','Qualify as plant Chief Operator'] },
+      { id:'wtr-ca-register', title:'Register for California Water Treatment Grade II Examination', level:'CA Exam Prep', color:'yellow',
+        summary:'California SWRCB Drinking Water Treatment Operator T2 exam — same CA-route reciprocity strategy as wastewater. Test in CA, reciprocate to AK, and apply for OK at the same time.',
+        objectives:['Verify CA SWRCB T2 requirements (experience + education hours)','Document any prior water-side coursework or shadowing','Submit CA T2 application + fee','Schedule CA T2 exam'],
+        rewards:['+100 XP','CA T2 admission ticket'] },
+
+      { id:'wtr-ca-pass', title:'Pass California Grade II Water Treatment (T2) Exam', level:'CA T2', color:'orange',
+        summary:'CA T2 covers coagulation, sedimentation, filtration, disinfection, distribution interface, regulatory (SDWA), math. Study using SWRCB T2 study guide + Sacramento State T2 manual.',
+        objectives:['Order SWRCB T2 study guide + Sacramento State T2 manual','Complete 100+ practice problems','Take 2 full-length practice exams','Pass CA T2 exam'],
+        rewards:['+400 XP','Title: CA T2 Water Operator','AK + OK reciprocity unlocked'] },
+
+      { id:'wtr-ak-recip', title:'Apply CA → AK Water Treatment Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+        summary:'Alaska DEC accepts California T2 at face value for full AK Water Treatment Operator Grade II.',
+        objectives:['Letter of standing from CA SWRCB (water side)','Submit Alaska DEC reciprocity application + fee','Receive AK Grade II Water Operator certification'],
+        rewards:['+500 XP','Title: AK Grade II Water Operator'] },
+
+      { id:'wtr-ok-recip', title:'Apply for Oklahoma Water Operator Reciprocity', level:'OK Reciprocity', color:'green',
+        summary:'Once you hold CA T2 (or AZ Grade II if you also test there later), apply to OK DEQ for water operator reciprocity.',
+        objectives:['Verify OK DEQ water operator reciprocity requirements','Letter of standing from issuing state','Submit OK DEQ application + fee','Receive OK Water Operator certification'],
+        rewards:['+300 XP','Title: OK Grade II Water Operator'] },
     ]
   },
+
   wdist: {
     name: 'Water Distribution',
     icon: '🔧',
     color: '#80d080',
     quests: [
-      { id:'wdist-course', title:'Complete Distribution System Training', level:'Trainee', color:'green',
-        summary:'Learn drinking water distribution fundamentals — pumps, storage tanks, valves, hydrants, mains, cross-connection control, sampling, disinfectant residuals.',
-        objectives:['Enroll in approved course','Complete required hours','Pass course assessment'],
-        rewards:['+75 XP','Course certificate','Eligible for Grade 1 distribution exam'] },
-      { id:'wdist-g1', title:'Pass Grade 1 Distribution Exam', level:'Grade 1', color:'green',
-        summary:'Entry-level distribution operator. Covers basic distribution operations, hydraulics, leak detection, valve exercising, customer service connections.',
-        objectives:['Submit ADEQ application','Schedule ABC exam','Pass Grade 1 exam','Receive certification'],
-        rewards:['+150 XP','Title: Grade 1 Distribution Operator'] },
-      { id:'wdist-g2', title:'Pass Grade 2 Distribution Exam', level:'Grade 2', color:'yellow',
-        summary:'Requires 1+ year field experience. Covers larger systems, multiple pressure zones, storage tank management.',
-        objectives:['Accrue 1 year field experience','Submit application','Pass Grade 2 exam','Receive certification'],
-        rewards:['+250 XP','Title: Grade 2 Distribution Operator'] },
-      { id:'wdist-g3', title:'Pass Grade 3 Distribution Exam', level:'Grade 3', color:'orange',
-        summary:'Larger distribution systems. Advanced hydraulics modeling, water quality management, regulatory compliance.',
-        objectives:['Accrue 3 years total experience','Submit application','Pass Grade 3 exam','Receive certification'],
-        rewards:['+400 XP','Title: Grade 3 Distribution Operator','Lead operator eligibility'] },
-      { id:'wdist-g4', title:'Pass Grade 4 Distribution Exam (Highest)', level:'Grade 4', color:'red',
-        summary:'Highest classification. Required for chief operators of large municipal water distribution systems.',
-        objectives:['Accrue 4+ years experience','Submit application','Pass Grade 4 exam','Receive certification'],
-        rewards:['+800 XP','Title: Grade 4 Chief Distribution Operator'] },
+      { id:'wdist-ca-register', title:'Register for California Water Distribution Grade II Examination', level:'CA Exam Prep', color:'yellow',
+        summary:'California SWRCB Drinking Water Distribution Operator D2 exam — paired companion to T2. Test in CA, reciprocate to AK and OK.',
+        objectives:['Verify CA SWRCB D2 application requirements','Document any prior distribution experience','Submit CA D2 application + fee','Schedule CA D2 exam'],
+        rewards:['+100 XP','CA D2 admission ticket'] },
+
+      { id:'wdist-ca-pass', title:'Pass California Grade II Water Distribution (D2) Exam', level:'CA D2', color:'orange',
+        summary:'CA D2 covers distribution system hydraulics, storage, pumping, leak detection, cross-connection control, water quality maintenance, regulatory.',
+        objectives:['Order SWRCB D2 study guide + Sacramento State D2 manual','Complete 100+ practice problems','Take 2 full-length practice exams','Pass CA D2 exam'],
+        rewards:['+400 XP','Title: CA D2 Water Distribution Operator'] },
+
+      { id:'wdist-ak-recip', title:'Apply CA → AK Water Distribution Reciprocity (Grade II)', level:'AK Reciprocity', color:'red',
+        summary:'Alaska DEC accepts California D2 at face value for full AK Water Distribution Operator Grade II.',
+        objectives:['Letter of standing from CA SWRCB (distribution side)','Submit Alaska DEC reciprocity application + fee','Receive AK Grade II Water Distribution certification'],
+        rewards:['+500 XP','Title: AK Grade II Water Distribution Operator'] },
+
+      { id:'wdist-ok-recip', title:'Apply for Oklahoma Water Distribution Reciprocity', level:'OK Reciprocity', color:'green',
+        summary:'Apply OK DEQ for water distribution operator reciprocity using CA D2 (or AZ if you test there).',
+        objectives:['Verify OK DEQ distribution operator reciprocity requirements','Letter of standing from issuing state','Submit OK DEQ application + fee','Receive OK Water Distribution certification'],
+        rewards:['+300 XP','Title: OK Grade II Water Distribution Operator'] },
     ]
   },
 };
@@ -6125,9 +6140,18 @@ const QUEST_STATE_KEY = 'timewar_quest_state_v1';
 function questLoadState(){ try{ return JSON.parse(localStorage.getItem(QUEST_STATE_KEY)||'{}'); }catch(e){ return {}; } }
 function questSaveState(s){ localStorage.setItem(QUEST_STATE_KEY, JSON.stringify(s)); }
 let QUEST_STATE = questLoadState();
-if(!QUEST_STATE.expanded) QUEST_STATE.expanded = { electrical:true };
-if(!QUEST_STATE.objectives) QUEST_STATE.objectives = {};  // {questId: [bool,bool,...]}
+if(!QUEST_STATE.expanded) QUEST_STATE.expanded = { electrical:true, wwt:true };
+if(!QUEST_STATE.objectives) QUEST_STATE.objectives = {};
 if(!QUEST_STATE.selectedQuest) QUEST_STATE.selectedQuest = null;
+// Auto-mark preComplete quests as fully done on first load (your current certs)
+Object.values(QUEST_DATA).forEach(cat => {
+  cat.quests.forEach(q => {
+    if(q.preComplete && !QUEST_STATE.objectives[q.id]){
+      QUEST_STATE.objectives[q.id] = q.objectives.map(()=>true);
+    }
+  });
+});
+questSaveState(QUEST_STATE);
 
 function questObjectivesDone(quest){
   const arr = QUEST_STATE.objectives[quest.id] || [];
