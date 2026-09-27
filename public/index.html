@@ -1325,9 +1325,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     // ── Sourced constants ─────────────────────────────────────────────
     // MeasuringWorth, relative value of £1 from 1526 in 2025 (UK), brought forward to 2026:
     var MW_REAL_PRICE_2025 = 1072, UK_RPI_12M = 0.034;      // real price; ONS RPI, 12 months to Aug 2026
-    var MW_LABOUR_2025     = 10030, UK_PAY_12M = 0.039;     // labour earnings; ONS total pay growth, May–Jul 2026
     var MW_REAL_PRICE = MW_REAL_PRICE_2025*(1+UK_RPI_12M);   // what £1 of 1526 buys, in 2026 pounds
-    var MW_LABOUR     = MW_LABOUR_2025*(1+UK_PAY_12M);       // what £1 of 1526 is worth as a wage, in 2026 pounds
     // GBP→USD, Trading Economics, 25 Sep 2026:
     var GBPUSD = 1.3248;
     // Maddison's 1990 dollars → 2026 dollars: US CPI-U Aug 2026 (334.980) ÷ 1990 average (130.7)
@@ -1336,8 +1334,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     // national income, mostly land (Piketty & Zucman; earliest measured c.1700). Midpoint used.
     var WEALTH_MULT = 6.5;
 
-    var USD_PER_D_GOODS = MW_REAL_PRICE*GBPUSD/240;   // one penny, as goods
-    var USD_PER_D_WAGE  = MW_LABOUR*GBPUSD/240;       // one penny, as wages
+    var USD_PER_D_GOODS = MW_REAL_PRICE*GBPUSD/240;   // one penny in 2026 US dollars
 
     function lsd(d){ // pence → "£3 15s 10d"
       d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
@@ -1443,20 +1440,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       var el=document.getElementById('won-body'); if(!el) return;
       var h='';
       h+='<div class="won-intro"><strong>How the money worked:</strong> England counted in pounds (£), shillings (s) and pence (d). 12 pence made a shilling and 20 shillings made a pound, so a pound was 240 pence. The <strong>penny</strong> was the everyday silver coin, and a labourer earned 3 or 4 of them for a whole day\'s work.</div>';
-      h+='<div class="purse" style="background:var(--parch2);border-color:var(--border2)"><strong>Why there are two dollar figures.</strong> Take one penny. <strong>As goods</strong> it is worth about '+usd(USD_PER_D_GOODS)+' today, because it bought roughly what '+usd(USD_PER_D_GOODS)+' buys now: a little bread and ale. <strong>As wages</strong> it is worth about '+usd(USD_PER_D_WAGE)+' today, because it was a quarter of a day\'s work, and a quarter of a day\'s work today pays about that much. Both are true. The gap is how poor 1526 was: a full day\'s labour bought only a little food. <em>Use the wage figure to judge incomes and fortunes, and the goods figure to judge prices.</em></div>';
       h+='<div class="won-basis">'+
-        '<div><b>£1 of 1526, as goods</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
-        '<div><b>£1 of 1526, as wages</b><span class="big">'+usd(MW_LABOUR*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
-        '<div><b>One penny</b><span class="big">'+usd(USD_PER_D_GOODS)+' / '+usd(USD_PER_D_WAGE)+'</span><span>goods / wages, 2026 US dollars</span></div>'+
-        '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_WAGE)+'</span><span>as wages — about a day\'s average pay today</span></div></div>';
+        '<div><b>£1 of 1526</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>1 shilling</b><span class="big">'+usd(12*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>1 penny</b><span class="big">'+usd(USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div></div>';
+      h+='<div class="note">Conversion: what the money bought then, priced in today\'s goods (UK price inflation from 1526 to 2026, then pounds to dollars at $'+GBPUSD+').</div>';
 
       // The ledger is lives, not savings
       var purse=0; try{ purse=+S.treasury||0; }catch(e){}
       h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each</strong>. It is each man\'s health in the game, and it is your real trading stake. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
 
       // Coins
-      h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">As goods (2026 $)</th><th class="n">As wages (2026 $)</th></tr></thead><tbody>';
-      COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td><td class="n">'+usd(c[3]*USD_PER_D_WAGE)+'</td></tr>'; });
+      h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">2026 US $</th></tr></thead><tbody>';
+      COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td></tr>'; });
       h+='</tbody></table></div>';
 
       // Realms
@@ -1473,15 +1470,15 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
       // Band incomes
       h+='<h4>What the band earns — by season and by year</h4><div class="note">Rates are for a working day without food and drink; a man fed by his master was paid less. The year counts 250 working days: Sundays, holy days and short winter days are left out. Summer rates run from Easter to Michaelmas. <span class="src">sourced</span> marks a documented wage rate. <span class="est">estimate</span> marks a reasoned figure where no rate survives.</div>';
-      h+='<div class="won-scroll"><table><thead><tr><th>Man</th><th>Trade &amp; basis</th>'+SEASONS.map(function(s){return '<th class="n">'+s[0].replace(' (','<br>(')+'</th>';}).join('')+'<th class="n">Year</th><th class="n">Year as wages (2026 $)</th><th class="n">Year as goods (2026 $)</th></tr></thead><tbody>';
+      h+='<div class="won-scroll"><table><thead><tr><th>Man</th><th>Trade &amp; basis</th>'+SEASONS.map(function(s){return '<th class="n">'+s[0].replace(' (','<br>(')+'</th>';}).join('')+'<th class="n">Year</th><th class="n">Year, 2026 US $</th></tr></thead><tbody>';
       BAND.forEach(function(b){
         var sp=seasonPence(b), yr=sp.reduce(function(a,c){return a+c;},0);
         h+='<tr class="band"><td>'+nameOf(b.id)+'</td><td>'+b.trade+(b.src?'<span class="src">sourced</span>':'')+(b.est?'<span class="est">estimate</span>':'')+(b.estNote?'<span class="est">'+b.estNote+' est.</span>':'')+'<div class="note">'+b.basis+'</div></td>'+
-          sp.map(function(p){return '<td class="n">'+lsd(p)+'<br><span style="color:var(--ink4)">'+usd(p*USD_PER_D_WAGE)+'</span></td>';}).join('')+
-          '<td class="n"><strong>'+lsd(yr)+'</strong></td><td class="n"><strong>'+usd(yr*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(yr*USD_PER_D_GOODS)+'</td></tr>';
+          sp.map(function(p){return '<td class="n">'+lsd(p)+'<br><span style="color:var(--ink4)">'+usd(p*USD_PER_D_GOODS)+'</span></td>';}).join('')+
+          '<td class="n"><strong>'+lsd(yr)+'</strong></td><td class="n"><strong>'+usd(yr*USD_PER_D_GOODS)+'</strong></td></tr>';
       });
       h+='</tbody></table></div>';
-      h+='<div class="note">Why the wage figures look large: a 1526 labourer\'s 4d a day was roughly the ordinary pay of his time, so measured as wages it is about an ordinary day\'s pay today. The goods figure shows how little that bought. Bread, ale and rent took most of it, and a bad harvest could halve what a family could eat.</div>';
+      h+='<div class="note">Bread, ale and rent took most of a wage, and a bad harvest could halve what a family could eat.</div>';
 
       // Households
       h+='<h4>Homes, land and net worth</h4><div class="note">What each household owned, valued the way a 1520s probate inventory or tax assessor would value it. Roger, as heir, owns his household outright. The other four are young unmarried sons: they live in their fathers\' houses and own little themselves, which was normal at eighteen. Everything here is an <span class="est">estimate</span> built from the sources below. The 1524–25 subsidy rates are shown so you can see which tax band each household fell in.</div>';
@@ -1492,18 +1489,18 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
           '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><div style="font-family:var(--fellsc);font-size:15px;color:var(--ink)">'+(typeof charAvatar==='function'?charAvatar(x.id,28)+' ':'')+nameOf(x.id)+' <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em">'+x.band+'</span></div>'+
           '<div style="font-family:var(--mono);font-size:11px;color:var(--ink2)">'+(x.own?'Household: <strong>'+lsd(fam)+'</strong> · <span style="color:var(--blood)">His own: <strong>'+lsd(own)+'</strong></span>':'Net worth: <strong>'+lsd(fam)+'</strong>')+'</div></div>'+
           '<div class="note" style="margin-top:4px"><strong>Home:</strong> '+x.home+'</div><div class="note"><strong>Tenure:</strong> '+x.tenure+'</div>'+
-          '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">As wages (2026 $)</th><th class="n">As goods (2026 $)</th></tr></thead><tbody>'+
-          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_WAGE)+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
-          '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(fam*USD_PER_D_GOODS)+'</td></tr>'+
-          (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_WAGE)+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
-            '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(own*USD_PER_D_GOODS)+'</td></tr>':'')+
+          '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">2026 US $</th></tr></thead><tbody>'+
+          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+          '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_GOODS)+'</strong></td></tr>'+
+          (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+            '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_GOODS)+'</strong></td></tr>':'')+
           '</tbody></table></div><div class="note">1524–25 subsidy band for the household: '+sb.band+' → about '+lsd(sb.tax)+' tax.</div></div>';
       });
-      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is '+usd(bandTotal*USD_PER_D_WAGE)+' as wages, or '+usd(bandTotal*USD_PER_D_GOODS)+' as goods, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
+      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
       h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
 
       h+='<h4>Sources</h4><div class="sources">'+
-        '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 (real price) and £10,030 (labour earnings) in 2025; brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a> and <a href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/bulletins/averageweeklyearningsingreatbritain/september2026" target="_blank" rel="noopener">UK pay growth +3.9%</a>.<br>'+
+        '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 in 2025 (real price); brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a>.<br>'+
         '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
         '• <a href="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)" target="_blank" rel="noopener">IMF 2026 GDP by country</a> — same lands today.<br>'+
         '• <a href="https://eml.berkeley.edu/~saez/course/piketty-zucman13Kisback.pdf" target="_blank" rel="noopener">Piketty &amp; Zucman, Capital is Back</a> — national wealth about 600–700% of national income in pre-industrial Britain and France.<br>'+
