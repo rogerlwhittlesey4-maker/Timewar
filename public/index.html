@@ -2014,19 +2014,382 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
     <!-- /two-column layout -->
 
-    <!-- ═════════ QUEST LOG (WoW Classic style) — under the character box ═════════ -->
-    <div class="wow-quest-log" id="wow-quest-log">
-      <div class="wql-titlebar">
-        <span>📜 Quest Log</span>
-        <span class="wow-x" title="Decorative">✕</span>
-      </div>
-      <div class="wql-body">
-        <div class="wql-list" id="wql-list"></div>
-        <div class="wql-detail" id="wql-detail">
-          <div class="wql-detail-empty">Select a quest to view its details, objectives, and rewards.</div>
-        </div>
+<!-- ═════════ COMPANIONS OF THE BAND — character cards + conversation ═════════ -->
+<style>
+.twc{background:#1a1208;border:3px solid #c9a227;border-radius:6px;margin-top:14px;box-shadow:0 4px 14px rgba(0,0,0,0.5);overflow:hidden;}
+.twc-title{background:linear-gradient(180deg,#3a2818,#1a1208);color:#f5dba0;font-family:var(--fellsc);font-size:14px;letter-spacing:0.1em;padding:8px 14px;border-bottom:2px solid #c9a227;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;text-shadow:1px 1px 2px rgba(0,0,0,0.8);}
+.twc-title small{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:#b99a5a;text-transform:uppercase;}
+.twc-body{display:grid;grid-template-columns:230px minmax(0,1fr) minmax(0,1.15fr);background:#0e0a04;min-height:560px;}
+@media (max-width:1100px){.twc-body{grid-template-columns:200px minmax(0,1fr);} .twc-chat{grid-column:1 / -1;border-top:2px solid #c9a227;}}
+@media (max-width:640px){.twc-body{grid-template-columns:1fr;} .twc-list{border-right:none!important;border-bottom:2px solid #c9a227;max-height:none!important;}}
+.twc-list{background:#1a1208;border-right:2px solid #c9a227;padding:10px 8px;max-height:760px;overflow-y:auto;}
+.twc-item{display:flex;gap:9px;align-items:center;padding:8px;border:1px solid #5a4520;border-radius:3px;margin-bottom:6px;cursor:pointer;background:linear-gradient(180deg,#2a1c10,#1c130a);transition:border-color .15s;}
+.twc-item:hover{border-color:#c9a227;}
+.twc-item.sel{border-color:#f5dba0;box-shadow:0 0 8px rgba(201,162,39,0.45);}
+.twc-item.fallen{opacity:0.55;filter:grayscale(0.6);}
+.twc-ico{font-size:24px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:#0e0a04;border:1px solid #8a6d3b;border-radius:50%;flex:none;}
+.twc-nm{font-family:var(--fellsc);font-size:13px;color:#f5dba0;line-height:1.2;}
+.twc-sub{font-family:var(--mono);font-size:9px;color:#b99a5a;text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;}
+.twc-camp{border-style:dashed;}
+.twc-card{padding:14px 16px;overflow-y:auto;max-height:760px;background:var(--parch);color:var(--ink);border-right:2px solid #c9a227;}
+.twc-card h3{font-family:var(--fellsc);font-size:22px;color:var(--ink);line-height:1.1;}
+.twc-card .twc-tag{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;margin:4px 0 10px;}
+.twc-card .twc-quote{font-family:var(--fell);font-style:italic;color:var(--blood);font-size:13px;border-left:3px solid var(--gold-m);padding:4px 10px;margin:8px 0 12px;background:var(--parch2);}
+.twc-sec{margin-bottom:11px;}
+.twc-sec .twc-h{font-family:var(--fellsc);font-size:12px;color:var(--gold);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:2px;margin-bottom:5px;}
+.twc-sec p,.twc-sec li{font-family:var(--fell);font-size:13px;line-height:1.5;color:var(--ink2);}
+.twc-sec ul{padding-left:18px;}
+.twc-traits{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px;}
+.twc-traits span{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;background:var(--parch3);border:1px solid var(--border2);color:var(--ink2);padding:2px 6px;border-radius:2px;}
+.twc-meters{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:8px 0 12px;}
+.twc-meter .lbl{font-family:var(--mono);font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;display:flex;justify-content:space-between;gap:8px;text-align:right;}
+.twc-meter .bar{height:7px;background:var(--parch3);border:1px solid var(--border2);border-radius:2px;overflow:hidden;margin-top:2px;}
+.twc-meter .bar i{display:block;height:100%;background:linear-gradient(90deg,#7a5c00,#c9a227);}
+.twc-meter.hp .bar i{background:linear-gradient(90deg,#7a1c1c,#b03030);}
+.twc-chat{display:flex;flex-direction:column;background:#120d06;min-height:560px;max-height:760px;}
+.twc-chat-head{padding:9px 12px;border-bottom:1px solid #5a4520;font-family:var(--fellsc);color:#f5dba0;font-size:13px;letter-spacing:0.06em;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.twc-chat-head button{font-family:var(--mono);font-size:9px;background:#1c1a14;color:#b99a5a;border:1px solid #5a4520;border-radius:2px;padding:3px 7px;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;}
+.twc-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px;}
+.twc-msg{max-width:88%;padding:8px 11px;border-radius:4px;font-family:var(--fell);font-size:14px;line-height:1.5;white-space:pre-wrap;}
+.twc-msg .who{display:block;font-family:var(--fellsc);font-size:11px;letter-spacing:0.06em;margin-bottom:3px;}
+.twc-msg.me{align-self:flex-end;background:#2c3b22;color:#e6efd8;border:1px solid #4d6a3a;}
+.twc-msg.me .who{color:#a9d48a;}
+.twc-msg.them{align-self:flex-start;background:#f4ead5;color:#2c1f0e;border:1px solid #c4a96e;}
+.twc-msg.them .who{color:#7a1c1c;}
+.twc-msg.sys{align-self:center;background:transparent;color:#8a7a60;font-family:var(--mono);font-size:10px;text-align:center;border:none;}
+.twc-msg .mood{font-family:var(--mono);font-size:9px;color:#8a6a45;text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;display:block;}
+.twc-input{display:flex;gap:6px;padding:10px;border-top:1px solid #5a4520;}
+.twc-input textarea{flex:1;min-height:44px;max-height:120px;resize:vertical;background:#f4ead5;border:1px solid #8a6d3b;border-radius:3px;padding:7px 9px;font-family:var(--fell);font-size:14px;color:#2c1f0e;}
+.twc-input button{font-family:var(--fellsc);font-size:13px;background:linear-gradient(180deg,#c9a227,#7a5c00);color:#1a1208;border:1px solid #f5dba0;border-radius:3px;padding:0 14px;cursor:pointer;letter-spacing:0.05em;}
+.twc-input button:disabled{opacity:0.5;cursor:wait;}
+.twc-empty{font-family:var(--fell);font-style:italic;color:#8a7a60;text-align:center;margin:auto;padding:20px;font-size:14px;}
+</style>
+
+<div class="twc" id="tw-companions">
+  <div class="twc-title">
+    <span>🛡 Companions of the Band</span>
+    <small>Speak with your men · they remember · Anno Domini as the campaign stands</small>
+  </div>
+  <div class="twc-body">
+    <div class="twc-list" id="twc-list"></div>
+    <div class="twc-card" id="twc-card"></div>
+    <div class="twc-chat">
+      <div class="twc-chat-head"><span id="twc-chat-title">Conversation</span><button onclick="twcClearChat()" title="Erase this conversation (the man keeps his character and loyalty)">Burn the letters</button></div>
+      <div class="twc-msgs" id="twc-msgs"></div>
+      <div class="twc-input">
+        <textarea id="twc-input" placeholder="Speak…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();twcSend();}"></textarea>
+        <button id="twc-send" onclick="twcSend()">Speak</button>
       </div>
     </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ── Authored character sheets for the founding band (Whittlesey, Isle of Ely, 1526) ──
+  var PROFILES = {
+    2: { // Ralph Whittlesey
+      role:'Son of the Fens', age:18,
+      aspirations:[
+        'Keep his father\'s copyhold by the mere and one day hold land of his own outright, free of any lord\'s steward',
+        'Marry Agnes Hake, the fowler\'s daughter from the Eastrea side, once he has something to offer her father',
+        'See the band home whole — every man of them, every time'],
+      fears:['A flood year that drowns the summer grazing and the hay with it','Murrain among the beasts','Debt, and the manor court that follows it'],
+      beliefs:'Keeps the saints\' days and his Easter duty at St Andrew\'s without thinking much about it. Trusts what he can see and handle. Distrusts Londoners, lawyers, and anyone who talks faster than he can follow.',
+      skills:['Punt-work and fowling on Whittlesey Mere','Eel-setting and reed-cutting','Tending sheep and cattle on the washes','Reading weather over the fen','Holding ground'],
+      speech:'Few words, short sentences, plain fen-country talk. Long silences. Says "aye" more than anything else. Never flatters.',
+      bonds:{3:'Watches Thomas\'s dealings with one eye, but would trust him with his life.',4:'Trusts John most of all — they say little and understand each other.',5:'Thinks William\'s head is full of wind and far places. Likes him anyway.'},
+      secret:'He cannot read, and it shames him more than he lets on.'
+    },
+    3: { // Thomas Fenne
+      role:'The Tanner\'s Eye', age:18,
+      aspirations:[
+        'Keep the band\'s purse and its reckoning — every penny in, every penny out',
+        'Rise from the tan-pits to a merchant\'s stall at Whittlesey market, then a booth at Stourbridge Fair by Cambridge',
+        'Be a man people step aside for rather than a man people step away from'],
+      fears:['Poverty','Being known forever by the stink of the tan-yard','Being cheated and not seeing it'],
+      beliefs:'Hears Mass and pays his dues, but grumbles openly at tithes and mortuary fees. Says the clergy count coin as well as any merchant. Still remembers how the Suffolk clothiers made the Cardinal back down over the Amicable Grant last year, and approves.',
+      skills:['Reckoning with counters and tally-sticks','Haggling','Knowing the price of hides, bark, wool, grain and ale','Spotting clipped or counterfeit coin','Noticing who speaks to whom'],
+      speech:'Quick, wry, full of prices and small observations. Asks what a thing costs and who gains by it. Cheerful even when complaining.',
+      bonds:{2:'Teases Ralph for his silences, and would follow him into a flood.',4:'Respects John\'s strength; finds his scruples inconvenient but usually right.',5:'William\'s best friend and chief critic — they argue about everything.'},
+      secret:'He has been quietly setting aside a few pence of his own from every sale since he was twelve.'
+    },
+    4: { // John Cobbes
+      role:'The Smith\'s Strength', age:18,
+      aspirations:[
+        'Take over his father\'s forge and be known as the best smith between Ely and Peterborough',
+        'Keep the weak and the widows of Whittlesey safe — that is what the band is for, in his mind',
+        'Die shriven, in a state of grace, with a priest at hand'],
+      fears:['Dying unshriven, without confession','Losing his temper and doing murder','Heresy creeping in with the books from over the sea'],
+      beliefs:'Devout and plain in his faith. Knows his Paternoster, Ave and Creed by heart in Latin, touches the wooden cross his mother gave him before danger, and holds that the Church and the King are set over men by God. Wary of talk about Luther.',
+      skills:['Smithing and repairing weapons and tools','Shoeing horses','Forging arrowheads and bill-hooks','Great strength','Steadiness under pressure'],
+      speech:'Slow and considered. Asks whether a thing is right before whether it will work. Rarely swears. When angry, speaks very quietly.',
+      bonds:{2:'Ralph is the brother he never had.',3:'Keeps Thomas honest, and Thomas knows it.',5:'Worries William will read himself into trouble with the Bishop\'s men.'},
+      secret:'He once struck a man in anger at the Whitsun ale and has never confessed how badly he hurt him.'
+    },
+    5: { // William Draper
+      role:'The Seeker', age:18,
+      aspirations:[
+        'See London, then Calais, then the great cloth marts at Antwerp where the Merchant Adventurers trade',
+        'Win a name in real wars — Italy, or against the Turk now marching on Hungary',
+        'Own books. Many books.'],
+      fears:['Growing old having seen nothing past the fen','Being thought a fool','Losing his friends to his own rashness'],
+      beliefs:'A believing Catholic, but curious — he has heard merchants from the Low Countries talk of Luther and of an English Testament printed abroad, and he wants to know what is in it, which frightens John. He knows well enough to keep that curiosity quiet.',
+      skills:['Reads English and some Latin','Knows the cloth trade and the wool routes to Flanders','Carries news and rumour from travelling merchants','Quick to learn anything new','Good with horses'],
+      speech:'Eager, full of questions and news from beyond the fens, speaks in bursts. Uses the odd Latin tag to show off. Loses the thread when excited.',
+      bonds:{2:'Thinks Ralph is the most solid man alive and wishes he could be as sure of anything.',3:'His best friend and fiercest arguer.',4:'Loves John and fears disappointing him.'},
+      secret:'He has been saving to buy a printed book from a Cambridge stationer — and he has not decided whether it will be a safe one.'
+    }
+  };
+
+  var STORE_KEY = 'timewar_companions_v1';
+  var sel = null;   // selected companion id, or 'campfire'
+  var busy = false;
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'null') || {}; }catch(e){ return {}; } }
+  function store(st){ localStorage.setItem(STORE_KEY, JSON.stringify(st)); }
+  function stateFor(st,id){ st.men=st.men||{}; if(!st.men[id]) st.men[id]={chat:[],memories:[],loyalty:60,mood:'steady'}; return st.men[id]; }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function companions(){ return (typeof S!=='undefined' && Array.isArray(S.men)) ? S.men.filter(function(m){ return !m.isCmd; }) : []; }
+  function manById(id){ return companions().filter(function(m){ return String(m.id)===String(id); })[0]; }
+  function profileOf(m, st){
+    var base = (typeof BIOS!=='undefined' && BIOS[m.id]) || {};
+    var p = PROFILES[m.id] || (st.profiles && st.profiles[m.id]) || null;
+    return { bio:base, p:p };
+  }
+  function icon(m){ return (typeof CHAR_ICONS!=='undefined' && CHAR_ICONS[m.id]) || '🛡'; }
+  function rankLabel(m){ try{ return rankName(m); }catch(e){ return ''; } }
+
+  // ── Rendering ──
+  function renderList(){
+    var el=document.getElementById('twc-list'); if(!el) return;
+    var st=load();
+    var html='<div class="twc-item twc-camp'+(sel==='campfire'?' sel':'')+'" onclick="twcSelect(\'campfire\')"><div class="twc-ico">🔥</div><div><div class="twc-nm">The Campfire</div><div class="twc-sub">Speak to the whole band</div></div></div>';
+    companions().forEach(function(m){
+      var s=stateFor(st,m.id);
+      html+='<div class="twc-item'+(String(sel)===String(m.id)?' sel':'')+(m.dead?' fallen':'')+'" onclick="twcSelect('+m.id+')">'+
+        '<div class="twc-ico">'+(m.dead?'✝':icon(m))+'</div><div><div class="twc-nm">'+esc(m.name)+'</div>'+
+        '<div class="twc-sub">'+(m.dead?'Fallen':esc(rankLabel(m))+' · Loyalty '+Math.round(s.loyalty))+'</div></div></div>';
+    });
+    el.innerHTML=html;
+  }
+
+  function renderCard(){
+    var el=document.getElementById('twc-card'); if(!el) return;
+    var st=load();
+    if(sel==='campfire'){
+      var alive=companions().filter(function(m){return !m.dead;});
+      el.innerHTML='<h3>🔥 The Campfire</h3><div class="twc-tag">'+esc((S&&S.currentSeason)||'')+' · '+esc((S&&S.campaign)||'')+'</div>'+
+        '<div class="twc-sec"><div class="twc-h">Around the fire</div><ul>'+alive.map(function(m){return '<li><strong>'+esc(m.name)+'</strong> — '+esc(rankLabel(m))+', '+Math.round(m.hp)+'/'+m.maxHp+' HP'+(m.scars?', '+m.scars+' scar'+(m.scars>1?'s':''):'')+'</li>';}).join('')+'</ul></div>'+
+        '<div class="twc-sec"><div class="twc-h">The band\'s standing</div><p>Purse: $'+((S&&S.treasury)||0).toFixed(2)+' · Record: '+((S&&S.wins)||0)+' won, '+((S&&S.losses)||0)+' lost · Seasons fought: '+((S&&S.seasons)||0)+'</p></div>'+
+        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Put a question to the whole band — the campaign, the purse, the King\'s taxes, news from abroad. Whoever has something to say will speak up, each in his own manner. They can disagree with you and with each other.</p></div>';
+      return;
+    }
+    var m=manById(sel);
+    if(!m){ el.innerHTML='<div class="twc-empty">Choose a companion to see his character.</div>'; return; }
+    var s=stateFor(st,m.id), pr=profileOf(m,st), b=pr.bio, p=pr.p;
+    var hpPct=Math.max(0,Math.min(100,m.hp/m.maxHp*100)), loyPct=Math.max(0,Math.min(100,s.loyalty));
+    var h='<h3>'+(m.dead?'✝ ':'')+esc(m.name)+'</h3><div class="twc-tag">'+esc((p&&p.role)||'Man of the band')+' · '+esc(b.origin||'Whittlesey, Isle of Ely')+(b.birth?' · b. '+esc(b.birth):'')+'</div>';
+    if(b.quote||(p&&p.quote)) h+='<div class="twc-quote">'+esc(b.quote||p.quote)+'</div>';
+    h+='<div class="twc-meters">'+
+      '<div class="twc-meter hp"><div class="lbl"><span>Health</span><span>'+Math.round(m.hp)+'/'+m.maxHp+'</span></div><div class="bar"><i style="width:'+hpPct+'%"></i></div></div>'+
+      '<div class="twc-meter"><div class="lbl"><span>Loyalty to you</span><span>'+Math.round(s.loyalty)+'</span></div><div class="bar"><i style="width:'+loyPct+'%"></i></div></div>'+
+      '<div class="twc-meter"><div class="lbl"><span>Standing</span><span>'+esc(rankLabel(m))+'</span></div></div>'+
+      '<div class="twc-meter"><div class="lbl"><span>Mood</span><span>'+esc(m.dead?'—':s.mood)+'</span></div></div></div>';
+    var traits=(b.traits||(p&&p.traits)||[]);
+    if(traits.length) h+='<div class="twc-traits">'+traits.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>';
+    if(b.background||(p&&p.background)) h+='<div class="twc-sec"><div class="twc-h">Background</div><p>'+esc(b.background||p.background)+'</p></div>';
+    if(b.personality||(p&&p.personality)) h+='<div class="twc-sec"><div class="twc-h">Temperament</div><p>'+esc(b.personality||p.personality)+'</p></div>';
+    if(p){
+      if(p.aspirations) h+='<div class="twc-sec"><div class="twc-h">Aspirations</div><ul>'+p.aspirations.map(function(a){return '<li>'+esc(a)+'</li>';}).join('')+'</ul></div>';
+      if(p.fears) h+='<div class="twc-sec"><div class="twc-h">Fears</div><ul>'+p.fears.map(function(a){return '<li>'+esc(a)+'</li>';}).join('')+'</ul></div>';
+      if(p.beliefs) h+='<div class="twc-sec"><div class="twc-h">Faith &amp; Opinions</div><p>'+esc(p.beliefs)+'</p></div>';
+      if(p.skills) h+='<div class="twc-sec"><div class="twc-h">Skills</div><ul>'+p.skills.map(function(a){return '<li>'+esc(a)+'</li>';}).join('')+'</ul></div>';
+      if(p.bonds){ var bl=Object.keys(p.bonds).map(function(k){ var o=manById(k); return o?'<li><strong>'+esc(o.name)+':</strong> '+esc(p.bonds[k])+'</li>':''; }).join(''); if(bl) h+='<div class="twc-sec"><div class="twc-h">Among the band</div><ul>'+bl+'</ul></div>'; }
+    } else if(!m.dead){
+      h+='<div class="twc-sec"><div class="twc-h">Unknown</div><p>You know little of this man yet. Speak with him and his character will be written down.</p></div>';
+    }
+    if(s.memories && s.memories.length) h+='<div class="twc-sec"><div class="twc-h">What he remembers of you</div><ul>'+s.memories.slice(-12).map(function(a){return '<li>'+esc(a)+'</li>';}).join('')+'</ul></div>';
+    el.innerHTML=h;
+  }
+
+  function renderChat(){
+    var box=document.getElementById('twc-msgs'), title=document.getElementById('twc-chat-title'), inp=document.getElementById('twc-input'), btn=document.getElementById('twc-send');
+    if(!box) return;
+    var st=load(), thread, name;
+    if(sel==='campfire'){ thread=(st.campfire||[]); name='The Campfire'; }
+    else { var m=manById(sel); if(!m){ box.innerHTML='<div class="twc-empty">Choose a companion to speak with.</div>'; return; } thread=stateFor(st,m.id).chat; name=m.name;
+      if(m.dead){ title.textContent=name; box.innerHTML=thread.map(msgHtml).join('')+'<div class="twc-msg sys">He fell in the service of the band. His words are kept here.</div>'; inp.disabled=true; btn.disabled=true; box.scrollTop=box.scrollHeight; return; } }
+    title.textContent='Speaking with '+name;
+    inp.disabled=false; btn.disabled=busy;
+    box.innerHTML = thread.length ? thread.map(msgHtml).join('') : '<div class="twc-empty">'+(sel==='campfire'?'The fire is lit. Say something to the band.':'He is waiting for you to speak.')+'</div>';
+    box.scrollTop=box.scrollHeight;
+  }
+  function msgHtml(x){
+    if(x.role==='user') return '<div class="twc-msg me"><span class="who">Roger</span>'+esc(x.text)+'</div>';
+    if(x.role==='sys') return '<div class="twc-msg sys">'+esc(x.text)+'</div>';
+    return '<div class="twc-msg them"><span class="who">'+esc(x.speaker||'')+'</span>'+esc(x.text)+(x.mood?'<span class="mood">'+esc(x.mood)+'</span>':'')+'</div>';
+  }
+  function renderAll(){ renderList(); renderCard(); renderChat(); }
+
+  // ── Prompt building ──
+  function worldCtx(){
+    var season=(S&&S.currentSeason)||'Spring, 1526 AD';
+    var roster=companions().map(function(m){ return m.name+(m.dead?' (fallen)':' — '+rankLabel(m)+', health '+Math.round(m.hp)+'/'+m.maxHp+(m.scars?', '+m.scars+' scars':'')); }).join('; ');
+    var recent=[];
+    try{ (S.chronicle||[]).filter(function(e){ return e.source==='trade'||e.source==='log'; }).slice(0,5).forEach(function(e){ recent.push(String(e.text||'').slice(0,160)); }); }catch(e){}
+    try{ (S.battles||[]).slice(-5).forEach(function(bt){ recent.push((bt.outcome||bt.result||'')+' '+(bt.enemy||'')+' '+(bt.season||'')); }); }catch(e){}
+    return 'CURRENT DATE IN THE STORY: '+season+'. Place: Whittlesey, a market town on the edge of the Isle of Ely in the Cambridgeshire fens, England, near Whittlesey Mere.\n'+
+      'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV (the person speaking to you), aged about 18, a wool merchant\'s son. Current campaign: '+((S&&S.campaign)||'')+'.\n'+
+      'Men of the band: '+roster+'.\n'+
+      'Band\'s record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost, over '+((S&&S.seasons)||0)+' seasons. The band\'s purse stands at '+((S&&S.treasury)||0).toFixed(2)+' in the ledger\'s units — in speech the men talk of "the purse" growing or shrinking, never of dollars.\n'+
+      (recent.length?'Recent fights: '+recent.join(' | ')+'\n':'')+
+      'The ranks in the ledger (PV2, PFC, Corporal, Sergeant…) are the band\'s game ledger only. In speech the men describe standing plainly ("the newest man", "Roger\'s right hand"), never with those modern rank titles.';
+  }
+  var RULES =
+    'HISTORICAL RULES — follow strictly:\n'+
+    '- You know only what such a man could know at the story\'s date and place. Nothing after that date, ever. If asked about something he could not know, he says he has not heard of it or does not understand.\n'+
+    '- England under King Henry VIII, still Catholic; Cardinal Wolsey is Lord Chancellor; the Bishop of Ely is the great lord of the Isle. News from London, Flanders or abroad arrives late and garbled, through merchants, carriers, drovers and priests.\n'+
+    '- Period-correct money (pounds, shillings, pence, marks, groats, nobles, angels), wages, prices, measures, church calendar, law and customs. A labourer earns a few pence a day. No anachronisms: no potatoes, tobacco, tea, coffee, forks at table, newspapers, clocks in every house, modern slang or modern ideas presented as common.\n'+
+    '- Speech: readable modern English with period flavour and vocabulary — not mock-Shakespearean thee/thou overload.\n'+
+    '- Each man has his own mind: he can disagree with Roger, refuse, argue, joke, grieve, or ask questions back. Do not flatter Roger. Keep his personality, aspirations and fears consistent.\n'+
+    '- Politics, economics, war, faith, family, trade and the band\'s future are all fair topics, discussed as a man of his station and learning would.\n'+
+    '- Never narrate on Roger\'s behalf or speak for other men who are not present in the conversation.';
+
+  function personaText(m, st){
+    var pr=profileOf(m,st), b=pr.bio, p=pr.p||{}, s=stateFor(st,m.id);
+    var bonds=p.bonds?Object.keys(p.bonds).map(function(k){ var o=manById(k); return o?(o.name+': '+p.bonds[k]):''; }).filter(Boolean).join(' '):'';
+    return 'YOU ARE '+m.name+', age '+(p.age||18)+', of '+(b.origin||'Whittlesey')+'.\n'+
+      'Background: '+(b.background||p.background||'')+'\nTemperament: '+(b.personality||p.personality||'')+'\n'+
+      (p.aspirations?'Aspirations: '+p.aspirations.join('; ')+'\n':'')+(p.fears?'Fears: '+p.fears.join('; ')+'\n':'')+
+      (p.beliefs?'Faith and opinions: '+p.beliefs+'\n':'')+(p.skills?'Skills: '+p.skills.join('; ')+'\n':'')+
+      (p.speech?'How you speak: '+p.speech+'\n':'')+(bonds?'How you see the others: '+bonds+'\n':'')+
+      (p.secret?'A private matter (reveal only if trust is high and it fits naturally): '+p.secret+'\n':'')+
+      'Your health: '+Math.round(m.hp)+'/'+m.maxHp+(m.scars?', '+m.scars+' battle scars':'')+'. Loyalty to Roger (0-100): '+Math.round(s.loyalty)+'. Current mood: '+s.mood+'.\n'+
+      (s.memories&&s.memories.length?'Things you remember from earlier talks with Roger: '+s.memories.slice(-12).join(' | ')+'\n':'');
+  }
+
+  function parseJSON(t){
+    if(!t) return null;
+    var a=t.indexOf('{'), z=t.lastIndexOf('}');
+    if(a<0||z<a) return null;
+    try{ return JSON.parse(t.slice(a,z+1)); }catch(e){ return null; }
+  }
+
+  async function ai(system, messages, maxTokens){
+    var res = await fetchWithTimeout('/api/claude',{ method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:maxTokens||900, system:system, messages:messages }) }, 60000);
+    var data = await res.json();
+    if(data.error) throw new Error(data.error.message||data.error);
+    return (data.content||[]).map(function(b){ return b.text||''; }).join('\n');
+  }
+
+  // Write a character sheet for a recruit who joined after the founding five.
+  async function ensureProfile(m){
+    var st=load();
+    if(PROFILES[m.id] || (st.profiles&&st.profiles[m.id])) return;
+    var sys='You create historically accurate characters for a story set in Whittlesey, Isle of Ely, Cambridgeshire, England. '+RULES+'\nReply with JSON only.';
+    var prompt=worldCtx()+'\n\nWrite the character sheet for the new recruit named "'+m.name+'"'+(m.age?', age '+m.age:'')+', who has just joined the band. Give him a plausible local trade or family, a distinct voice, and hopes and fears of his own. JSON keys: role (short epithet), age (number), origin, background (2-3 sentences), personality (1-2 sentences), aspirations (array of 3), fears (array of 3), beliefs (1-2 sentences), skills (array of 4-5), speech (1 sentence on how he talks), traits (array of 5 single words or short phrases), quote (one line he might say, in double quotes), secret (one sentence).';
+    var txt=await ai(sys,[{role:'user',content:prompt}],900);
+    var j=parseJSON(txt); if(!j) throw new Error('Could not write his character sheet');
+    st=load(); st.profiles=st.profiles||{}; st.profiles[m.id]=j; store(st);
+  }
+
+  // ── Actions ──
+  window.twcSelect=function(id){ sel=id; renderAll(); var i=document.getElementById('twc-input'); if(i&&!i.disabled) i.focus(); };
+
+  window.twcClearChat=function(){
+    if(sel==null) return;
+    if(!confirm('Burn this conversation? He keeps his character, loyalty and memories.')) return;
+    var st=load();
+    if(sel==='campfire') st.campfire=[]; else stateFor(st,sel).chat=[];
+    store(st); renderChat();
+  };
+
+  window.twcSend=async function(){
+    if(busy||sel==null) return;
+    var inp=document.getElementById('twc-input'); var text=(inp.value||'').trim(); if(!text) return;
+    var st=load();
+    busy=true; document.getElementById('twc-send').disabled=true; inp.value='';
+    try{
+      if(sel==='campfire'){ await sendCampfire(text); }
+      else { await sendOne(text); }
+    }catch(e){
+      st=load();
+      var err={role:'sys',text:'No answer came ('+(e&&e.message||'error')+'). Try again.',ts:Date.now()};
+      if(sel==='campfire'){ st.campfire=st.campfire||[]; st.campfire.push(err); } else stateFor(st,sel).chat.push(err);
+      store(st);
+    }
+    busy=false; renderAll();
+  };
+
+  async function sendOne(text){
+    var m=manById(sel); if(!m||m.dead) return;
+    var st=load(), s=stateFor(st,m.id);
+    s.chat.push({role:'user',text:text,ts:Date.now()}); store(st); renderChat();
+    showTyping(m.name);
+    if(!PROFILES[m.id]) await ensureProfile(m);
+    st=load(); s=stateFor(st,m.id);
+    var system=worldCtx()+'\n\n'+personaText(m,st)+'\n'+RULES+'\n\n'+
+      'Reply as '+m.name+' speaking directly to Roger, in character, usually 1-4 short paragraphs (shorter is fine when he is a man of few words). '+
+      'Return JSON only: {"reply": "what he says (may include brief actions in *asterisks*)", "mood": "one or two words", "loyalty_change": integer from -3 to 3 reflecting how this exchange affected his regard for Roger, "memory": "one short sentence worth him remembering about Roger from this exchange, or empty string"}';
+    var hist=s.chat.filter(function(x){return x.role==='user'||x.role==='ai';}).slice(-18).map(function(x){ return {role:x.role==='user'?'user':'assistant', content:x.role==='user'?x.text:JSON.stringify({reply:x.text,mood:x.mood||''})}; });
+    var txt=await ai(system,hist,900);
+    var j=parseJSON(txt)||{reply:txt};
+    st=load(); s=stateFor(st,m.id);
+    s.chat.push({role:'ai',speaker:m.name,text:String(j.reply||'…'),mood:String(j.mood||'').slice(0,30),ts:Date.now()});
+    if(s.chat.length>120) s.chat=s.chat.slice(-120);
+    var d=parseInt(j.loyalty_change,10); if(isFinite(d)) s.loyalty=Math.max(0,Math.min(100,s.loyalty+Math.max(-3,Math.min(3,d))));
+    if(j.mood) s.mood=String(j.mood).slice(0,30);
+    if(j.memory && String(j.memory).trim()){ s.memories.push(String(j.memory).trim().slice(0,200)); if(s.memories.length>24) s.memories=s.memories.slice(-24); }
+    store(st);
+    try{ if(typeof chronicleAdd==='function') chronicleAdd('council','ai',m.name,'companion',String(j.reply||'').slice(0,600)); }catch(e){}
+  }
+
+  async function sendCampfire(text){
+    var st=load(); st.campfire=st.campfire||[];
+    st.campfire.push({role:'user',text:text,ts:Date.now()}); store(st); renderChat();
+    showTyping('The band');
+    var alive=companions().filter(function(m){return !m.dead;});
+    for(var i=0;i<alive.length;i++){ if(!PROFILES[alive[i].id]) await ensureProfile(alive[i]); }
+    st=load();
+    var system=worldCtx()+'\n\nTHE MEN AROUND THE FIRE:\n\n'+alive.map(function(m){ return personaText(m,st); }).join('\n---\n')+'\n'+RULES+'\n\n'+
+      'Roger is speaking to the whole band around the campfire. Between one and four of the men answer — only those who would genuinely speak up, in a natural order, each in his own voice. They may react to each other and disagree. Keep each man\'s turn short (1-3 sentences, more only if the topic demands). '+
+      'Return JSON only: {"lines":[{"speaker":"exact full name","text":"what he says (brief actions in *asterisks* allowed)"}], "loyalty":{"exact full name": integer -2..2}}';
+    var names=alive.map(function(m){return m.name;});
+    var hist=st.campfire.filter(function(x){return x.role==='user'||x.role==='ai';}).slice(-24);
+    var msgs=[], buf=[];
+    hist.forEach(function(x){
+      if(x.role==='user'){ if(buf.length){ msgs.push({role:'assistant',content:JSON.stringify({lines:buf})}); buf=[]; } msgs.push({role:'user',content:x.text}); }
+      else buf.push({speaker:x.speaker,text:x.text});
+    });
+    if(buf.length) msgs.push({role:'assistant',content:JSON.stringify({lines:buf})});
+    var txt=await ai(system,msgs,1100);
+    var j=parseJSON(txt);
+    st=load(); st.campfire=st.campfire||[];
+    var lines=(j&&Array.isArray(j.lines))?j.lines:[{speaker:names[0]||'The band',text:txt}];
+    lines.forEach(function(l){ if(l&&l.text) st.campfire.push({role:'ai',speaker:String(l.speaker||''),text:String(l.text),ts:Date.now()}); });
+    if(st.campfire.length>160) st.campfire=st.campfire.slice(-160);
+    if(j&&j.loyalty) alive.forEach(function(m){ var d=parseInt(j.loyalty[m.name],10); if(isFinite(d)){ var s=stateFor(st,m.id); s.loyalty=Math.max(0,Math.min(100,s.loyalty+Math.max(-2,Math.min(2,d)))); } });
+    store(st);
+  }
+
+  function showTyping(who){
+    var box=document.getElementById('twc-msgs'); if(!box) return;
+    var e=document.getElementById('twc-empty-typing'); if(e) e.remove();
+    var el=document.getElementById('twc-typing')||document.createElement('div');
+    el.id='twc-typing'; el.className='twc-msg sys'; el.textContent=who+' is thinking…'; box.appendChild(el); box.scrollTop=box.scrollHeight;
+  }
+
+  window.twcRender=renderAll;
+  document.addEventListener('DOMContentLoaded', function(){
+    var first=companions().filter(function(m){return !m.dead;})[0];
+    sel = first ? first.id : 'campfire';
+    renderAll();
+  });
+})();
+</script>
 
   </div>
 </div>
@@ -4363,9 +4726,9 @@ function clearForm(){
 // ── BEGIN NEW CAMPAIGN — full reset for a clean real-money playthrough ──
 // Wipes: band, treasury, seasons, battles, Chronicle, Discipline Console trade log,
 //        Tier 1 account balance (back to $500).
-// Keeps: Character EXP, Quest Log, calendar reflections/habits.
+// Also clears companion conversations/loyalty. Keeps: Character EXP, calendar reflections/habits.
 async function clearAll(){
-  if(!confirm('BEGIN A NEW CAMPAIGN?\n\nThis wipes the band, treasury, battles, the Chronicle of Battles and the Discipline Console trade log, and resets the account to $500.\n\nKept: Character EXP, Quest Log, calendar.')) return;
+  if(!confirm('BEGIN A NEW CAMPAIGN?\n\nThis wipes the band, treasury, battles, the Chronicle of Battles and the Discipline Console trade log, and resets the account to $500.\n\nYour companions\' conversations and loyalty start over with the new band.\n\nKept: Character EXP and calendar.')) return;
   if(confirm('Download a backup of the current campaign first?\n\nOK = download backup (save file + trade CSV)\nCancel = skip backup')){
     try{ saveToFile(); }catch(e){}
     try{ if(typeof window.t1ExportCsv==='function') window.t1ExportCsv(); }catch(e){}
@@ -4377,6 +4740,7 @@ async function clearAll(){
   save();
   try{ localStorage.setItem('timewar_t1_trades_v1','[]'); }catch(e){}
   try{ localStorage.setItem('timewar_t1_balance_v1','500'); }catch(e){}
+  try{ localStorage.removeItem('timewar_companions_v1'); }catch(e){}
   try{ if(typeof window.twCloudFlush==='function') await window.twCloudFlush(); }catch(e){}
   location.reload();
 }
@@ -5930,7 +6294,7 @@ function switchPage(name){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
-  if(name==='character') updateCharacterPage();
+  if(name==='character'){ updateCharacterPage(); try{ if(window.twcRender) window.twcRender(); }catch(e){} }
   window.scrollTo(0,0);
 }
 
