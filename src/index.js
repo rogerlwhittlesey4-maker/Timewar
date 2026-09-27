@@ -2,6 +2,8 @@
 //   POST /api/claude  -> Anthropic proxy (key lives in ANTHROPIC_API_KEY secret)
 //   GET  /api/save    -> this user's cloud save
 //   PUT  /api/save    -> store this user's cloud save (keeps hourly backups)
+//   GET  /api/save/backups        -> list this user's backups (newest first)
+//   GET  /api/save/backup?ts=...  -> one backup, to recover lost data from
 //   everything else   -> static assets in ./public
 
 // Hosts that sit behind Cloudflare Access. Cloud saves are refused on any other
@@ -25,6 +27,9 @@ export default {
 
     if (url.pathname === '/api/save') {
       return handleSave(request, env, url);
+    }
+    if (url.pathname === '/api/save/backups' || url.pathname === '/api/save/backup') {
+      return handleBackups(request, env, url);
     }
 
     // Everything else: static files (index.html, css, images, etc.)
@@ -100,6 +105,32 @@ async function handleSave(request, env, url) {
   }
 
   return jsonResponse({ error: 'Method Not Allowed' }, 405);
+}
+
+// Read-only access to the user's own backups. Nothing here changes the current save;
+// the page merges back only what the user chooses to recover.
+async function handleBackups(request, env, url) {
+  if (!env.TW_SAVES) return jsonResponse({ error: 'Cloud save storage (TW_SAVES) is not bound to this Worker' }, 503);
+  if (request.method !== 'GET') return jsonResponse({ error: 'Method Not Allowed' }, 405);
+  const user = saveUser(request, env, url);
+  if (!user) return jsonResponse({ error: 'Not signed in through Cloudflare Access' }, 401);
+  const prefix = 'backup:' + user + ':';
+  if (url.pathname === '/api/save/backups') {
+    const keys = [];
+    let cursor;
+    do {
+      const page = await env.TW_SAVES.list({ prefix, cursor });
+      page.keys.forEach(k => keys.push(Number(k.name.slice(prefix.length))));
+      cursor = page.list_complete ? null : page.cursor;
+    } while (cursor);
+    keys.sort((a, b) => b - a);
+    return jsonResponse({ backups: keys.filter(n => isFinite(n)).slice(0, 200) }, 200);
+  }
+  const ts = String(url.searchParams.get('ts') || '').replace(/[^0-9]/g, '');
+  if (!ts) return jsonResponse({ error: 'ts required' }, 400);
+  const rec = await env.TW_SAVES.get(prefix + ts, 'json');
+  if (!rec) return jsonResponse({ error: 'No such backup' }, 404);
+  return jsonResponse(rec, 200);
 }
 
 // ── Anthropic proxy ────────────────────────────────────────────────────────
