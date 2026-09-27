@@ -3002,9 +3002,40 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   .won .sources{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
   .won .sources a{color:var(--blood);}
   .won .purse{background:linear-gradient(135deg,#fff5d8,#ffeec0);border:2px solid var(--gold);border-radius:4px;padding:10px 12px;margin:10px 0;font-family:var(--fell);font-size:13px;color:var(--ink);line-height:1.5;}
+  .won .won-sort{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink4);margin:4px 0 6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+  .won .won-sort button{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink2);background:var(--parch2);border:1px solid var(--border2);border-radius:2px;padding:3px 7px;cursor:pointer;}
+  .won .won-sort button.on{background:var(--blood);color:#f7ecd2;border-color:var(--blood);}
+  .won .rank{margin:4px 0 12px;}
+  .won .rank .row{display:grid;grid-template-columns:22px minmax(150px,1.1fr) minmax(100px,2fr) minmax(150px,0.9fr);gap:2px 8px;align-items:center;padding:3px 0;border-bottom:1px dotted var(--border);}
+  .won .rank .row.eng{background:#fff5d8;}
+  .won .rank .legend{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px;}
+  .won .rank .sw{display:inline-block;width:14px;height:8px;border:1px solid var(--border2);}
+  .won .rank .sw.gdp,.won .rank .sw.now{background:linear-gradient(90deg,#8a2a20,#b8412f);}
+  .won .rank .sw.worth,.won .rank .sw.then{background:linear-gradient(90deg,#8f6a1c,#c9a24a);}
+  .won .rank .rk{font-family:var(--mono);font-size:10px;color:var(--ink4);text-align:right;}
+  .won .rank .nm{font-family:var(--fell);font-size:12.5px;color:var(--ink);line-height:1.2;}
+  .won .rank .nm small{display:block;font-family:var(--mono);font-size:8.5px;color:var(--ink4);letter-spacing:0.02em;margin-top:1px;}
+  .won .rank .row.eng .nm{color:var(--blood);font-family:var(--fellsc);}
+  .won .rank .bar{position:relative;height:14px;background:rgba(0,0,0,0.05);border:1px solid var(--border);}
+  .won .rank .bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8a2a20,#b8412f);min-width:2px;}
+  .won .rank .bar.worth i,.won .rank .bar.then i{background:linear-gradient(90deg,#8f6a1c,#c9a24a);}
+  .won .rank .bar2{display:flex;flex-direction:column;gap:2px;}
+  .won .rank .bar2 .bar{height:9px;}
+  .won .rank .val{font-family:var(--mono);font-size:11px;color:var(--ink);text-align:right;padding-right:4px;}
+  .won .rank .val strong{white-space:nowrap;}
+  .won .rank .val small{display:block;font-size:8.5px;color:var(--ink4);}
+  .won details.won-more{margin:6px 0 12px;}
+  .won details.won-more summary{font-family:var(--mono);font-size:9px;color:var(--blood);text-transform:uppercase;letter-spacing:0.07em;cursor:pointer;}
+  @media (max-width:600px){
+    .won .rank .row{grid-template-columns:18px 1fr 126px;gap:2px 6px;}
+    .won .rank .row .rk{grid-row:1/3;}
+    .won .rank .row .nm{grid-column:2/4;font-size:12px;}
+    .won .rank .row .bar,.won .rank .row .bar2{grid-column:2/3;grid-row:2;}
+    .won .rank .row .val{grid-column:3/4;grid-row:2;}
+  }
   </style>
   <div class="parch-panel won" id="won-panel" style="margin-bottom:14px;">
-    <div class="p-inner">
+    <div class="p-inner" style="padding:14px 18px;">
       <details open>
         <summary><div class="sec-title">⚖ The Wealth of Nations — Anno Domini 1526 <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.05em;">(click to fold)</span></div></summary>
         <div id="won-body"></div>
@@ -3048,24 +3079,84 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     ];
 
     // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
-    // population is derived as GDP ÷ GDP per head from the same tables
+    // gdp: millions of 1990 international $; pc: per head. People = gdp ÷ pc.
+    // Maddison counts by modern borders and lumps some lands together; each row is named for
+    // the realms that actually held those lands in 1526. now = the same land's 2026 GDP (IMF, $m).
+    // Listed in order of output; the sum of the rows is Maddison's world total.
     var REALMS = [
-      ['England (with Wales, Scotland, Ireland)',2815,714,'Subsidy of 1523 yielded £151,215, collected over four years; the Amicable Grant of 1525 was abandoned after revolt',true,4264794,'United Kingdom'],
-      ['France',10912,727,'',false,3596094,'France'],
-      ['Italian states',11550,1100,'Richest per head in Europe: banking, silk, Venice and Florence',false,2738164,'Italy'],
-      ['Spain (Castile & Aragon)',4495,661,'American silver just beginning to arrive',false,2091222,'Spain'],
-      ['Portugal',606,606,'Spice route to India via the Cape',false,380637,'Portugal'],
-      ['Low Countries (Netherlands)',723,761,'Antwerp: the cloth market where English wool and cloth are sold',false,1449704,'Netherlands'],
-      ['Low Countries (Belgium)',1225,null,'',false,776730,'Belgium'],
-      ['German lands (Holy Roman Empire)',8256,688,'',false,5452858,'Germany'],
-      ['Ottoman Empire & West Asia',10495,null,'State revenue c. 9.65 million Venetian ducats in 1528',false,1640223,'Turkey only'],
-      ['Russia & former USSR lands',8458,null,'',false,2656452,'Russia only'],
-      ['Ming China',61800,600,'Largest economy on earth',false,20851593,'China'],
-      ['India (Mughal empire founded April 1526)',60500,550,'',false,4153191,'India'],
-      ['Japan',7700,500,'',false,4379253,'Japan'],
-      ['Mexico (New Spain)',3188,425,'Conquered 1521',false,2120855,'Mexico'],
+      {name:'Ming China', s:'Ming China', gdp:61800, pc:600, note:'The largest economy on earth, under the Jiajing Emperor', now:['China',20851593]},
+      {name:'India — Babur\'s new Mughal empire, Vijayanagara and the sultanates', s:'India (Mughals and sultanates)', gdp:60500, pc:550, note:'Babur won Panipat on 21 April 1526 and founded the Mughal empire', now:['India',4153191]},
+      {name:'Rest of Asia — Korea, Siam, Burma, Malacca and the Indies', s:'the rest of Asia', gdp:20822, pc:554, note:'Portugal has held Malacca since 1511', now:null},
+      {name:'Africa — Songhai, Ethiopia, Kongo, Morocco; Egypt Ottoman since 1517', s:'Africa', gdp:19383, pc:414, note:'', now:null},
+      {name:'Italian states — Venice, Florence, Milan, Naples, the Pope', s:'the Italian states', gdp:11550, pc:1100, note:'Richest per head in Europe: banking, silk, Venice and Florence. The League of Cognac against Charles V was sworn on 22 May 1526', now:['Italy',2738164]},
+      {name:'France', s:'France', gdp:10912, pc:727, note:'Francis I came home from captivity in Madrid in March 1526', now:['France',3596094]},
+      {name:'Ottoman Empire, Safavid Persia and Arabia', s:'the Ottoman Empire and Persia', gdp:10495, pc:590, note:'Ottoman state revenue c. 9.65 million Venetian ducats in 1528; Suleiman marches on Hungary this summer', now:['Turkey only',1640223]},
+      {name:'Muscovy, Lithuania and the Tatar khanates', s:'Muscovy and Lithuania', gdp:8458, pc:499, note:'Vasili III, Grand Prince of Moscow', now:['Russia only',2656452]},
+      {name:'German lands (Holy Roman Empire)', s:'the Holy Roman Empire', gdp:8256, pc:688, note:'Charles V emperor; the Peasants\' War crushed in 1525', now:['Germany',5452858]},
+      {name:'Japan (the Warring States)', s:'Japan', gdp:7700, pc:500, note:'No effective central rule', now:['Japan',4379253]},
+      {name:'Eastern Europe — Poland, Hungary, Bohemia, the Balkans', s:'Eastern Europe', gdp:6696, pc:496, note:'Hungary is destroyed at Mohács on 29 August 1526', now:['Poland only',1134248]},
+      {name:'Spain (Castile and Aragon)', s:'Spain', gdp:4495, pc:661, note:'American silver just beginning to arrive', now:['Spain',2091222]},
+      {name:'Peru (the Inca) and the rest of the Americas', s:'the Inca and the Americas', gdp:4100, pc:410, note:'Pizarro sails south on his second voyage, 1526', now:null},
+      {name:'New Spain (Mexico)', s:'New Spain', gdp:3188, pc:425, note:'Conquered 1521', now:['Mexico',2120855]},
+      {name:'England (with Wales, Scotland and Ireland)', s:'England', gdp:2815, pc:714, eng:true, note:'Subsidy of 1523 yielded £151,215, collected over four years; the Amicable Grant of 1525 was abandoned after revolt', now:['United Kingdom',4264794]},
+      {name:'Austrian Habsburg lands', s:'the Austrian lands', gdp:1414, pc:707, note:'Archduke Ferdinand, the Emperor\'s brother', now:['Austria',623719]},
+      {name:'Flanders and Brabant (Antwerp)', s:'Flanders and Brabant', gdp:1225, pc:875, note:'Antwerp: the market where English wool and cloth are sold', now:['Belgium',776730]},
+      {name:'North America and Australasia (native nations)', s:'the native nations of America', gdp:1120, pc:400, note:'No European settlement yet north of Mexico', now:['United States, Canada and Australia',32383920+2507340+2123963]},
+      {name:'Holland and the northern Low Countries', s:'Holland', gdp:723, pc:761, note:'', now:['Netherlands',1449704]},
+      {name:'Small states of Western Europe', s:'small states', gdp:632, pc:472, note:'', now:null},
+      {name:'Denmark–Norway', s:'Denmark–Norway', gdp:626, pop:0.90, note:'Frederick I, since Christian II was driven out in 1523', now:['Denmark only',503772]},
+      {name:'Portugal', s:'Portugal', gdp:606, pc:606, note:'Spice route to India round the Cape', now:['Portugal',380637]},
+      {name:'Sweden (with Finland)', s:'Sweden', gdp:518, pop:0.85, note:'Gustav Vasa, king since 1523', now:['Sweden only',760481]},
+      {name:'Swiss Confederacy', s:'the Swiss Confederacy', gdp:411, pc:632, note:'Pikemen for hire to every king', now:['Switzerland',1146911]},
     ];
-    var WORLD_GDP=248445, WORLD_PC=566, WORLD_GDP_2026=126295331;
+    var WORLD_GDP=248445, WORLD_PC=566;
+    function realmPop(r){ return r.pop || r.gdp/r.pc; }
+    function realmPc(r){ return r.pc || r.gdp/r.pop; }
+
+    // ── The world in 2026 ─────────────────────────────────────────────
+    // [country, GDP 2026 (IMF forecast, $m), household net worth ($tn), year measured, which 1526 row held the land]
+    // Net worth: McKinsey Household Wealth Watch (2025) where it tracks the country; otherwise the latest
+    // measured figure, UBS Global Wealth Databook 2023 (end-2022: adults × mean wealth per adult).
+    var WORLD_GDP_2026=126295331, WORLD_WORTH_2026=570;
+    var MODERN = [
+      ['United States',32383920,175,2025,'North America and Australasia (native nations)'],
+      ['China',20851593,75,2025,'Ming China'],
+      ['Germany',5452858,23,2025,'German lands (Holy Roman Empire)'],
+      ['Japan',4379253,22,2025,'Japan (the Warring States)'],
+      ['United Kingdom',4264794,15,2025,'England (with Wales, Scotland and Ireland)'],
+      ['India',4153191,15.37,2022,'India — Babur\'s new Mughal empire, Vijayanagara and the sultanates'],
+      ['France',3596094,16,2025,'France'],
+      ['Italy',2738164,13,2025,'Italian states — Venice, Florence, Milan, Naples, the Pope'],
+      ['Russia',2656452,4.39,2022,'Muscovy, Lithuania and the Tatar khanates'],
+      ['Brazil',2635912,4.63,2022,'Peru (the Inca) and the rest of the Americas'],
+      ['Canada',2507340,13,2025,'North America and Australasia (native nations)'],
+      ['Australia',2123963,12,2025,'North America and Australasia (native nations)'],
+      ['Mexico',2120855,5.4,2025,'New Spain (Mexico)'],
+      ['Spain',2091222,11,2025,'Spain (Castile and Aragon)'],
+      ['South Korea',1931008,10,2025,'Rest of Asia — Korea, Siam, Burma, Malacca and the Indies'],
+      ['Turkey',1640223,1.04,2022,'Ottoman Empire, Safavid Persia and Arabia'],
+      ['Indonesia',1539872,3.26,2022,'Rest of Asia — Korea, Siam, Burma, Malacca and the Indies'],
+      ['Netherlands',1449704,6.4,2025,'Holland and the northern Low Countries'],
+      ['Saudi Arabia',1388676,2.27,2022,'Ottoman Empire, Safavid Persia and Arabia'],
+      ['Switzerland',1146911,4.83,2022,'Swiss Confederacy'],
+      ['Poland',1134248,1.8,2025,'Eastern Europe — Poland, Hungary, Bohemia, the Balkans'],
+      ['Taiwan',976719,5.42,2022,null],
+      ['Ireland',779381,1.5,2025,'England (with Wales, Scotland and Ireland)'],
+      ['Belgium',776730,3.9,2025,'Flanders and Brabant (Antwerp)'],
+      ['Sweden',760481,2.9,2025,'Sweden (with Finland)'],
+      ['Israel',719848,1.37,2022,'Ottoman Empire, Safavid Persia and Arabia'],
+      ['Argentina',688378,0.42,2022,'Peru (the Inca) and the rest of the Americas'],
+      ['Singapore',659572,1.91,2022,'Rest of Asia — Korea, Siam, Burma, Malacca and the Indies'],
+      ['Austria',623719,2.5,2025,'Austrian Habsburg lands'],
+      ['United Arab Emirates',621546,1.24,2022,'Ottoman Empire, Safavid Persia and Arabia'],
+      ['Norway',599406,1.64,2022,'Denmark–Norway'],
+      ['Denmark',503772,2.1,2025,'Denmark–Norway'],
+      ['Portugal',380637,1.1,2025,'Portugal'],
+    ];
+    var sort1526='gdp', sort2026='gdp';
+    window.wonSort=function(which,key){ if(which===1526) sort1526=key; else sort2026=key; render(); };
+    function sortBar(which,cur,opts){ return '<div class="won-sort">Rank by '+opts.map(function(o){ return '<button type="button" class="'+(o[0]===cur?'on':'')+'" onclick="wonSort('+which+',\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div>'; }
+    function realmIndex(name){ for(var i=0;i<REALMS.length;i++){ if(REALMS[i].name===name) return i; } return -1; }
 
     // ── What the band earns ───────────────────────────────────────────
     // Working year of 250 days, split by the English seasons of the game.
@@ -3148,17 +3239,66 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td></tr>'; });
       h+='</tbody></table></div>';
 
-      // Realms
-      h+='<h4>The wealth of the realms, c. 1500 — in 2026 US dollars</h4><div class="note"><strong>Yearly GDP</strong> is each realm\'s output in a year (Maddison\'s estimates, raised to 2026 dollars by US inflation). <strong>Total worth</strong> is everything the realm owned — mostly land, then houses, livestock, tools and stock — estimated at 6½ years of output, the ratio measured for pre-industrial England and France. <strong>Same land in 2026</strong> is that country\'s actual GDP today (IMF), for scale.</div>';
-      h+='<div class="won-scroll"><table class="wide"><thead><tr><th>Realm</th><th class="n">People (m)</th><th class="n">Yearly GDP</th><th class="n">Total worth<span class="est">estimate</span></th><th class="n">Per head / year</th><th class="n">Share of world</th><th class="n">Same land in 2026</th><th>Notes</th></tr></thead><tbody>';
-      REALMS.forEach(function(r){
-        var pop=r[2]?r[1]/r[2]:null, gdp=r[1]*1e6*CPI_1990_TO_NOW;
-        h+='<tr'+(r[4]?' class="eng"':'')+'><td>'+r[0]+'</td><td class="n">'+(pop?pop.toFixed(1):'—')+'</td><td class="n"><strong>'+usd(gdp)+'</strong></td><td class="n">'+usd(gdp*WEALTH_MULT)+'</td><td class="n">'+(r[2]?usd(r[2]*CPI_1990_TO_NOW):'—')+'</td><td class="n">'+(r[1]/WORLD_GDP*100).toFixed(1)+'%</td><td class="n">'+usd(r[5]*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+r[6]+' · '+Math.round(r[5]*1e6/gdp).toLocaleString('en-US')+'× bigger</span></td><td class="notes">'+(r[3]||'')+'</td></tr>';
-      });
+      // ── The powers of the world, 1526 — ranked ──
       var wg=WORLD_GDP*1e6*CPI_1990_TO_NOW;
-      h+='<tr><td><strong>The whole world</strong></td><td class="n">'+(WORLD_GDP/WORLD_PC).toFixed(0)+'</td><td class="n"><strong>'+usd(wg)+'</strong></td><td class="n">'+usd(wg*WEALTH_MULT)+'</td><td class="n">'+usd(WORLD_PC*CPI_1990_TO_NOW)+'</td><td class="n">100%</td><td class="n">'+usd(WORLD_GDP_2026*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+Math.round(WORLD_GDP_2026*1e6/wg).toLocaleString('en-US')+'× bigger</span></td><td></td></tr>';
+      var rs=REALMS.map(function(r,i){ var pop=realmPop(r), pc=realmPc(r), g=r.gdp*1e6*CPI_1990_TO_NOW; return {r:r, rank:i+1, gdp:g, worth:g*WEALTH_MULT, pop:pop, pc:pc*CPI_1990_TO_NOW, share:r.gdp/WORLD_GDP}; });
+      var k1=sort1526; rs.sort(function(a,b){ return b[k1]-a[k1]; });
+      h+='<h4>The powers of the world in 1526 — who holds the money</h4>';
+      h+='<div class="note">Every land on earth, ranked — '+REALMS.length+' realms and regions that together make the whole world. <strong>Yearly output</strong> is what each produced in a year (Maddison\'s estimates for 1500, raised to 2026 dollars by US inflation). <strong>Total worth</strong> is everything it owned — land above all, then houses, beasts, tools and stock — reckoned at 6½ years of output, the ratio measured in the earliest balance sheets of England and France. Because that ratio is the same everywhere, the order by worth is the order by output, with every figure 6½ times larger. The whole world made <strong>'+usd(wg)+'</strong> a year and was worth about <strong>'+usd(wg*WEALTH_MULT)+'</strong>. Where Maddison lumps lands together, the row is named for the realms that held them in 1526.</div>';
+      h+=sortBar(1526,k1,[['gdp','Yearly output'],['worth','Total worth'],['pop','People'],['pc','Output per head']]);
+      var m1=rs[0][k1];
+      h+='<div class="rank">';
+      rs.forEach(function(x,i){
+        var w=Math.max(0.6, x[k1]/m1*100), main, sub;
+        if(k1==='gdp'){ main=usd(x.gdp); sub='worth '+usd(x.worth)+' · '+(x.share*100).toFixed(1)+'% of the world'; }
+        else if(k1==='worth'){ main=usd(x.worth); sub='output '+usd(x.gdp)+' a year · '+(x.share*100).toFixed(1)+'% of the world'; }
+        else if(k1==='pop'){ main=x.pop.toFixed(1)+' m people'; sub=usd(x.pc)+' a head each year'; }
+        else { main=usd(x.pc)+' a head'; sub=x.pop.toFixed(1)+' m people'; }
+        h+='<div class="row'+(x.r.eng?' eng':'')+'"><div class="rk">'+(i+1)+'</div><div class="nm">'+x.r.name+(x.r.now?'<small>same land in 2026: '+x.r.now[0]+', '+usd(x.r.now[1]*1e6)+'</small>':'<small>many countries today</small>')+'</div><div class="bar"><i style="width:'+w.toFixed(1)+'%"></i></div><div class="val"><strong>'+main+'</strong><small>'+sub+'</small></div></div>';
+      });
+      h+='</div>';
+
+      // The full table, folded away
+      h+='<details class="won-more"><summary>The full table of the realms, c. 1500</summary>';
+      h+='<div class="won-scroll"><table class="wide"><thead><tr><th class="n">#</th><th>Realm</th><th class="n">People (m)</th><th class="n">Yearly output</th><th class="n">Total worth<span class="est">estimate</span></th><th class="n">Per head / year</th><th class="n">Share of world</th><th class="n">Same land in 2026</th><th>Notes</th></tr></thead><tbody>';
+      REALMS.forEach(function(r,i){
+        var pop=realmPop(r), pc=realmPc(r), gdp=r.gdp*1e6*CPI_1990_TO_NOW;
+        h+='<tr'+(r.eng?' class="eng"':'')+'><td class="n">'+(i+1)+'</td><td>'+r.name+'</td><td class="n">'+pop.toFixed(1)+'</td><td class="n"><strong>'+usd(gdp)+'</strong></td><td class="n">'+usd(gdp*WEALTH_MULT)+'</td><td class="n">'+usd(pc*CPI_1990_TO_NOW)+'</td><td class="n">'+(r.gdp/WORLD_GDP*100).toFixed(1)+'%</td><td class="n">'+(r.now?usd(r.now[1]*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+r.now[0]+' · '+Math.round(r.now[1]*1e6/gdp).toLocaleString('en-US')+'× bigger</span>':'—')+'</td><td class="notes">'+(r.note||'')+'</td></tr>';
+      });
+      h+='<tr><td></td><td><strong>The whole world</strong></td><td class="n">'+(WORLD_GDP/WORLD_PC).toFixed(0)+'</td><td class="n"><strong>'+usd(wg)+'</strong></td><td class="n">'+usd(wg*WEALTH_MULT)+'</td><td class="n">'+usd(WORLD_PC*CPI_1990_TO_NOW)+'</td><td class="n">100%</td><td class="n">'+usd(WORLD_GDP_2026*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+Math.round(WORLD_GDP_2026*1e6/wg).toLocaleString('en-US')+'× bigger</span></td><td></td></tr>';
       h+='</tbody></table></div>';
-      h+='<div class="note">Maddison\'s England figure includes Wales, Scotland and Ireland. England alone had about 2.8 million people by 1541 (Wrigley &amp; Schofield). Newer work by Broadberry and others puts English output per head higher than Maddison does. Figures for state revenue survive for only a few realms, and none is invented here. Total worth is an estimate: nobody measured a nation\'s wealth before the late 1600s, so the ratio is taken from the earliest measured balance sheets.</div>';
+      h+='<div class="note">Maddison\'s England figure includes Wales, Scotland and Ireland. England alone had about 2.8 million people by 1541 (Wrigley &amp; Schofield). Newer work by Broadberry and others puts English output per head higher than Maddison does. Figures for state revenue survive for only a few realms, and none is invented here. Total worth is an estimate: nobody measured a nation\'s wealth before the late 1600s, so the ratio is taken from the earliest measured balance sheets.</div></details>';
+
+      // ── The powers of the world, 2026 ──
+      var ms=MODERN.map(function(m){ var idx=m[4]?realmIndex(m[4]):-1; return {name:m[0], gdp:m[1]*1e6, worth:m[2]*1e12, yr:m[3], then:idx>=0?REALMS[idx]:null, thenRank:idx+1, share:m[1]/WORLD_GDP_2026, wshare:m[2]/WORLD_WORTH_2026}; });
+      var k2=sort2026; ms.sort(function(a,b){ return b[k2]-a[k2]; });
+      var mg=Math.max.apply(null, ms.map(function(x){return x.gdp;})), mw=Math.max.apply(null, ms.map(function(x){return x.worth;}));
+      h+='<h4>The powers of the world in 2026 — the same chart today</h4>';
+      h+='<div class="note">The '+MODERN.length+' largest economies, ranked. <strong>Yearly GDP</strong> is the IMF\'s forecast for 2026. <strong>Net worth</strong> is what the people of each country own less what they owe — houses and land, businesses, pensions, shares and savings — the modern measure closest to the 1526 "total worth" (the state\'s own holdings are not counted). The world makes <strong>'+usd(WORLD_GDP_2026*1e6)+'</strong> a year and its households own about <strong>'+usd(WORLD_WORTH_2026*1e12)+'</strong>, about 4½ years of output — less than the 6½ of 1526, when land was nearly all the wealth there was. Figures marked <span class="est">end-2022</span> are the latest measured for that country.</div>';
+      h+=sortBar(2026,k2,[['gdp','Yearly GDP'],['worth','Net worth']]);
+      h+='<div class="rank"><div class="legend"><span class="sw gdp"></span>GDP <span class="sw worth"></span>Net worth <span style="text-transform:none;letter-spacing:0">(each bar measured against its leader)</span></div>';
+      ms.forEach(function(x,i){
+        var flag=x.yr!==2025?' <span class="est">end-'+x.yr+'</span>':'';
+        h+='<div class="row'+(x.name==='United Kingdom'?' eng':'')+'"><div class="rk">'+(i+1)+'</div><div class="nm">'+x.name+(x.then?'<small>in 1526: '+x.then.s+', no. '+x.thenRank+' then</small>':'<small>in 1526: outside every crown\'s reach</small>')+'</div>'+
+          '<div class="bar2"><div class="bar gdp"><i style="width:'+Math.max(0.6,x.gdp/mg*100).toFixed(1)+'%"></i></div><div class="bar worth"><i style="width:'+Math.max(0.6,x.worth/mw*100).toFixed(1)+'%"></i></div></div>'+
+          '<div class="val">'+(k2==='gdp'?'<strong>'+usd(x.gdp)+'</strong><small>worth '+usd(x.worth)+flag+' · '+(x.share*100).toFixed(1)+'% of world GDP</small>':'<strong>'+usd(x.worth)+'</strong>'+flag+'<small>GDP '+usd(x.gdp)+' · '+(x.wshare*100).toFixed(1)+'% of the world\'s wealth</small>')+'</div></div>';
+      });
+      h+='</div>';
+      h+='<div class="note">Ranks are among the economies shown; the first 25 by GDP are the world\'s first 25. Net worth here is household wealth, the only measure taken the same way across countries; a country\'s public property, roads and armies are not in it. In 1526 there was no such split — the king\'s lands and the abbey\'s lands were counted with everyone else\'s.</div>';
+
+      // ── Then and now ──
+      var tn=REALMS.filter(function(r){ return r.now; }).map(function(r){ return {r:r, then:r.gdp/WORLD_GDP, now:r.now[1]/WORLD_GDP_2026, rankThen:realmIndex(r.name)+1}; });
+      tn.sort(function(a,b){ return b.now-a.now; });
+      var mx=Math.max.apply(null, tn.map(function(x){ return Math.max(x.then,x.now); }));
+      h+='<h4>Then and now — the same lands, share of the world\'s output</h4><div class="note">How each land\'s slice of the world has changed in five hundred years. Where Maddison lumps lands together, the 2026 figure is for the country named.</div>';
+      h+='<div class="rank"><div class="legend"><span class="sw then"></span>1526 <span class="sw now"></span>2026</div>';
+      tn.forEach(function(x,i){
+        var up=x.now>=x.then;
+        h+='<div class="row'+(x.r.eng?' eng':'')+'"><div class="rk">'+(i+1)+'</div><div class="nm">'+x.r.now[0]+'<small>1526: '+x.r.s+', no. '+x.rankThen+' of '+REALMS.length+'</small></div>'+
+          '<div class="bar2"><div class="bar then"><i style="width:'+Math.max(0.6,x.then/mx*100).toFixed(1)+'%"></i></div><div class="bar now"><i style="width:'+Math.max(0.6,x.now/mx*100).toFixed(1)+'%"></i></div></div>'+
+          '<div class="val"><strong>'+(x.then*100).toFixed(1)+'% → '+(x.now*100).toFixed(1)+'%</strong><small>'+(up?'↑ '+(x.now/x.then).toFixed(1)+'× its old share':'↓ a share '+(x.then/x.now).toFixed(1)+'× smaller')+'</small></div></div>';
+      });
+      h+='</div>';
 
       // Band incomes
       h+='<h4>What the band earns — by season and by year</h4><div class="note">Rates are for a working day without food and drink; a man fed by his master was paid less. The year counts 250 working days: Sundays, holy days and short winter days are left out. Summer rates run from Easter to Michaelmas. <span class="src">sourced</span> marks a documented wage rate. <span class="est">estimate</span> marks a reasoned figure where no rate survives.</div>';
@@ -3195,6 +3335,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 in 2025 (real price); brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a>.<br>'+
         '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
         '• <a href="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)" target="_blank" rel="noopener">IMF 2026 GDP by country</a> — same lands today.<br>'+
+        '• <a href="https://www.mckinsey.com/featured-insights/charts/household-wealth-watch" target="_blank" rel="noopener">McKinsey, Household Wealth Watch</a> — household net worth by country for 2025 (world about $570 trillion), at market exchange rates.<br>'+
+        '• <a href="https://en.wikipedia.org/wiki/List_of_countries_by_wealth_per_adult" target="_blank" rel="noopener">UBS Global Wealth Databook 2023</a> — adults and mean wealth per adult at end-2022, multiplied here for countries McKinsey does not track.<br>'+
+        '• <a href="https://www.ubs.com/global/en/media/display-page-ndp/en-20260630-gwr-2026.html" target="_blank" rel="noopener">UBS Global Wealth Report 2026</a> — wealth defined as financial and real assets owned by private individuals, less debts; world personal wealth rose 10.8% in 2025.<br>'+
         '• <a href="https://eml.berkeley.edu/~saez/course/piketty-zucman13Kisback.pdf" target="_blank" rel="noopener">Piketty &amp; Zucman, Capital is Back</a> — national wealth about 600–700% of national income in pre-industrial Britain and France.<br>'+
         '• <a href="https://tradingeconomics.com/united-kingdom/currency" target="_blank" rel="noopener">Trading Economics</a> — GBP/USD 1.3248 on 25 Sep 2026.<br>'+
         '• <a href="https://www.economics.utoronto.ca/munro5/REH21MunroWageStickiness.pdf" target="_blank" rel="noopener">Munro, wage-stickiness in late-medieval England</a> — building craftsmen 6d summer / 5d winter (4d with food) under the 1495 statute; rates stable until the 1530s.<br>'+
