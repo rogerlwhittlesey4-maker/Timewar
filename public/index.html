@@ -3049,7 +3049,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       ['Winter (Dec–Feb)', {winter:52}],
     ];
     var BAND = [
-      {id:1, trade:'Wool dealer on his inherited stock', basis:'A small wool dealer\'s net profit, taken as £12 a year and earned mostly after shearing (15% / 50% / 20% / 15% by season)', annual:2880, split:[0.15,0.5,0.2,0.15], est:true},
+      {id:1, trade:'Wool broker on commission', basis:'Buys fleeces for larger dealers on commission, using his father\'s old contacts, since he has no stock of his own. Taken as £6 a year, earned mostly after shearing (15% / 50% / 20% / 15% by season)', annual:1440, split:[0.15,0.5,0.2,0.15], est:true},
       {id:2, trade:'Fen farmer\'s son — husbandry labour', basis:'Labourer\'s rate: 4d a day in summer, 3d in winter; 5d at harvest', rates:{summer:4,winter:3,harvest:5}, src:true, estNote:'harvest rate'},
       {id:3, trade:'Tanner\'s son — tan-yard work', basis:'Semi-skilled: 5d summer / 4d winter, between labourer and craftsman (no statute rate for tanners)', rates:{summer:5,winter:4,harvest:5}, est:true},
       {id:4, trade:'Blacksmith\'s son — smithing', basis:'Craftsman\'s rate: 6d a day in summer, 5d in winter, without food and drink (statute of 1495)', rates:{summer:6,winter:5,harvest:6}, src:true},
@@ -3063,10 +3063,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     // Values are reasoned estimates for Whittlesey c.1526; see the notes under the table.
     var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
     var HOUSEHOLDS = [
-      {id:1, who:'his own household (heir since his father died)', band:'yeoman / small merchant',
-       home:'A two-storey timber-framed hall house near the market place: wattle-and-daub walls, reed thatch, a hall open to the roof with a hearth, a parlour and a chamber over it, and a loft for wool. Glass only in the parlour window.',
-       tenure:'Held by copy of the court roll of the manor of Whittlesey St Mary (Thorney Abbey), with rights of common on the fen.',
-       items:[['The house and its yard',2400],['20 acres of pasture held by copy ('+'20 × 17s 6d)',20*ACRE],['60 sheep at 1s 6d',60*18],['Wool in the loft, waiting for the stapler',1920],['A riding horse',160],['Household stuff: beds, pewter, brass pots, linen, a chest',720],['Money in hand and debts owed to him',1200]],
+      // Roger's net worth is set to match Lee's own: about $2,000 (≈ £1 7s 3d in 1526 money at this page's rate)
+      {id:1, who:'what he owns himself', band:'wool merchant\'s son, fallen on lean times',
+       home:'A rented upper chamber in a house near the market place: one room under the thatch, a bed, a chest and a shuttered window over the street. He pays his rent by the quarter.',
+       tenure:'Holds no land. When his father died, the house, the flock and the wool stock went to pay his father\'s debts; Roger kept his name, his father\'s trade connections and little else.',
+       items:[['His clothes: a good doublet, hose, two shirts, shoes and a cap',96],['A sword and buckler',60],['A few fleeces kept back from his father\'s trade',48],['Bed, blanket and a locking chest',40],['Money in his purse',83]],
        own:null},
       {id:2, who:'his father\'s holding by the mere', band:'husbandman',
        home:'A one-and-a-half-room cottage of timber and daub under fen reed: one hearth room with an open fire, a sleeping chamber, a cow-house against the gable. Earth floor strewn with rushes; shutters, no glass.',
@@ -3159,7 +3160,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
             '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_GOODS)+'</strong></td></tr>':'')+
           '</tbody></table></div><div class="note">1524–25 subsidy band for the household: '+sb.band+' → about '+lsd(sb.tax)+' tax.</div></div>';
       });
-      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
+      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and most of it is the few belongings each man owns outright. Remember that the $500 ledger is their lives, not this money.</div>';
       h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
 
       h+='<h4>Sources</h4><div class="sources">'+
@@ -4834,7 +4835,7 @@ const CHAR_PORTRAITS={
 };
 const BIOS={
   1:{origin:'Whittlesey, Cambridgeshire',birth:'1508 AD',
-    background:`Roger Lee Whittlesey IV is the fourth generation of his line to bear the name in Whittlesey. Son of a wool merchant who died of fever when Roger was fourteen, he inherited modest holdings and a reputation for clear-headedness beyond his years. He speaks with quiet authority — men defer to him not from rank but from the sense that he sees further ahead than they do.`,
+    background:`Roger Lee Whittlesey IV is the fourth generation of his line to bear the name in Whittlesey. Son of a wool merchant who died of fever when Roger was fourteen, his father's debts took the house and the flock, and Roger was left with little but the family name, his father's trade connections and a reputation for clear-headedness beyond his years. He speaks with quiet authority — men defer to him not from rank but from the sense that he sees further ahead than they do.`,
     personality:`Calm under pressure, calculating in risk, deeply loyal to those who earn his trust. He carries the weight of command without complaint and never asks his men to go where he will not lead.`,
     traits:['Commander','Strategist','Cool-headed','Loyal','Merchant\'s mind'],
     quote:`"We do not fight for glory. We fight so that Whittlesey stands when tomorrow comes."`},
