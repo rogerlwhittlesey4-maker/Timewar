@@ -2312,6 +2312,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .twc-msg.them .who{color:#7a1c1c;}
 .twc-msg.narr{align-self:center;background:transparent;border:none;color:#c9b27a;font-style:italic;font-size:13px;text-align:center;max-width:92%;}
 .twc-msg.sys{align-self:center;background:transparent;color:#8a7a60;font-family:var(--mono);font-size:10px;text-align:center;border:none;}
+.twc-msg.twc-docline{align-self:center;max-width:92%;background:linear-gradient(180deg,#f7ecd2,#e9d6a8);border:1px solid #9a7840;color:#2c1f0e;font-family:var(--fellsc);font-size:13px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.35);}
+.twc-msg.twc-docline:hover{border-color:#c9a227;}
 .twc-msg.divider{align-self:stretch;max-width:none;text-align:center;font-family:var(--fellsc);font-size:12px;color:#c9a227;letter-spacing:0.08em;border-top:1px solid #5a4520;padding-top:6px;margin-top:4px;background:transparent;}
 .twc-msg.typing{opacity:0.9;}
 .twc-dots{display:inline-flex;gap:4px;align-items:center;height:14px;}
@@ -2415,6 +2417,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   var sel = null;          // 'gathering' | 'log' | man id
   var viewSceneId = null;  // scene shown in the chat column (null = current)
+  var viewDocId = null;    // document shown when the Documents record is open
   var busy = false;        // a 1:1 reply or scene line is being written
   var live = false, liveTimer = null, nextAt = 0, quiet = 0, pace = 60, fastNext = false;
   var pendingSpeaker = null, typingShown = false, TYPING_LEAD_MS = 4000;
@@ -2506,7 +2509,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
       (recent.length?'Recent fights: '+recent.join(' | ')+'\n':'')+
-      (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'');
+      (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'')+
+      docsContext(st);
   }
 
   function personaText(m, st, noMood){
@@ -2547,12 +2551,98 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   }
 
   // ───────── rendering ─────────
+  // ───────── signed documents ─────────
+  // Who can write his own name (1526): Roger and Edmund write; Thomas can scratch his
+  // name; Ralph and John make their mark. Later recruits default to a mark.
+  var LITERACY = {1:'writes', 2:'mark', 3:'name', 4:'mark', 5:'writes'};
+  function literacyOf(name){ if(/^roger/i.test(name)) return 'writes'; var m=manByName(name); if(!m) return 'mark'; return LITERACY[m.id] || 'mark'; }
+  function roman(n){ var t=[[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']], s=''; t.forEach(function(p){ while(n>=p[0]){ s+=p[1]; n-=p[0]; } }); return s.replace(/i$/,'j'); }
+  // Regnal year of Henry VIII (acceded 22 April 1509, Julian) — how English deeds were dated
+  function regnal(dateStr){ var o=parseD(dateStr), y=o.y-1509+((o.m>4||(o.m===4&&o.d>=22))?1:0); return {n:y, text:'the '+roman(y)+' yere of the reigne of our souerayne lorde Kynge Henry the viij', plain:'the '+y+'th year of the reign of King Henry VIII'}; }
+  function ordinalDay(ds){ var o=parseD(ds), n=o.d, suf=(n%10===1&&n!==11)?'st':(n%10===2&&n!==12)?'nd':(n%10===3&&n!==13)?'rd':'th'; return n+suf+' day of '+MONTHS[o.m-1]+' '+o.y; }
+  function docById(st,id){ return (st.documents||[]).filter(function(d){ return d.id===id; })[0]; }
+  function docSigners(d, yes){ return (d.signatories||[]).filter(function(s){ return !!s.signed===yes; }).map(function(s){ return s.name; }); }
+  function docsContext(st){
+    var ds=(st.documents||[]).slice(-8);
+    if(!ds.length) return '';
+    return 'SIGNED DOCUMENTS (binding on those who signed; the men remember them): '+ds.map(function(d){
+      return dayInfo(d.date).short+' — '+d.title+' ('+d.kind+'): '+(d.terms||[]).join('; ')+'. Signed: '+(docSigners(d,true).join(', ')||'none')+(docSigners(d,false).length?'. Refused: '+docSigners(d,false).join(', '):'');
+    }).join(' || ')+'\n';
+  }
+
+  function docHtml(d){
+    var di=dayInfo(d.date), rg=regnal(d.date);
+    var sigs=(d.signatories||[]).map(function(s){
+      var lit=literacyOf(s.name), mark;
+      if(!s.signed) mark='<span style="color:#8a2a20;font-style:italic">'+esc(s.name)+' — refused to sign</span>';
+      else if(lit==='writes') mark='<span style="font-family:var(--fell);font-style:italic;font-size:18px;color:#2c1f0e">'+esc(s.name)+'</span>';
+      else if(lit==='name') mark='<span style="font-family:var(--fell);font-style:italic;font-size:16px;color:#3a2a14;letter-spacing:0.08em">'+esc(s.name.split(' ')[0])+' '+esc((s.name.split(' ')[1]||'').toLowerCase())+'</span> <span style="font-size:10px;color:#6b4f2e">(in an unsteady hand)</span>';
+      else mark='<span style="font-size:20px;color:#2c1f0e">✚</span> <span style="font-style:italic;color:#4a3520">the marke of '+esc(s.name)+'</span>';
+      return '<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted #9a7840;padding:5px 0;align-items:baseline"><span>'+mark+'</span>'+(s.reason?'<span style="font-family:var(--mono);font-size:9px;color:#6b4f2e;text-align:right;max-width:55%">'+esc(s.reason)+'</span>':'')+'</div>';
+    }).join('');
+    return '<div style="align-self:stretch;background:linear-gradient(180deg,#f7ecd2,#efdfb9);border:1px solid #9a7840;box-shadow:inset 0 0 30px rgba(122,92,40,0.25),0 3px 10px rgba(0,0,0,0.4);border-radius:3px;padding:18px 20px;color:#2c1f0e;font-family:var(--fell);">'+
+      '<div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#7a5c00;text-align:center">'+esc(d.kind||'Document')+(d.source==='recorded'?' · recorded from the conversation':'')+'</div>'+
+      '<div style="font-family:var(--fellsc);font-size:21px;text-align:center;margin:4px 0 10px;color:#2c1f0e">'+esc(d.title)+'</div>'+
+      '<div style="font-size:14.5px;line-height:1.65;white-space:pre-wrap">'+esc(d.body||'')+'</div>'+
+      ((d.terms&&d.terms.length)?'<div style="margin-top:10px;font-family:var(--fellsc);font-size:12px;color:#7a5c00;letter-spacing:0.06em">THE TERMS</div><ol style="margin:4px 0 0 20px;font-size:13.5px;line-height:1.5">'+d.terms.map(function(t){return '<li>'+esc(t)+'</li>';}).join('')+'</ol>':'')+
+      '<div style="margin-top:12px;font-size:13px;font-style:italic;color:#4a3520">Given at '+esc(String(d.place||'Whittlesey').replace(/^The /,'the '))+(/whittlesey/i.test(d.place||'')?'':', Whittlesey')+', the '+ordinalDay(d.date)+' — '+esc(rg.text)+' <span style="font-style:normal;font-family:var(--mono);font-size:9px;color:#6b4f2e">('+esc(rg.plain)+')</span></div>'+
+      '<div style="margin-top:12px;font-family:var(--fellsc);font-size:12px;color:#7a5c00;letter-spacing:0.06em">SIGNED AND MARKED</div>'+sigs+
+      (d.witnesses&&d.witnesses.length?'<div style="margin-top:8px;font-size:12px;color:#4a3520"><em>Witnesses:</em> '+esc(d.witnesses.join(', '))+'</div>':'')+
+      '</div>';
+  }
+
+  window.twcOpenDoc=function(id){ sel='docs'; viewDocId=id; viewSceneId=null; renderAll(); };
+
+  window.twcDraft=async function(){
+    if(busy) return;
+    var topic=prompt('What is the document?\n\nFor example: "Articles of the band: how spoils and wages are shared", "An oath of loyalty to the band", "A bond for the loan of Ralph\'s father\'s punt", "A receipt for 3s paid to the smith".');
+    if(!topic||!topic.trim()) return;
+    var st=ensure(load()), priv=!sceneMode(), m=priv?manById(sel):null;
+    var parties = priv ? (m&&!m.dead?[m]:[]) : alive();
+    if(!parties.length) return;
+    var place = priv ? 'a private word' : curScene(st).place;
+    var transcript = priv
+      ? stateFor(st,m.id).chat.slice(-20).map(function(x){ return (x.role==='user'?'Roger: ':x.speaker+': ')+x.text; }).join('\n')
+      : sceneTranscript(curScene(st));
+    busy=true; renderChat();
+    try{
+      for(var i=0;i<parties.length;i++){ if(!PROFILES[parties[i].id]) await ensureProfile(parties[i]); }
+      st=ensure(load());
+      var rg=regnal(st.storyDate);
+      var system=worldCtx(st, st.storyDate, place)+docsContext(st)+'\nTHE MEN WHO WOULD SIGN:\n\n'+parties.map(function(p){ return personaText(p,st,true)+'Can write: '+({writes:'yes, signs his name',name:'only scratches his name',mark:'no — makes his mark'})[literacyOf(p.name)]; }).join('\n---\n')+'\n'+RULES+'\n\n'+
+        'You draw up a written document exactly as an English scrivener or parish clerk would in 1526: plain English of the period made readable (not Latin), in the correct form for its kind — articles of agreement, a bond (obligation) with a penal sum, an indenture, an oath, a receipt (acquittance), a letter or a will. Keep it true to what these men can actually promise and afford (their real means are in their descriptions) and to the conversation. Then decide, for each man, whether he would really put his name or mark to it — in character; a man may refuse or hesitate, and give his reason in a few words. Roger, who asked for it, signs.\n'+
+        'Return JSON only: {"title": "short title", "kind": "Articles of agreement | Bond | Indenture | Oath | Receipt | Letter | Will | Other", "body": "the document text, 120-280 words, opening in the proper form (e.g. \\"These articles made the ... day of ...\\" / \\"Know all men by these presents...\\"), dated '+rg.text+'", "terms": ["each binding term in one short line"], "signatories": [{"name": "Roger Lee Whittlesey IV", "signs": true, "reason": ""}'+parties.map(function(p){ return ', {"name": "'+p.name+'", "signs": true or false, "reason": "a few words"}'; }).join('')+'], "witnesses": ["names of any others present who would witness, or empty"]}';
+      var user=(transcript?'The conversation so far:\n'+transcript+'\n\n':'')+'Roger asks for this document to be drawn up: '+topic.trim();
+      var j=parseJSON(await ai(system,[{role:'user',content:user}],1400));
+      if(!j||!j.body) throw new Error('the clerk could not draw it up');
+      st=ensure(load());
+      var sigs=(j.signatories||[]).map(function(s){ return {name:String(s.name||''), signed:!!s.signs, reason:String(s.reason||'').slice(0,120)}; }).filter(function(s){ return s.name; });
+      if(!sigs.some(function(s){ return /^roger/i.test(s.name); })) sigs.unshift({name:'Roger Lee Whittlesey IV', signed:true, reason:''});
+      var doc={id:'d'+Date.now(), title:String(j.title||topic).slice(0,120), kind:String(j.kind||'Document').slice(0,40), date:st.storyDate, place:(priv?'Whittlesey':curScene(st).place), body:String(j.body||''), terms:(j.terms||[]).map(String).slice(0,12), signatories:sigs, witnesses:(j.witnesses||[]).map(String).filter(Boolean).slice(0,6), source:'drawn', sceneId:priv?null:st.currentScene, ts:Date.now()};
+      st.documents=st.documents||[]; st.documents.push(doc);
+      var signed=docSigners(doc,true), refused=docSigners(doc,false);
+      var note='📜 '+doc.title+' — signed by '+signed.join(', ')+(refused.length?'; refused by '+refused.join(', '):'');
+      if(priv){ stateFor(st,m.id).chat.push({role:'doc',docId:doc.id,text:note,ts:Date.now(),date:st.storyDate}); }
+      else { curScene(st).lines.push({who:'doc',docId:doc.id,text:note,ts:Date.now()}); }
+      refused.forEach(function(n){ var mm=manByName(n); if(mm){ var s=stateFor(st,mm.id); s.memories.push(dayInfo(st.storyDate).short+': refused to sign "'+doc.title+'".'); } });
+      signed.forEach(function(n){ var mm=manByName(n); if(mm){ var s=stateFor(st,mm.id); s.memories.push(dayInfo(st.storyDate).short+': put his '+(literacyOf(n)==='mark'?'mark':'name')+' to "'+doc.title+'".'); if(s.memories.length>24) s.memories=s.memories.slice(-24); } });
+      store(st);
+      busy=false; sel='docs'; viewDocId=doc.id; renderAll();
+    }catch(e){
+      busy=false;
+      st=ensure(load()); var msg={who:'sys',role:'sys',text:'The document could not be drawn up ('+(e&&e.message||'error')+').',ts:Date.now(),date:st.storyDate};
+      if(priv&&m) stateFor(st,m.id).chat.push(msg); else curScene(st).lines.push(msg);
+      store(st); renderAll();
+    }
+  };
+
   function renderList(){
     var el=document.getElementById('twc-list'); if(!el) return;
     var st=ensure(load()), sc=curScene(st), di=dayInfo(st.storyDate);
     var html='<div class="twc-group">Today</div>'+
       '<div class="twc-item'+(sel==='gathering'?' sel':'')+'" onclick="twcSelect(\'gathering\')"><div class="twc-ico">🍺</div><div><div class="twc-nm"><span class="twc-live-dot'+(live?' on':'')+'"></span>The Gathering</div><div class="twc-sub">'+esc(di.short)+' · '+esc(sc.place)+'</div></div></div>'+
       '<div class="twc-item'+(sel==='log'?' sel':'')+'" onclick="twcSelect(\'log\')"><div class="twc-ico">📜</div><div><div class="twc-nm">Conversation Log</div><div class="twc-sub">'+st.scenes.length+' gathering'+(st.scenes.length===1?'':'s')+' recorded</div></div></div>'+
+      '<div class="twc-item'+(sel==='docs'?' sel':'')+'" onclick="twcSelect(\'docs\')"><div class="twc-ico">🖋</div><div><div class="twc-nm">Signed Documents</div><div class="twc-sub">'+((st.documents||[]).length)+' on record</div></div></div>'+
       '<div class="twc-group">The men</div>';
     companions().forEach(function(m){
       var s=stateFor(st,m.id);
@@ -2574,6 +2664,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<div class="twc-sec"><div class="twc-h">Present</div><ul>'+alive().map(function(m){ var s=stateFor(st,m.id); return '<li><strong>'+esc(m.name)+'</strong> — '+esc(s.mood)+', health '+Math.round(m.hp)+'/'+m.maxHp+'</li>'; }).join('')+'</ul></div>'+
         '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or go to the next day when this one is done; the day is summed up in the log and the men remember it.</p></div>'+
         (earlier.length?'<div class="twc-sec"><div class="twc-h">Earlier days</div>'+earlier.map(function(s){ return '<p><strong>'+esc(dayInfo(s.date).short)+' · '+esc(s.place)+'</strong> — '+esc(s.summary)+'</p>'; }).join('')+'</div>':'');
+      return;
+    }
+    if(sel==='docs'){
+      var ds=(st.documents||[]).slice().reverse();
+      el.innerHTML='<h3>🖋 Signed Documents</h3><div class="twc-tag">Every agreement, oath, bond and receipt of the band, by date</div>'+
+        (ds.length?ds.map(function(d){ var y=docSigners(d,true), n=docSigners(d,false);
+          return '<div class="twc-logrow'+(viewDocId===d.id?' cur':'')+'" onclick="twcOpenDoc(\''+d.id+'\')"><div class="d">'+esc(d.title)+'</div><div class="m">'+esc(d.kind)+' · '+esc(dayInfo(d.date).short)+' · '+esc(d.place||'')+'</div><div class="s">Signed: '+esc(y.join(', ')||'—')+(n.length?' · <span style="color:#8a2a20">Refused: '+esc(n.join(', '))+'</span>':'')+'</div></div>'; }).join('')
+        :'<p style="font-family:var(--fell);font-size:13px;color:var(--ink3)">Nothing has been put in writing yet. In the Gathering or a private word, press <strong>🖋 Draw up a document</strong> for articles of the band, an oath, a bond or a receipt. The men decide in character whether to put their name or mark to it. Every document is dated in the regnal year, witnessed and kept here.</p>');
       return;
     }
     if(sel==='log'){
@@ -2618,6 +2716,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(l.who==='roger') return '<div class="twc-msg me"><span class="who">'+(typeof charAvatar==='function'?charAvatar(1,26)+' ':'')+'Roger</span>'+esc(l.text)+'</div>';
     if(l.who==='narr') return '<div class="twc-msg narr">'+esc(l.text)+'</div>';
     if(l.who==='sys') return '<div class="twc-msg sys">'+esc(l.text)+'</div>';
+    if(l.who==='doc') return '<div class="twc-msg twc-docline" onclick="twcOpenDoc(\''+l.docId+'\')" title="Open the document">'+esc(l.text)+'<span class="mood">Signed document · click to read</span></div>';
     var sm=manByName(l.speaker), av=(sm&&hasImg(sm))?charAvatar(sm.id,26)+' ':'';
     return '<div class="twc-msg them"><span class="who">'+av+esc(l.speaker||'')+'</span>'+esc(l.text)+(l.mood?'<span class="mood">'+esc(l.mood)+'</span>':'')+'</div>';
   }
@@ -2628,6 +2727,16 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var dayEl=document.getElementById('twc-day'), feastEl=document.getElementById('twc-feast'), ctrl=document.getElementById('twc-ctrl');
     var inp=document.getElementById('twc-input'), btn=document.getElementById('twc-send');
     var dateStr, place, viewingPast=false;
+    if(sel==='docs'){
+      var d=viewDocId?docById(st,viewDocId):null;
+      var dd=dayInfo(d?d.date:st.storyDate);
+      dayEl.textContent=d?dd.long:'Signed Documents';
+      feastEl.textContent=d?[d.place, regnal(d.date).plain].filter(Boolean).join(' · '):'The band\'s written record';
+      ctrl.style.display='flex';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button><span class="twc-status">Kept on record · read only</span>';
+      inp.disabled=true; btn.disabled=true; inp.placeholder='';
+      return;
+    }
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       viewingPast = sc.id!==st.currentScene;
@@ -2643,13 +2752,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<select onchange="twcPace(this.value)" title="How often someone speaks">'+PACES.map(function(p){ return '<option value="'+p[0]+'"'+(p[0]===pace?' selected':'')+'>'+p[1]+'</option>'; }).join('')+'</select>'+
         '<select onchange="twcPlace(this.value)" title="Where the band is gathered">'+PLACES.map(function(p){ return '<option'+(p===sc2.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'</select>'+
         '<button onclick="twcNextDay()" title="End this day; it is summed up in the log and the men remember it">Next day →</button>'+
+        '<button onclick="twcDraft()" title="Put an agreement, oath, bond or receipt in writing for the men to sign">🖋 Draw up a document</button>'+
         '<span class="twc-status" id="twc-status"></span>';
     } else if(sceneMode() && viewingPast){
       ctrl.style.display='flex';
       ctrl.innerHTML='<button onclick="twcOpenScene(null)">← Back to today</button><span class="twc-status">From the log · read only</span>';
     } else {
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcClearChat()" title="Erase this one-to-one conversation">Burn the letters</button><span class="twc-status">Private word</span>';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcDraft()" title="Put something in writing between you and him">🖋 Draw up a document</button><button onclick="twcClearChat()" title="Erase this one-to-one conversation">Burn the letters</button><span class="twc-status">Private word</span>';
     }
     var m2=manById(sel);
     var disabled = (sceneMode()&&viewingPast) || (!sceneMode() && (!m2 || m2.dead));
@@ -2683,6 +2793,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var st=ensure(load()); renderHeaderAndCtrl(st);
     var atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
     var html='';
+    if(sel==='docs'){
+      var d=viewDocId?docById(st,viewDocId):null;
+      box.innerHTML = d ? docHtml(d) : '<div class="twc-empty">Choose a document from the list to read it.</div>';
+      box.scrollTop=0; return;
+    }
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       html = sc.lines.length ? sc.lines.map(lineHtml).join('') : '<div class="twc-empty">The band has gathered at '+esc(sc.place.toLowerCase())+'. Press “Let them talk”, or say something.</div>';
@@ -2695,7 +2810,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       chat.forEach(function(x){
         var d=x.date||START_DATE;
         if(d!==lastDate){ html+='<div class="twc-msg divider">— '+esc(dayInfo(d).long)+' —</div>'; lastDate=d; }
-        html+= x.role==='user'?lineHtml({who:'roger',text:x.text}) : x.role==='sys'?lineHtml({who:'sys',text:x.text}) : lineHtml({who:'man',speaker:x.speaker,text:x.text,mood:x.mood});
+        html+= x.role==='user'?lineHtml({who:'roger',text:x.text}) : x.role==='sys'?lineHtml({who:'sys',text:x.text}) : x.role==='doc'?lineHtml({who:'doc',docId:x.docId,text:x.text}) : lineHtml({who:'man',speaker:x.speaker,text:x.text,mood:x.mood});
       });
       if(m.dead) html+='<div class="twc-msg sys">He fell in the service of the band. His words are kept here.</div>';
       else if(!chat.length) html='<div class="twc-empty">He is waiting for you to speak.</div>';
@@ -2737,10 +2852,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   function sceneTranscript(sc){
     return sc.lines.filter(function(l){ return l.who!=='sys'; }).slice(-40).map(function(l){
-      return l.who==='roger'?'Roger: '+l.text : l.who==='narr'?'[ '+l.text+' ]' : l.speaker+': '+l.text; }).join('\n');
+      return l.who==='roger'?'Roger: '+l.text : l.who==='narr'?'[ '+l.text+' ]' : l.who==='doc'?'[ Document signed: '+String(l.text).replace(/^📜 /,'')+' ]' : l.speaker+': '+l.text; }).join('\n');
   }
   function rogerAwaiting(sc){
-    for(var i=sc.lines.length-1;i>=0;i--){ var l=sc.lines[i]; if(l.who==='sys'||l.who==='narr') continue; return l.who==='roger'; }
+    for(var i=sc.lines.length-1;i>=0;i--){ var l=sc.lines[i]; if(l.who==='sys'||l.who==='narr'||l.who==='doc') continue; return l.who==='roger'; }
     return false;
   }
 
@@ -2847,10 +2962,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       var prompt='Date: '+dayInfo(sc.date).long+'. Place: '+sc.place+'.\nConversation:\n'+sceneTranscript(sc)+'\n\n'+
         'Return JSON: {"summary": "2-3 sentences: what was discussed and decided, who argued what", '+
         '"memories": {'+men.map(function(m){return '"'+m.name+'": "one short sentence he would remember about Roger from today, or empty"';}).join(', ')+'}, '+
-        '"loyalty": {'+men.map(function(m){return '"'+m.name+'": integer -3..3';}).join(', ')+'}}';
+        '"loyalty": {'+men.map(function(m){return '"'+m.name+'": integer -3..3';}).join(', ')+'}, '+
+        '"documents": [only if in this conversation a written document was actually drawn up and signed, marked or sealed (not merely talked about) and it is not already shown as [ Document signed ], give {"title": "...", "kind": "Articles of agreement | Bond | Indenture | Oath | Receipt | Letter | Will | Other", "terms": ["..."], "signed_by": ["exact full names"], "refused_by": ["exact full names"]}; otherwise an empty array]}';
       var j=parseJSON(await ai(sys,[{role:'user',content:prompt}],600)); if(!j) return;
       st=ensure(load()); sc=sceneById(st,sceneId); if(!sc) return;
       sc.summary=String(j.summary||'').slice(0,600);
+      (Array.isArray(j.documents)?j.documents:[]).slice(0,4).forEach(function(dj){
+        if(!dj||!dj.title) return;
+        var sigs=(dj.signed_by||[]).map(function(n){ return {name:String(n),signed:true,reason:''}; }).concat((dj.refused_by||[]).map(function(n){ return {name:String(n),signed:false,reason:''}; }));
+        st.documents=st.documents||[];
+        st.documents.push({id:'d'+Date.now()+Math.floor(Math.random()*1000), title:String(dj.title).slice(0,120), kind:String(dj.kind||'Document').slice(0,40), date:sc.date, place:sc.place, body:'Recorded from the conversation at '+sc.place+'. The written text itself was not kept in the log; these are its terms as the men agreed them.', terms:(dj.terms||[]).map(String).slice(0,12), signatories:sigs, witnesses:[], source:'recorded', sceneId:sc.id, ts:Date.now()});
+      });
       men.forEach(function(m){
         var s=stateFor(st,m.id);
         var mem=j.memories&&j.memories[m.name]; if(mem&&String(mem).trim()){ s.memories.push(dayInfo(sc.date).short+': '+String(mem).trim().slice(0,200)); if(s.memories.length>24) s.memories=s.memories.slice(-24); }
