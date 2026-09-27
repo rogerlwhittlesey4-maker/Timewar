@@ -1885,11 +1885,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       </div>
       <!-- /WoW column -->
 
-      <!-- May 2026 calendar (2/3 width, stretches to match WoW column height) -->
+      <!-- Live calendar (2/3 width, stretches to match WoW column height) -->
       <div style="flex:2 1 480px;min-width:320px;display:flex;flex-direction:column;">
         <div class="parch-panel" style="flex:1;display:flex;flex-direction:column;">
           <div class="p-inner" style="flex:1;display:flex;flex-direction:column;">
-            <div style="font-family:var(--fellsc);font-size:22px;color:var(--gold);text-align:center;letter-spacing:0.06em;padding-bottom:6px;margin-bottom:4px;">📅 May 2026</div>
+            <div style="font-family:var(--fellsc);font-size:22px;color:var(--gold);text-align:center;letter-spacing:0.06em;padding-bottom:6px;margin-bottom:4px;" id="cal-title">📅 Calendar</div>
             <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-align:center;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border2);">Personal Development Tracker · The Now</div>
 
             <!-- Day headers -->
@@ -1903,56 +1903,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
               <div style="font-family:var(--fellsc);font-size:11px;color:var(--gold-m);text-align:center;padding:6px 0;letter-spacing:0.06em;">Sat</div>
             </div>
 
-            <!-- Day grid: May 1, 2026 = Friday (column 5) -->
+            <!-- Day grid: built by the calendar script for the current month -->
             <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;" id="cal-2026-grid">
-              <!-- Week 1: empty Sun-Thu, May 1 Fri, May 2 Sat -->
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-holiday"><div class="cal-d">1</div><div class="cal-note">May Day · Beltane</div></div>
-              <div class="cal-day"><div class="cal-d">2</div></div>
-              <!-- Week 2: May 3-9 -->
-              <div class="cal-day"><div class="cal-d">3</div></div>
-              <div class="cal-day"><div class="cal-d">4</div></div>
-              <div class="cal-day cal-holiday"><div class="cal-d">5</div><div class="cal-note">Cinco de Mayo</div></div>
-              <div class="cal-day"><div class="cal-d">6</div></div>
-              <div class="cal-day"><div class="cal-d">7</div></div>
-              <div class="cal-day"><div class="cal-d">8</div></div>
-              <div class="cal-day"><div class="cal-d">9</div></div>
-              <!-- Week 3: May 10-16 -->
-              <div class="cal-day cal-holiday"><div class="cal-d">10</div><div class="cal-note">Mother\'s Day</div></div>
-              <div class="cal-day"><div class="cal-d">11</div></div>
-              <div class="cal-day"><div class="cal-d">12</div></div>
-              <div class="cal-day"><div class="cal-d">13</div></div>
-              <div class="cal-day"><div class="cal-d">14</div></div>
-              <div class="cal-day"><div class="cal-d">15</div></div>
-              <div class="cal-day"><div class="cal-d">16</div></div>
-              <!-- Week 4: May 17 (TODAY) - 23 -->
-              <div class="cal-day cal-today"><div class="cal-d">17</div><div class="cal-note">Today</div></div>
-              <div class="cal-day"><div class="cal-d">18</div></div>
-              <div class="cal-day"><div class="cal-d">19</div></div>
-              <div class="cal-day"><div class="cal-d">20</div></div>
-              <div class="cal-day"><div class="cal-d">21</div></div>
-              <div class="cal-day"><div class="cal-d">22</div></div>
-              <div class="cal-day"><div class="cal-d">23</div></div>
-              <!-- Week 5: May 24-30 -->
-              <div class="cal-day"><div class="cal-d">24</div></div>
-              <div class="cal-day cal-holiday"><div class="cal-d">25</div><div class="cal-note">Memorial Day</div></div>
-              <div class="cal-day"><div class="cal-d">26</div></div>
-              <div class="cal-day"><div class="cal-d">27</div></div>
-              <div class="cal-day"><div class="cal-d">28</div></div>
-              <div class="cal-day"><div class="cal-d">29</div></div>
-              <div class="cal-day"><div class="cal-d">30</div></div>
-              <!-- Week 6: May 31, then empty -->
-              <div class="cal-day"><div class="cal-d">31</div></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
-              <div class="cal-day cal-empty"></div>
             </div>
 
             <style>
@@ -1971,7 +1923,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
             <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div style="background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:10px;">
                 <div style="font-family:var(--fellsc);font-size:13px;color:var(--ink);margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">📓 Today\'s Reflection</div>
-                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Sunday, May 17, 2026</div>
+                <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;" id="cal-today-label"></div>
                 <textarea id="cal-daily-reflection" placeholder="What did you do today that moves you forward?" style="width:100%;min-height:42px;max-height:80px;background:#fff;border:1px solid var(--border2);border-radius:2px;padding:5px 7px;font-family:var(--fell);font-size:11px;color:var(--ink);resize:vertical;line-height:1.4;"></textarea>
                 <button onclick="saveCalReflection()" style="margin-top:6px;font-family:var(--fellsc);font-size:10px;padding:4px 10px;border-radius:3px;cursor:pointer;border:1px solid var(--border2);background:var(--parch);color:var(--ink);">Save reflection</button>
               </div>
@@ -1991,25 +1943,67 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
 
             <script>
-              // Daily reflection persistence (localStorage)
+              // Live calendar: current month, today highlighted, per-day reflection + habits.
               (function(){
-                const dateKey = 'cal-refl-2026-05-17';
-                const ta = document.getElementById('cal-daily-reflection');
-                if(ta){
-                  const saved = localStorage.getItem(dateKey);
-                  if(saved) ta.value = saved;
+                function pad(n){ return (n<10?'0':'')+n; }
+                function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+                function nthWeekday(y,m,wd,n){ var d=new Date(y,m,1); var off=(wd-d.getDay()+7)%7; return 1+off+(n-1)*7; }
+                function lastWeekday(y,m,wd){ var d=new Date(y,m+1,0); return d.getDate()-((d.getDay()-wd+7)%7); }
+                function holidays(y,m){
+                  var h={};
+                  var fixed={'0-1':'New Year\'s Day','1-14':'Valentine\'s Day','2-17':'St. Patrick\'s Day','4-1':'May Day','4-5':'Cinco de Mayo','6-4':'Independence Day','9-31':'Halloween','10-11':'Veterans Day','11-24':'Christmas Eve','11-25':'Christmas','11-31':'New Year\'s Eve'};
+                  Object.keys(fixed).forEach(function(k){ var p=k.split('-'); if(+p[0]===m) h[+p[1]]=fixed[k]; });
+                  if(m===0) h[nthWeekday(y,0,1,3)]='MLK Day';
+                  if(m===1) h[nthWeekday(y,1,1,3)]='Presidents\' Day';
+                  if(m===4){ h[nthWeekday(y,4,0,2)]='Mother\'s Day'; h[lastWeekday(y,4,1)]='Memorial Day'; }
+                  if(m===5) h[nthWeekday(y,5,0,3)]='Father\'s Day';
+                  if(m===8) h[nthWeekday(y,8,1,1)]='Labor Day';
+                  if(m===9) h[nthWeekday(y,9,1,2)]='Columbus Day';
+                  if(m===10) h[nthWeekday(y,10,4,4)]='Thanksgiving';
+                  return h;
                 }
-                window.saveCalReflection = function(){
-                  const v = document.getElementById('cal-daily-reflection').value;
-                  localStorage.setItem(dateKey, v);
-                  showToast && showToast('Saved', 'Reflection saved for today.', false);
+                var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+                var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                var today=new Date(), todayKey=ymd(today);
+
+                function renderCalendar(){
+                  var grid=document.getElementById('cal-2026-grid'); if(!grid) return;
+                  var y=today.getFullYear(), m=today.getMonth();
+                  var first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(), hol=holidays(y,m);
+                  var html='';
+                  for(var i=0;i<first;i++) html+='<div class="cal-day cal-empty"></div>';
+                  for(var d=1; d<=days; d++){
+                    var isToday=(d===today.getDate()), note=isToday?'Today':(hol[d]||'');
+                    if(isToday && hol[d]) note='Today · '+hol[d];
+                    html+='<div class="cal-day'+(isToday?' cal-today':(hol[d]?' cal-holiday':''))+'"><div class="cal-d">'+d+'</div>'+(note?'<div class="cal-note">'+note+'</div>':'')+'</div>';
+                  }
+                  var cells=first+days; while(cells%7){ html+='<div class="cal-day cal-empty"></div>'; cells++; }
+                  grid.innerHTML=html;
+                  var t=document.getElementById('cal-title'); if(t) t.textContent='📅 '+MONTHS[m]+' '+y;
+                  var l=document.getElementById('cal-today-label'); if(l) l.textContent=DAYS[today.getDay()]+', '+MONTHS[m]+' '+today.getDate()+', '+y;
+                }
+
+                function loadDay(){
+                  var ta=document.getElementById('cal-daily-reflection');
+                  if(ta) ta.value=localStorage.getItem('cal-refl-'+todayKey)||'';
+                  document.querySelectorAll('.cal-habit').forEach(function(cb){
+                    cb.checked=localStorage.getItem('cal-habit-'+todayKey+'-'+cb.dataset.habit)==='1';
+                  });
+                }
+                window.saveCalReflection=function(){
+                  var v=document.getElementById('cal-daily-reflection').value;
+                  localStorage.setItem('cal-refl-'+todayKey, v);
+                  try{ showToast && showToast('Saved', 'Reflection saved for today.', false); }catch(e){}
                 };
-                // Habit checkbox persistence
-                document.querySelectorAll('.cal-habit').forEach(cb => {
-                  const k = 'cal-habit-2026-05-17-' + cb.dataset.habit;
-                  cb.checked = localStorage.getItem(k) === '1';
-                  cb.addEventListener('change', ()=>{ localStorage.setItem(k, cb.checked?'1':'0'); });
+                document.querySelectorAll('.cal-habit').forEach(function(cb){
+                  cb.addEventListener('change', function(){ localStorage.setItem('cal-habit-'+todayKey+'-'+cb.dataset.habit, cb.checked?'1':'0'); });
                 });
+
+                renderCalendar(); loadDay();
+                // Roll over at midnight (checked each minute and when the tab comes back).
+                function checkRollover(){ var n=new Date(); if(ymd(n)!==todayKey){ today=n; todayKey=ymd(n); renderCalendar(); loadDay(); } }
+                setInterval(checkRollover, 60000);
+                document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkRollover(); });
               })();
             </script>
 
