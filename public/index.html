@@ -2086,6 +2086,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .twc-msg.narr{align-self:center;background:transparent;border:none;color:#c9b27a;font-style:italic;font-size:13px;text-align:center;max-width:92%;}
 .twc-msg.sys{align-self:center;background:transparent;color:#8a7a60;font-family:var(--mono);font-size:10px;text-align:center;border:none;}
 .twc-msg.twc-docline{align-self:center;max-width:92%;background:linear-gradient(180deg,#f7ecd2,#e9d6a8);border:1px solid #9a7840;color:#2c1f0e;font-family:var(--fellsc);font-size:13px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.35);}
+.twc-msg.event{align-self:center;max-width:92%;background:linear-gradient(180deg,#2a2114,#1e1810);border:1px solid #7a5c2e;color:#e8d7a8;font-family:var(--fell);font-size:13px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.35);}
+.twc-msg.event .ico{display:block;font-size:16px;margin-bottom:2px;}
+.twc-msg.event .note{display:block;font-family:var(--mono);font-size:9px;color:#a08a5a;margin-top:4px;letter-spacing:0.04em;white-space:normal;}
+.twc-msg.event.grave{border-color:#8a2a20;color:#f0d0c8;}
+.twc-msg.event.news{border-color:#4a6a8a;color:#d8e2ec;}
+.twc-annal{align-self:stretch;background:linear-gradient(180deg,#f7ecd2,#efdfb9);border:1px solid #9a7840;box-shadow:inset 0 0 30px rgba(122,92,40,0.25),0 3px 10px rgba(0,0,0,0.4);border-radius:3px;padding:18px 22px;color:#2c1f0e;font-family:var(--fell);}
+.twc-annal .kind{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#7a5c00;text-align:center;}
+.twc-annal h4{font-family:var(--fellsc);font-size:21px;text-align:center;margin:4px 0 12px;color:#2c1f0e;font-weight:normal;}
+.twc-annal .body{font-size:14.5px;line-height:1.7;white-space:pre-wrap;}
+.twc-annal .body::first-letter{font-family:var(--fellsc);font-size:34px;line-height:1;float:left;margin:4px 6px 0 0;color:#8a2a20;}
+.twc-annal .foot{margin-top:12px;font-size:12px;font-style:italic;color:#4a3520;border-top:1px dotted #9a7840;padding-top:8px;}
 .twc-msg.twc-docline:hover{border-color:#c9a227;}
 .twc-msg.divider{align-self:stretch;max-width:none;text-align:center;font-family:var(--fellsc);font-size:12px;color:#c9a227;letter-spacing:0.08em;border-top:1px solid #5a4520;padding-top:6px;margin-top:4px;background:transparent;}
 .twc-msg.typing{opacity:0.9;}
@@ -2194,6 +2205,49 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     ['evening','Evening','Vespers, about six; supper, and the day\'s work done'],
     ['night','Night','after Compline and the curfew bell, about eight or nine; fires covered, most folk abed']];
   var OCCASIONS = ['An ordinary gathering','Market day','After a fight','Sunday, after Mass','A feast day','Bad news has come','A stranger has arrived','Payday — wages are in'];
+
+  // ───────── news of the year 1526, and after ─────────
+  // d: the day it happened (Julian, as all Christendom then counted). delay: days before word reaches a fen
+  // town — a proclamation is read at the market cross within a week or two; London news comes in 3-10 days
+  // with carriers and drovers; Flanders and France in 3-4 weeks; Italy, Vienna and Hungary in 5-6 weeks;
+  // the Indies in a year. text = what the men would actually hear: late, second-hand, sometimes garbled.
+  // truth = what really happened, for the player. Nothing here is invented.
+  var NEWS = [
+    {d:'1526-01-14', delay:24, kind:'abroad', head:'The French King buys his freedom', text:'Word off the Flanders ships: the French King, a prisoner in Spain since the great battle at Pavia last year, has put his seal to a treaty at Madrid. He gives up Burgundy and all claim to Milan and Naples, and hands over his two little sons as hostages for it.', truth:'The Treaty of Madrid, 14 January 1526.'},
+    {d:'1526-01-20', delay:20, kind:'court', head:'The Cardinal cleans out the King\'s household', text:'They say the Cardinal has drawn up new ordinances at Eltham for the King\'s household: hangers-on and idle servants are put out of the court, the King\'s privy chamber cut to a handful of gentlemen, and every man\'s wages and rations set down in writing.', truth:'The Eltham Ordinances, January 1526.'},
+    {d:'1526-02-11', delay:14, kind:'church', head:'The Cambridge prior bears a faggot', text:'Dr Barnes, prior of the Austin friars at Cambridge, preached against the Cardinal\'s pomp and the Church at Christmas and was had up to London for it. He knelt at Paul\'s Cross with four Hanse merchants of the Steelyard, each bearing a faggot on his shoulder, while Lutheran books burned and the Bishop of Rochester preached.', truth:'Robert Barnes\'s public penance at Paul\'s Cross, 11 February 1526.'},
+    {d:'1526-02-13', delay:150, kind:'court', head:'Whispers about the King', text:'A carrier from London has it — and it is only talk — that at the Shrovetide jousts the King rode out with the words "Declare I dare not" on his coat, and that his eye is on one of Sir Thomas Boleyn\'s daughters. Nobody at the inn believes it and everybody repeats it.', truth:'Henry VIII\'s Shrovetide device of February 1526; his pursuit of Anne Boleyn began about this time.'},
+    {d:'1526-03-01', delay:80, kind:'church', head:'An English Testament, printed and forbidden', text:'A pedlar out of Lynn says there is a New Testament in plain English, printed over the sea by one Tyndale, and that copies come into the eastern ports hidden in bales of cloth. The priests say it is heresy to own one. It costs about what a labourer earns in a week.', truth:'Tyndale\'s New Testament, printed at Worms early in 1526, was reaching England by the spring; copies sold for about 2s–3s.'},
+    {d:'1526-03-10', delay:35, kind:'abroad', head:'The Emperor weds', text:'The Emperor Charles has married the Infanta Isabella of Portugal at Seville, with a dowry past counting. The Emperor is lord of Flanders, where every fleece of English wool goes — and he was to have married our Princess Mary, until he broke it off.', truth:'Charles V married Isabella of Portugal at Seville on 10 March 1526.'},
+    {d:'1526-03-17', delay:24, kind:'abroad', head:'The French King comes home', text:'The French King has crossed the river at the Spanish border and is back in France, his two sons handed over in his place. Men who know say he will never keep the treaty he signed in prison, and that means war again in Italy.', truth:'Francis I was released at the Bidasoa on 17 March 1526; his sons went to Spain as hostages.'},
+    {d:'1526-04-03', delay:75, kind:'abroad', head:'Cabot sails for the Spice Islands', text:'Sebastian Cabot, the Bristol man who sails for the Emperor now, has put out from Spain with four ships to find a way to the Spice Islands. Old sailors at Lynn remember his father.', truth:'Sebastian Cabot sailed from Sanlúcar on 3 April 1526; he never got past the River Plate.'},
+    {d:'1526-04-21', delay:365, kind:'far', head:'A great battle in the Indies', text:'Letters a year old, come by way of the Portuguese at Lisbon, tell of a battle near Delhi in the Indies: a prince out of the mountains named Babur, with guns, destroyed the Sultan of Delhi and all his elephants, and has made himself lord of that country.', truth:'The First Battle of Panipat, 21 April 1526 — the founding of the Mughal empire.'},
+    {d:'1526-04-23', delay:48, kind:'war', head:'The Turk marches on Hungary', text:'The Great Turk has left Constantinople with a host said to be a hundred thousand strong, with guns and camels, to fall on the kingdom of Hungary. The young King of Hungary is calling on all Christendom for help, and getting little.', truth:'Suleiman left Constantinople on 23 April 1526.'},
+    {d:'1526-05-22', delay:25, kind:'abroad', head:'The Pope and the French King league against the Emperor', text:'The Pope, the French King, the Venetians, Florence and the Duke of Milan have sworn a league at Cognac against the Emperor. Our King is named its protector but has not joined it. The Cardinal is said to be well pleased, having no love for the Emperor since he jilted the Princess.', truth:'The League of Cognac, 22 May 1526.'},
+    {d:'1526-07-27', delay:40, kind:'war', head:'Petervaradin falls to the Turk', text:'The Turk has taken the fortress of Petervaradin on the Danube, the key to Hungary, after a siege of a fortnight, and the garrison was put to the sword. The Hungarian King is gathering what army he can.', truth:'Pétervárad fell on 27 July 1526.'},
+    {d:'1526-08-22', delay:10, kind:'trade', head:'Proclamation: the King\'s gold is worth more', text:'A proclamation read at the market cross: because gold is being carried out of the realm to where it fetches more, the King raises the value of his gold coin. The angel that was 6s 8d is now 7s 4d, and the sovereign 22s. Silver pennies are as they were. A man with an angel in his purse is a groat and more the richer.', truth:'The proclamation of 22 August 1526 raised the angel to 7s 4d and the sovereign to 22s.'},
+    {d:'1526-08-27', delay:35, kind:'church', head:'The German princes go their own way in religion', text:'The Diet of the Empire at Speyer has broken up with every prince left to order religion in his own lands as he will answer to God and the Emperor. So the Lutheran princes keep their new preaching, and the Emperor, busy with the French, cannot stop them.', truth:'The recess of the Diet of Speyer, 27 August 1526.'},
+    {d:'1526-08-29', delay:37, kind:'war', head:'Hungary destroyed at Mohács', text:'Terrible news from the east, come by way of Venice and Antwerp: the Turk has destroyed the whole army of Hungary in a battle at a place called Mohács. The King of Hungary, a young man of twenty, was drowned in a marsh in the flight; bishops, lords and thousands of knights are slain. There is nothing now between the Turk and Vienna.', truth:'The Battle of Mohács, 29 August 1526; King Louis II drowned in flight.'},
+    {d:'1526-09-04', delay:16, kind:'realm', head:'Bloodshed in Scotland', text:'From the north: the Earl of Lennox tried to take the boy King of Scots out of the hands of the Earl of Angus, was beaten at Linlithgow Bridge and killed after he had yielded. Angus keeps the King and rules Scotland as he pleases.', truth:'The Battle of Linlithgow Bridge, 4 September 1526.'},
+    {d:'1526-09-11', delay:40, kind:'war', head:'The Turk burns Buda', text:'The Turk has entered Buda, the chief city of Hungary, and burned it, and gone home for the winter driving thousands of Christian captives before him. Men say he will come back for Vienna in the spring.', truth:'Suleiman entered Buda on 11 September 1526 and withdrew in October.'},
+    {d:'1526-09-20', delay:30, kind:'church', head:'The Pope besieged in his own castle', text:'The Colonna, the Emperor\'s friends in Rome, broke into the Vatican with armed men and sacked the Pope\'s own palace and St Peter\'s. The Pope fled to the Castle of St Angelo by the covered way and has had to make terms.', truth:'The Colonna raid on Rome, 20 September 1526.'},
+    {d:'1526-10-24', delay:12, kind:'church', head:'The English Testament burned at Paul\'s Cross', text:'The Bishop of London has forbidden the English New Testament on pain of excommunication and had every copy his men could find burned at Paul\'s Cross after a sermon. The Bishop of Ely is said to be searching for the same in his diocese. Owning one is now a dangerous thing.', truth:'Tunstall\'s prohibition of 24 October 1526 and the burning at Paul\'s Cross that month.'},
+    {d:'1526-11-05', delay:10, kind:'trade', head:'Proclamation: new coins, and lighter silver', text:'A second proclamation on the coin: the angel is now 7s 6d and the sovereign 22s 6d, and there is a new gold crown of the double rose worth 5s. Worse for poor men, the new silver pennies are struck lighter — the same silver now makes nine pence where it made eight — so old pennies are worth keeping and prices will creep up. Foreign ducats are no longer to pass as money.', truth:'The proclamation of 5 November 1526: gold revalued again, the crown of the double rose introduced, the penny\'s silver cut by one ninth.'},
+    {d:'1526-11-30', delay:32, kind:'war', head:'The German landsknechts pour into Italy', text:'Twelve thousand German foot under old Frundsberg have crossed the Alps in the snow to join the Emperor\'s army against the Pope, unpaid and swearing to hang the Pope with a golden cord. Giovanni de\' Medici, the Pope\'s best captain, is dead of a wound from their guns.', truth:'Frundsberg\'s landsknechts entered Italy in November 1526; Giovanni delle Bande Nere died of his wound on 30 November.'},
+    {d:'1527-05-06', delay:26, kind:'war', head:'Rome sacked', text:'The Emperor\'s unpaid army has stormed Rome. The Duke of Bourbon was shot dead on the wall, and the Spaniards and Germans have sacked the city for days — churches, nuns, cardinals, nothing spared. The Pope is shut up in the Castle of St Angelo. Christendom has seen nothing like it since the heathen.', truth:'The Sack of Rome, 6 May 1527.'},
+    {d:'1527-05-17', delay:45, kind:'court', head:'Talk of the King\'s marriage', text:'A secret that everyone knows: the Cardinal has been sitting in judgment on whether the King was ever lawfully married to Queen Katherine, she being his brother\'s widow. The Queen\'s people are furious. The Emperor is her nephew, and the Pope is the Emperor\'s prisoner.', truth:'Wolsey\'s secret legatine court opened at Westminster on 17 May 1527.'},
+    {d:'1527-08-15', delay:0, kind:'local', head:'A drowned harvest', text:'It has rained since Whitsun and the corn is rotting in the field. Wheat is already past 10s the quarter at Peterborough market and the fen is under water. Old men say there will be dearth by Candlemas.', truth:'The wet summer of 1527 and the harvest failure that followed, with dearth in 1527–28.'},
+    {d:'1528-05-30', delay:9, kind:'realm', head:'The sweating sickness', text:'The sweat is in London again — a man merry at dinner and dead by supper. The court has scattered and the King moves from house to house. It is on the roads north and it will come to the fen.', truth:'The sweating sickness of 1528 broke out in London at the end of May.'},
+  ];
+  function newsArrives(n){ return addDays(n.d, n.delay||0); }
+  function newsReached(dateStr){ return NEWS.filter(function(n){ return cmpD(newsArrives(n), dateStr)<=0; }).sort(function(a,b){ return cmpD(newsArrives(b), newsArrives(a)); }); }
+  function newsBetween(a,b){ return NEWS.filter(function(n){ var t=newsArrives(n); return cmpD(t,a)>0 && cmpD(t,b)<=0; }).sort(function(x,y){ return cmpD(newsArrives(x), newsArrives(y)); }); }
+  function newsContext(dateStr){
+    var got=newsReached(dateStr).slice(0,8);
+    if(!got.length) return '';
+    return 'NEWS THAT HAS REACHED THE FEN (by carrier, pedlar, drover and priest; the men know only this, nothing of what came after, and may garble details):\n'+got.map(function(n){ var age=cmpD(dateStr, newsArrives(n)); return '- ['+(age<=10?'FRESH — the talk of the town, arrived ':'arrived ')+dayInfo(newsArrives(n)).short+'] '+n.head+': '+n.text; }).join('\n')+'\n';
+  }
+  var KIND_ICON={abroad:'🕊️',court:'👑',church:'✝️',war:'⚔️',trade:'⚖️',realm:'🏰',far:'🌍',local:'🌧️'};
   function timeOf(sc){ var k=(sc&&sc.time)||'evening'; return TIMES.filter(function(t){ return t[0]===k; })[0]||TIMES[4]; }
   function timeKeyForClock(hm){ var h=parseInt(String(hm).split(':')[0],10); if(!isFinite(h)) return 'evening'; return h<5?'night':h<8?'dawn':h<11?'morning':h<14?'noon':h<17?'afternoon':h<20?'evening':'night'; }
   function clockText(hm){ var p=String(hm||'').split(':'), h=parseInt(p[0],10), m=parseInt(p[1],10)||0; if(!isFinite(h)) return ''; var part=h<5?'at night':h<12?'in the morning':h<17?'in the afternoon':h<21?'in the evening':'at night'; var hh=h%12||12; return (h===12&&m===0)?'noon':(h===0&&m===0)?'midnight':hh+(m?':'+(m<10?'0':'')+m:' o\'clock')+' '+part; }
@@ -2205,6 +2259,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   var sel = null;          // 'gathering' | 'log' | man id
   var viewSceneId = null;  // scene shown in the chat column (null = current)
   var viewDocId = null;    // document shown when the Documents record is open
+  var viewAnnalId = null;  // annal shown when the Annals are open
+  var annalBusy = false;
   var recoverView = null;  // results of a backup search, shown in the log card
   var recoverFound = null;
   var busy = false;        // a 1:1 reply or scene line is being written
@@ -2274,6 +2330,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   function icon(m){ return (typeof charAvatar==='function') ? charAvatar(m.id,36,(typeof CHAR_ICONS!=='undefined' && CHAR_ICONS[m.id]) || '🛡') : ((typeof CHAR_ICONS!=='undefined' && CHAR_ICONS[m.id]) || '🛡'); }
   function hasImg(m){ return typeof CHAR_IMAGES!=='undefined' && !!CHAR_IMAGES[m.id]; }
   function rankLabel(m){ try{ return rankName(m); }catch(e){ return ''; } }
+  // The ledger's ranks are modern; in the story a man's standing is spoken of the way 1526 would
+  var STANDING=['a green lad','a blooded man','a tried man','a seasoned man','a man of mark','a leader of men','a captain of ten','the band\'s right hand','the band\'s first man','a master of the band'];
+  function standing(m){ return STANDING[Math.min(m.rankIdx||0, STANDING.length-1)]; }
 
   // ───────── prompt building ─────────
   var RULES =
@@ -2288,18 +2347,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   function worldCtx(st, dateStr, place){
     var di=dayInfo(dateStr);
-    var roster=companions().map(function(m){ return m.name+(m.dead?' (fallen — the band mourns him)':' — health '+Math.round(m.hp)+'/'+m.maxHp+(m.scars?', '+m.scars+' scars':'')); }).join('; ');
-    var recent=[];
-    try{ (S.chronicle||[]).filter(function(e){ return e.source==='trade'||e.source==='log'; }).slice(0,4).forEach(function(e){ recent.push(String(e.text||'').slice(0,160)); }); }catch(e){}
+    var roster=companions().map(function(m){ return m.name+(m.dead?' (fallen — the band mourns him)':' — health '+Math.round(m.hp)+'/'+m.maxHp+(m.scars?', '+m.scars+' scars':'')+', '+standing(m)); }).join('; ');
+    var recent=(st.events||[]).slice(-4).map(function(e){ return dayInfo(e.date).short+': '+e.text; });
     var past=(st.scenes||[]).filter(function(s){ return s.summary && s.id!==st.currentScene; }).slice(-6).map(function(s){ return dayInfo(s.date).short+', '+s.place+': '+s.summary; });
     return 'STORY DATE: '+di.long+' (Julian).'+(di.feasts.length?' Church calendar: '+di.feasts.join('; ')+'.':'')+(di.fast?' '+di.fast+'.':'')+' Season: '+di.season+'.\n'+
       'PLACE: '+(place||'Whittlesey')+', in Whittlesey — a fen market town on the edge of the Isle of Ely, Cambridgeshire, with its two parishes of St Mary and St Andrew, near Whittlesey Mere.\n'+
       'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a wool merchant\'s son. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
-      (recent.length?'Recent fights: '+recent.join(' | ')+'\n':'')+
+      (recent.length?'RECENT FIGHTS (the men were there; wounds are real and slow to heal): '+recent.join(' | ')+'\n':'')+
       (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'')+
-      docsContext(st);
+      docsContext(st)+newsContext(dateStr);
   }
 
   function personaText(m, st, noMood){
@@ -2432,6 +2490,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       '<div class="twc-item'+(sel==='gathering'?' sel':'')+'" onclick="twcSelect(\'gathering\')"><div class="twc-ico">🍺</div><div><div class="twc-nm"><span class="twc-live-dot'+(live?' on':'')+'"></span>The Gathering</div><div class="twc-sub">'+esc(di.short)+' · '+esc(sc.place)+'</div></div></div>'+
       '<div class="twc-item'+(sel==='log'?' sel':'')+'" onclick="twcSelect(\'log\')"><div class="twc-ico">📜</div><div><div class="twc-nm">Conversation Log</div><div class="twc-sub">'+st.scenes.length+' gathering'+(st.scenes.length===1?'':'s')+' recorded</div></div></div>'+
       '<div class="twc-item'+(sel==='docs'?' sel':'')+'" onclick="twcSelect(\'docs\')"><div class="twc-ico">🖋</div><div><div class="twc-nm">Signed Documents</div><div class="twc-sub">'+((st.documents||[]).length)+' on record</div></div></div>'+
+      '<div class="twc-item'+(sel==='news'?' sel':'')+'" onclick="twcSelect(\'news\')"><div class="twc-ico">📯</div><div><div class="twc-nm">News from Afar</div><div class="twc-sub">'+newsReached(st.storyDate).length+' reports reached the fen</div></div></div>'+
+      '<div class="twc-item'+(sel==='annals'?' sel':'')+'" onclick="twcSelect(\'annals\')"><div class="twc-ico">📖</div><div><div class="twc-nm">The Annals</div><div class="twc-sub">'+((st.annals||[]).length)+' month'+((st.annals||[]).length===1?'':'s')+' written up</div></div></div>'+
       '<div class="twc-group">The men</div>';
     companions().forEach(function(m){
       var s=stateFor(st,m.id);
@@ -2452,7 +2512,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<div class="twc-sec"><div class="twc-h">The hour</div><p>'+esc(timeOf(sc)[1])+': '+esc(timeOf(sc)[2])+'.'+(sc.occasion&&sc.occasion!==OCCASIONS[0]?' <strong>'+esc(sc.occasion)+'.</strong>':'')+'</p>'+(sc.topic?'<p><em>When you arrived they were talking about:</em> '+esc(sc.topic)+'</p>':'')+'</div>'+
         '<div class="twc-sec"><div class="twc-h">The day</div><p>'+(di.feasts.length?esc(di.feasts.join(' · '))+'. ':'An ordinary '+di.weekday.toLowerCase()+'. ')+(di.fast?esc(di.fast)+'.':'')+'</p></div>'+
         '<div class="twc-sec"><div class="twc-h">Present</div><ul>'+presentMen(sc).map(function(m){ var s=stateFor(st,m.id); return '<li><strong>'+esc(m.name)+'</strong> — '+esc(s.mood)+', health '+Math.round(m.hp)+'/'+m.maxHp+'</li>'; }).join('')+'</ul></div>'+
-        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or press <strong>⚙ New gathering</strong> to choose the day, the hour, who is there and what they are talking about. When a gathering ends it is summed up in the log, and the men remember it.</p></div>'+
+        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or press <strong>⚙ New gathering</strong> to choose the day, the hour, who is there and what they are talking about. When a gathering ends it is summed up in the log, and the men remember it. Every trade you log is a fight: a win is experience for the men who went, a loss is wounds, and the band hears of it here. Real news of 1526 arrives as the days turn, late and by word of mouth, and at each month\'s end the clerk writes the month into the Annals.</p></div>'+
         (earlier.length?'<div class="twc-sec"><div class="twc-h">Earlier days</div>'+earlier.map(function(s){ return '<p><strong>'+esc(dayInfo(s.date).short)+' · '+esc(s.place)+'</strong> — '+esc(s.summary)+'</p>'; }).join('')+'</div>':'');
       return;
     }
@@ -2462,6 +2522,23 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         (ds.length?ds.map(function(d){ var y=docSigners(d,true), n=docSigners(d,false);
           return '<div class="twc-logrow'+(viewDocId===d.id?' cur':'')+'" onclick="twcOpenDoc(\''+d.id+'\')"><div class="d">'+esc(d.title)+'</div><div class="m">'+esc(d.kind)+' · '+esc(dayInfo(d.date).short)+' · '+esc(d.place||'')+'</div><div class="s">Signed: '+esc(y.join(', ')||'—')+(n.length?' · <span style="color:#8a2a20">Refused: '+esc(n.join(', '))+'</span>':'')+'</div></div>'; }).join('')
         :'<p style="font-family:var(--fell);font-size:13px;color:var(--ink3)">Nothing has been put in writing yet. In the Gathering or a private word, press <strong>🖋 Draw up a document</strong> for articles of the band, an oath, a bond or a receipt. The men decide in character whether to put their name or mark to it. Every document is dated in the regnal year, witnessed and kept here.</p>');
+      return;
+    }
+    if(sel==='news'){
+      var got=newsReached(st.storyDate);
+      el.innerHTML='<h3>📯 News from Afar</h3><div class="twc-tag">What word has reached Whittlesey by '+esc(dayInfo(st.storyDate).long)+'</div>'+
+        '<p style="font-family:var(--fell);font-size:12.5px;color:var(--ink3);line-height:1.5">Real events of the year, arriving as they would have: a proclamation within the fortnight, London talk in a week, Flanders and France in a month, Italy and Hungary in six weeks, the Indies in a year. The men know these and nothing later. New word is announced in the gathering when a day turns, and the men bring it up themselves.</p>'+
+        (got.length?got.map(function(n){ var age=cmpD(st.storyDate,newsArrives(n)); return '<div class="twc-logrow" style="cursor:default"><div class="d">'+esc(KIND_ICON[n.kind]||'📯')+' '+esc(n.head)+(age<=10?' <span style="font-family:var(--mono);font-size:8px;color:#8a2a20;border:1px solid #c98a7a;border-radius:2px;padding:0 4px;vertical-align:middle">FRESH</span>':'')+'</div><div class="m">Reached the fen '+esc(dayInfo(newsArrives(n)).short)+' · happened '+esc(dayInfo(n.d).short)+' · '+esc(n.kind)+'</div><div class="s">'+esc(n.text)+'</div><div class="s" style="color:var(--ink4);font-size:11px;margin-top:3px"><em>What really happened:</em> '+esc(n.truth)+'</div></div>'; }).join('')
+        :'<p style="font-family:var(--fell);font-size:13px;color:var(--ink3)">No word has reached the fen yet.</p>');
+      return;
+    }
+    if(sel==='annals'){
+      var an=(st.annals||[]).slice().reverse(), cur=monthKey(st.storyDate), have=(st.annals||[]).some(function(a){ return a.month===cur; });
+      el.innerHTML='<h3>📖 The Annals</h3><div class="twc-tag">Each month of the band, written up in the parish clerk\'s hand</div>'+
+        '<p style="font-family:var(--fell);font-size:12.5px;color:var(--ink3);line-height:1.5">When a month ends the clerk writes it into the book from the log: the gatherings, the fights and wounds, the documents signed and the news that came. You can also have him write up the month so far.</p>'+
+        '<div style="margin:6px 0 10px"><button onclick="twcWriteAnnal()" '+(annalBusy?'disabled':'')+' style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;background:var(--parch2);border:1px solid var(--border2);color:var(--ink);border-radius:2px;padding:5px 9px;cursor:pointer">'+(annalBusy?'✎ The clerk is writing…':'✎ '+(have?'Rewrite':'Write up')+' '+esc(monthName(cur))+' so far')+'</button></div>'+
+        (an.length?an.map(function(a){ return '<div class="twc-logrow'+(viewAnnalId===a.id?' cur':'')+'" onclick="twcOpenAnnal(\''+a.id+'\')"><div class="d">'+esc(a.title)+'</div><div class="m">'+esc(monthName(a.month))+' · through '+esc(dayInfo(a.through).short)+' · '+a.scenes+' gathering'+(a.scenes===1?'':'s')+'</div><div class="s">'+esc(String(a.text).slice(0,160))+'…</div></div>'; }).join('')
+        :'<p style="font-family:var(--fell);font-size:13px;color:var(--ink3)">Nothing written up yet. The first entry is made when May ends, or press the button above.</p>');
       return;
     }
     if(sel==='log'){
@@ -2508,6 +2585,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(l.who==='roger') return '<div class="twc-msg me"><span class="who">'+(typeof charAvatar==='function'?charAvatar(1,26)+' ':'')+'Roger</span>'+esc(l.text)+'</div>';
     if(l.who==='narr') return '<div class="twc-msg narr">'+esc(l.text)+'</div>';
     if(l.who==='sys') return '<div class="twc-msg sys">'+esc(l.text)+'</div>';
+    if(l.who==='event') return '<div class="twc-msg event'+(l.grave?' grave':'')+(l.news?' news':'')+'"><span class="ico">'+esc(l.ico||'⚔')+'</span>'+esc(l.text)+(l.note?'<span class="note">'+esc(l.note)+'</span>':'')+'</div>';
     if(l.who==='doc') return '<div class="twc-msg twc-docline" onclick="twcOpenDoc(\''+l.docId+'\')" title="Open the document">'+esc(l.text)+'<span class="mood">Signed document · click to read</span></div>';
     var sm=manByName(l.speaker), av=(sm&&hasImg(sm))?charAvatar(sm.id,26)+' ':'';
     return '<div class="twc-msg them"><span class="who">'+av+esc(l.speaker||'')+'</span>'+esc(l.text)+(l.mood?'<span class="mood">'+esc(l.mood)+'</span>':'')+'</div>';
@@ -2519,6 +2597,15 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var dayEl=document.getElementById('twc-day'), feastEl=document.getElementById('twc-feast'), ctrl=document.getElementById('twc-ctrl');
     var inp=document.getElementById('twc-input'), btn=document.getElementById('twc-send');
     var dateStr, place, viewingPast=false;
+    if(sel==='news'||sel==='annals'){
+      var a=sel==='annals'&&viewAnnalId?annalById(st,viewAnnalId):null;
+      dayEl.textContent=sel==='news'?'News from Afar':(a?a.title:'The Annals');
+      feastEl.textContent=sel==='news'?'What the fen knows by '+dayInfo(st.storyDate).long:(a?'Written up through '+dayInfo(a.through).long:'The clerk\'s book');
+      ctrl.style.display='flex';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button><span class="twc-status">'+(sel==='news'?'As it reached Whittlesey · read only':'The clerk\'s book · read only')+'</span>';
+      inp.disabled=true; btn.disabled=true; inp.placeholder='';
+      return;
+    }
     if(sel==='docs'){
       var d=viewDocId?docById(st,viewDocId):null;
       var dd=dayInfo(d?d.date:st.storyDate);
@@ -2592,6 +2679,16 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       box.innerHTML = d ? docHtml(d) : '<div class="twc-empty">Choose a document from the list to read it.</div>';
       box.scrollTop=0; return;
     }
+    if(sel==='news'){
+      var fresh=newsReached(st.storyDate).filter(function(n){ return cmpD(st.storyDate,newsArrives(n))<=10; });
+      box.innerHTML = fresh.length ? fresh.map(function(n){ return lineHtml({who:'event', news:true, ico:KIND_ICON[n.kind]||'📯', text:n.text, note:n.head+' · reached the fen '+dayInfo(newsArrives(n)).short}); }).join('') : '<div class="twc-empty">Nothing new has come with the carriers this week. Older reports are in the list.</div>';
+      box.scrollTop=0; return;
+    }
+    if(sel==='annals'){
+      var an=viewAnnalId?annalById(st,viewAnnalId):null;
+      box.innerHTML = an ? annalHtml(an) : '<div class="twc-empty">Choose a month from the list to read the clerk\'s entry.</div>';
+      box.scrollTop=0; return;
+    }
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       html = sc.lines.length ? sc.lines.map(lineHtml).join('') : '<div class="twc-empty">The band has gathered at '+esc(sc.place.toLowerCase())+'. Press “Let them talk”, or say something.</div>';
@@ -2646,10 +2743,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   function sceneTranscript(sc){
     return sc.lines.filter(function(l){ return l.who!=='sys'; }).slice(-40).map(function(l){
-      return l.who==='roger'?'Roger: '+l.text : l.who==='narr'?'[ '+l.text+' ]' : l.who==='doc'?'[ Document signed: '+String(l.text).replace(/^📜 /,'')+' ]' : l.speaker+': '+l.text; }).join('\n');
+      return l.who==='roger'?'Roger: '+l.text : (l.who==='narr'||l.who==='event')?'[ '+l.text+' ]' : l.who==='doc'?'[ Document signed: '+String(l.text).replace(/^📜 /,'')+' ]' : l.speaker+': '+l.text; }).join('\n');
   }
   function rogerAwaiting(sc){
-    for(var i=sc.lines.length-1;i>=0;i--){ var l=sc.lines[i]; if(l.who==='sys'||l.who==='narr'||l.who==='doc') continue; return l.who==='roger'; }
+    for(var i=sc.lines.length-1;i>=0;i--){ var l=sc.lines[i]; if(l.who==='sys'||l.who==='narr'||l.who==='doc'||l.who==='event') continue; return l.who==='roger'; }
     return false;
   }
 
@@ -2739,12 +2836,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(ss && cmpD(next, ss)<0){ next=ss; jumped=true; }
     var nd=dayInfo(next);
     if(!confirm('End '+dayInfo(st.storyDate).long+' and go to '+nd.long+'?'+(jumped?'\n\nThe campaign has moved on to '+S.currentSeason+', so the story skips ahead to match.':'')+'\n\nToday is written into the log and the men will remember it.')) return;
-    if(talkCount(sc)) summarize(sc.id); else dropIfEmpty(st,sc);
+    var old=st.storyDate, done=talkCount(sc)?summarize(sc.id):Promise.resolve(); if(!talkCount(sc)) dropIfEmpty(st,sc);
     st.storyDate=next;
     var ns={id:'s'+Date.now(), date:next, place:sc.place, time:sc.time||'evening', lines:[], summary:''};
     if(jumped) ns.lines.push({who:'sys',text:'Time has passed. The band has fought on into '+S.currentSeason+'.',ts:Date.now()});
+    newsBetween(old,next).forEach(function(n){ ns.lines.push({who:'event', news:true, ico:KIND_ICON[n.kind]||'📯', text:'Word reaches Whittlesey: '+n.text, note:n.head+' · '+n.truth+' Reached the fen '+dayInfo(newsArrives(n)).short+'.', ts:Date.now()}); });
     st.scenes.push(ns); st.currentScene=ns.id; store(st);
     viewSceneId=null; quiet=0;
+    if(monthKey(old)!==monthKey(next)){ var mk=monthKey(old); Promise.resolve(done).then(function(){ return writeAnnal(mk,false); }); }
     if(live) schedule(4000);
     renderAll();
   };
@@ -2781,8 +2880,85 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   window.twcOpenScene=function(id){ viewSceneId=id; var st=ensure(load()); if(id===st.currentScene) viewSceneId=null; if(sel!=='log'&&sel!=='gathering') sel='log'; if(viewSceneId===null && sel==='log') sel='gathering'; renderAll(); };
 
+  // ───────── fights: the ledger's battles reach the men ─────────
+  // Called by the Discipline Console when a trade is logged: a win is experience, a loss is wounds,
+  // and at nothing left a man dies. The men hear of it in the gathering and carry the memory.
+  function enemyName(e){ e=String(e||'').trim(); if(!e||/^unknown/i.test(e)) return 'outlaws on the fen road'; return e; }
+  window.twcBattle=function(rep){
+    try{
+      var st=ensure(load()), sc=curScene(st), date=st.storyDate, res=rep.results||[];
+      var hurt=res.filter(function(r){ return r.type==='loss'; }), won=res.filter(function(r){ return r.type==='win'; });
+      var text, ico='⚔️', grave=false;
+      if(rep.outcome==='WIN'){
+        text='The band drove off '+enemyName(rep.enemy)+'.'+(won.length?' '+won.map(function(r){ return firstName(r.name); }).join(', ')+' came through it and '+(won.length===1?'is':'are')+' the harder for it.':'');
+        var promos=won.filter(function(r){ return r.promoted; });
+        if(promos.length) text+=' '+promos.map(function(r){ var m=manByName(r.name); return firstName(r.name)+' has risen in the band\'s esteem: '+(m?standing(m):'a better man')+' now'; }).join('; ')+'.';
+      } else {
+        text='The band was set upon by '+enemyName(rep.enemy)+' and came off the worse: '+hurt.map(function(r){ var w=Math.round(r.share); return firstName(r.name)+' took '+w+' wound'+(w===1?'':'s'); }).join(', ')+'.';
+        var dead=hurt.filter(function(r){ return r.dead; });
+        if(dead.length){ text+=' '+dead.map(function(r){ return r.name+' died of his wounds.'; }).join(' '); grave=true; ico='✝️'; }
+      }
+      var note=(rep.outcome==='WIN'?'Won $':'Lost $')+Number(rep.pnl||0).toFixed(2)+(rep.setup?' · '+rep.setup:'')+(rep.contract?' '+rep.contract:'')+' · logged '+new Date().toLocaleDateString();
+      st.events=st.events||[]; st.events.push({ts:Date.now(), date:date, kind:rep.outcome==='WIN'?'win':'loss', text:text, note:note, grave:grave});
+      if(st.events.length>60) st.events=st.events.slice(-60);
+      sc.lines.push({who:'event', ico:ico, text:text, note:note, grave:grave, ts:Date.now()});
+      res.forEach(function(r){
+        var m=manByName(r.name); if(!m) return; var s=stateFor(st,m.id), w=Math.round(r.share);
+        s.memories.push(dayInfo(date).short+': '+(r.type==='win'?'fought beside Roger against '+enemyName(rep.enemy)+' and won':'took '+w+' wounds fighting '+enemyName(rep.enemy)+' under Roger'));
+        if(s.memories.length>24) s.memories=s.memories.slice(-24);
+        if(r.type==='win') s.loyalty=Math.min(100, s.loyalty+1);
+        else if(!r.dead) s.mood = w>=40?'in pain':'sore';
+      });
+      if(grave){
+        var names=hurt.filter(function(r){ return r.dead; }).map(function(r){ return r.name; });
+        companions().forEach(function(m){ if(m.dead) return; var s=stateFor(st,m.id);
+          s.memories.push(dayInfo(date).short+': '+names.join(' and ')+' died of wounds got fighting under Roger.'); if(s.memories.length>24) s.memories=s.memories.slice(-24);
+          s.mood='grieving'; s.loyalty=Math.max(0, s.loyalty-4); });
+      }
+      store(st); renderAll();
+    }catch(e){ console.warn('[twcBattle]', e); }
+  };
+
+  // ───────── the annals: each month written up in the clerk's hand ─────────
+  function monthKey(ds){ return String(ds).slice(0,7); }
+  function monthName(key){ var p=key.split('-'); return MONTHS[+p[1]-1]+' '+p[0]; }
+  function annalById(st,id){ return (st.annals||[]).filter(function(a){ return a.id===id; })[0]; }
+  function annalHtml(a){
+    var rg=regnal(a.month+'-01');
+    return '<div class="twc-annal"><div class="kind">The book of the band · written up by the parish clerk</div><h4>'+esc(a.title)+'</h4><div class="body">'+esc(a.text)+'</div>'+
+      '<div class="foot">Written up through '+esc(dayInfo(a.through).long)+', '+esc(rg.text)+' <span style="font-style:normal;font-family:var(--mono);font-size:9px;color:#6b4f2e">('+esc(rg.plain)+')</span></div></div>';
+  }
+  async function writeAnnal(key, force){
+    var st=ensure(load()); st.annals=st.annals||[];
+    if(!force && st.annals.some(function(a){ return a.month===key; })) return;
+    var scenes=st.scenes.filter(function(x){ return monthKey(x.date)===key && (x.summary || talkCount(x)>=3); });
+    var docs=(st.documents||[]).filter(function(d){ return monthKey(d.date)===key; });
+    var events=(st.events||[]).filter(function(e){ return monthKey(e.date)===key; });
+    var news=NEWS.filter(function(n){ return monthKey(newsArrives(n))===key && cmpD(newsArrives(n), st.storyDate)<=0; });
+    if(!scenes.length && !docs.length && !events.length) return;
+    var rg=regnal(key+'-01');
+    var material='MONTH: '+monthName(key)+' ('+rg.plain+'). Written up through '+dayInfo(st.storyDate).long+'.\n'+
+      (scenes.length?'GATHERINGS OF THE BAND:\n'+scenes.map(function(x){ return '- '+dayInfo(x.date).short+', '+x.place+': '+(x.summary||sceneTranscript(x).slice(0,700)); }).join('\n')+'\n':'')+
+      (events.length?'FIGHTS:\n'+events.map(function(e){ return '- '+dayInfo(e.date).short+': '+e.text; }).join('\n')+'\n':'')+
+      (docs.length?'DOCUMENTS SIGNED:\n'+docs.map(function(d){ return '- '+dayInfo(d.date).short+': '+d.title+' ('+d.kind+') — signed '+(docSigners(d,true).join(', ')||'by none')+(docSigners(d,false).length?'; refused by '+docSigners(d,false).join(', '):''); }).join('\n')+'\n':'')+
+      (news.length?'NEWS THAT REACHED THE TOWN THIS MONTH:\n'+news.map(function(n){ return '- '+dayInfo(newsArrives(n)).short+': '+n.head+' — '+n.text; }).join('\n')+'\n':'')+
+      'THE MEN AT THE MONTH\'S END: '+companions().map(function(m){ return m.name+(m.dead?' (dead)':' — health '+Math.round(m.hp)+' of '+m.maxHp+', '+standing(m)); }).join('; ')+'.';
+    var sys='You are the parish clerk of St Mary\'s, Whittlesey, in the Isle of Ely, writing up the month in the book kept for Roger Whittlesey\'s band, in '+rg.plain+'. '+RULES+'\n'+
+      'Write as a clerk of 1526 would: plain, pious, exact about days, names and money, dry about the men\'s follies, in readable English with period flavour (not mock-archaic). Record only what the material says happened, in the order it happened; invent nothing and add no events of your own. 180-320 words in two to four paragraphs. Reply with JSON only: {"title": "a short heading in the clerk\'s style, e.g. \\"The moneth of May, in the xviij yere of Kyng Henry\\"", "text": "the entry"}';
+    try{
+      var j=parseJSON(await ai(sys,[{role:'user',content:material}],900)); if(!j||!j.text) return;
+      st=ensure(load()); st.annals=st.annals||[];
+      var entry={id:'a'+Date.now(), month:key, title:String(j.title||monthName(key)).slice(0,140), text:String(j.text).slice(0,3200), through:st.storyDate, ts:Date.now(), scenes:scenes.length};
+      st.annals=st.annals.filter(function(a){ return a.month!==key; }); st.annals.push(entry);
+      st.annals.sort(function(a,b){ return a.month<b.month?-1:a.month>b.month?1:0; });
+      store(st); if(sel==='annals') viewAnnalId=entry.id; renderAll();
+    }catch(e){ console.warn('[annals]', e); }
+  }
+  window.twcWriteAnnal=async function(key){ if(annalBusy) return; var st=ensure(load()); annalBusy=true; renderCard(); try{ await writeAnnal(key||monthKey(st.storyDate), true); } finally{ annalBusy=false; renderCard(); } };
+  window.twcOpenAnnal=function(id){ recoverView=null; sel='annals'; viewAnnalId=id; viewSceneId=null; renderAll(); };
+
   // ───────── actions ─────────
-  window.twcSelect=function(id){ recoverView=null; sel=id; if(id!=='log') viewSceneId=null; renderAll(); var i=document.getElementById('twc-input'); if(i&&!i.disabled) i.focus(); };
+  window.twcSelect=function(id){ recoverView=null; sel=id; if(id!=='log') viewSceneId=null; if(id==='annals'&&!viewAnnalId){ var st0=ensure(load()); var last=(st0.annals||[]).slice(-1)[0]; viewAnnalId=last?last.id:null; } renderAll(); var i=document.getElementById('twc-input'); if(i&&!i.disabled) i.focus(); };
 
   // ── New gathering: choose day, hour, place, company, occasion and opening talk ──
   window.twcSetTime=function(k){
@@ -3062,6 +3238,13 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
       if(L) out.push('£'+L); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
     }
+    function pd(d){ // pence with quarters: 1.5 → 1½d, 0.25 → ¼d, 15 → 1s 3d
+      var w=Math.floor(d), f=d-w, fr=f>=0.7?'¾':f>=0.45?'½':f>=0.2?'¼':'';
+      if(!w) return (fr||'0')+'d';
+      var t=w>=12?lsd(w):w+'d';
+      if(!fr) return t;
+      return /d$/.test(t) ? t.replace(/d$/, fr+'d') : t+' '+fr+'d';
+    }
     function usd(x){ if(x>=1e12) return '$'+(x/1e12).toFixed(x>=1e13?0:1)+' tn'; if(x>=1e9) return '$'+(x/1e9).toFixed(x>=1e11?0:1)+' bn'; if(x>=1e6) return '$'+(x/1e6).toFixed(1)+' m'; if(x>=100) return '$'+Math.round(x).toLocaleString('en-US'); return '$'+x.toFixed(2); }
 
     // ── Money of England in 1526 ──────────────────────────────────────
@@ -3076,6 +3259,56 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       ['Mark','13s 4d','Money of account (two-thirds of a pound)',160],
       ['Pound','20s','Money of account = 240d',240],
       ['Sovereign','20s','Gold; revalued to 22s 6d in the recoinage of late 1526',240],
+    ];
+
+    // ── What a penny buys: prices of the 1520s (pence) ─────────────────
+    // Decade averages from Thorold Rogers (1521-30), Dyer, the assizes of bread and ale and the statutes
+    // named in the notes. A heading row has no price. All are "about": prices moved with the harvest.
+    var PRICES = [
+      ['Food and drink'],
+      ['A gallon of good ale',1.5,'The assize price; small ale ½d–1d'],
+      ['A gallon of Gascon wine',8,'Fixed at 8d by statute in 1531; malmsey 1s'],
+      ['A penny wheaten loaf',1,'About 2 lb when wheat is 6s the quarter (Assize of Bread)'],
+      ['A quarter of wheat (8 bushels)',84,'6s–8s in a fair year, double in a dearth: a year\'s bread for one man'],
+      ['A quarter of malt, for brewing',54,'About 4s 6d'],
+      ['A pound of beef',0.5,'The 1533 statute fixed beef and pork at ½d the pound, mutton and veal at ¾d'],
+      ['A pound of cheese',0.6,'½d–¾d'],
+      ['A pound of butter',1.25,''],
+      ['Eggs',1,'About 20 for a penny'],
+      ['A hen',2,'A capon 5d–6d, a goose 4d'],
+      ['A red herring',0.25,'Four or five for a penny; the Lent staple'],
+      ['A pound of pepper',20,'About 1s 8d, from Antwerp'],
+      ['A pound of sugar',5,''],
+      ['A pound of tallow candles',1.5,'Wax candles 6d–8d the pound'],
+      ['Beasts and land'],
+      ['A cow',108,'8s–10s; a plough ox about £1'],
+      ['A sheep',20,'1s 6d–2s'],
+      ['A pig',30,''],
+      ['A common horse',240,'13s 4d–£1 6s 8d; a good riding horse £2–£4'],
+      ['An acre of arable, a year\'s rent',10.5,'Clark\'s early-1500s average'],
+      ['A cottage, a year\'s rent',60,'4s–6s'],
+      ['Roger\'s chamber, a quarter\'s rent',15,'About 5s a year'],
+      ['Cloth and clothing'],
+      ['A yard of broadcloth',30,'2s–3s 4d; a kersey 1s–1s 4d the yard'],
+      ['A yard of linen',6,'4d–8d'],
+      ['A pair of shoes',6,''],
+      ['A shirt',10,''],
+      ['A doublet',48,'3s–5s; a gown £1 and up'],
+      ['Arms'],
+      ['A yew bow',24,'The 1515 statute capped the best foreign yew at 3s 4d; English yew 2s'],
+      ['A sheaf of 24 arrows',18,''],
+      ['A sword',40,'3s 4d–6s 8d'],
+      ['A bill',18,''],
+      ['A jack (padded coat)',80,'5s–10s; a sallet 3s'],
+      ['Church, learning and the road'],
+      ['A candle to the rood',0.5,''],
+      ['A mass said for a soul',4,'A trental of thirty masses 10s'],
+      ['A burial',8,'6d–1s in fees'],
+      ['Tyndale\'s English Testament',30,'About 2s–3s, sold in secret'],
+      ['A quire of paper (24 sheets)',4,''],
+      ['A bed at an inn',1,'Supper 2d, ale 1d, stabling 2d'],
+      ['A barber-surgeon\'s bleeding',2,''],
+      ['A physician\'s fee',80,'A noble — no fen labourer ever paid it'],
     ];
 
     // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
@@ -3232,11 +3465,21 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
       // The ledger is lives, not savings
       var purse=0; try{ purse=+S.treasury||0; }catch(e){}
-      h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each</strong>. It is each man\'s health in the game, and it is your real trading stake. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
+      h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each, 100 health</strong>. Every trade you log is a fight: what you win the men who went out get as experience, what you lose they take as wounds, dollar for dollar, and a man with nothing left dies. It is your real trading stake and their health in the game. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
 
       // Coins
       h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">2026 US $</th></tr></thead><tbody>';
       COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td></tr>'; });
+      h+='</tbody></table></div>';
+
+      // What a penny buys
+      h+='<h4>What a penny buys — prices of the 1520s</h4><div class="note">What the coin in the table above actually bought, so the sums in the conversations mean something. A labourer\'s day was 4d: a gallon of ale, a pound of butter and a loaf, with a penny over. Prices are decade averages and moved with the harvest — a wet year doubled bread. Every figure is <span class="est">about</span>.</div>';
+      h+='<div class="won-scroll"><table><thead><tr><th>Thing</th><th class="n">1526</th><th class="n">2026 US $</th><th class="n">Labourer\'s days</th><th>Notes</th></tr></thead><tbody>';
+      PRICES.forEach(function(p){
+        if(p.length===1){ h+='<tr><td colspan="5" style="font-family:var(--fellsc);color:var(--gold);letter-spacing:0.05em;padding-top:9px">'+p[0]+'</td></tr>'; return; }
+        var d=p[1], days=d/4;
+        h+='<tr><td>'+p[0]+'</td><td class="n">'+pd(d)+'</td><td class="n">'+usd(d*USD_PER_D_GOODS)+'</td><td class="n">'+(days<0.1?'—':days<1?(days.toFixed(1)):days<10?days.toFixed(1):Math.round(days))+'</td><td class="notes">'+(p[2]||'')+'</td></tr>';
+      });
       h+='</tbody></table></div>';
 
       // ── The powers of the world, 1526 — ranked ──
@@ -3349,7 +3592,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.<br>'+
         '• <a href="https://www.british-history.ac.uk/vch/cambs/vol4/pp123-135" target="_blank" rel="noopener">Victoria County History, Whittlesey</a> — the two manors (Thorney Abbey, Ely Priory), copyhold tenure, the fishery, 355 householders in 1563.<br>'+
         '• <a href="https://faculty.econ.ucdavis.edu/faculty/gclark/papers/rentereh.pdf" target="_blank" rel="noopener">Clark, Land rental values in England 1500–1912</a> — early-1500s rent about 10.5d an acre.<br>'+
-        '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.'+
+        '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.<br>'+
+        '• J. E. Thorold Rogers, <em>A History of Agriculture and Prices in England</em>, vol. IV (1401–1582) — decade averages for grain, beasts, cloth, candles and wages; Christopher Dyer, <em>Standards of Living in the Later Middle Ages</em> — what a labourer\'s wage bought; the Assize of Bread and Ale; the acts of 1515 (bows), 1531 (wine) and 1533 (meat).'+
         '</div>';
       el.innerHTML=h;
     }
@@ -5697,6 +5941,7 @@ function logBattle(){
   promos.forEach(m=>showToast('⬆ Promotion!',m.name+' promoted to '+rankId(m)+' — '+rankName(m)+'!',false));
   deaths.forEach(m=>showToast('☩ Fallen',m.name+' has fallen in battle.',true));
   clearForm();render();
+  try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:outcome, pnl:pnl, enemy:enemy, setup:setup, contract:contract, results:results}); }catch(e){}
   // Auto-prompt to refresh world after each battle
   setTimeout(()=>{showToast('New Season','Season advanced to '+S.currentSeason+'. Update your briefing and quests.',false);},600);
 }
@@ -8490,6 +8735,7 @@ Render your verdict now.`;
           deaths.forEach(m=>showToast('☩ Fallen', m.name+' has fallen in battle.', true));
         }
         if(typeof render === 'function') render();
+        try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:draft.outcome, pnl:draft.pnl, enemy:draft.enemy, setup:draft.setup, contract:draft.contract, results:results}); }catch(e){}
       }
     }catch(e){ console.warn('[t1Commit] game-state update failed:', e.message); }
 
