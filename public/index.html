@@ -1285,6 +1285,176 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
+  <!-- ═════════ THE WEALTH OF NATIONS, 1526 — money, realms and what the band earns ═════════ -->
+  <style>
+  .won details>summary{cursor:pointer;list-style:none;}
+  .won details>summary::-webkit-details-marker{display:none;}
+  .won .won-intro{font-family:var(--fell);font-size:13px;color:var(--ink2);line-height:1.55;margin:4px 0 10px;}
+  .won .won-basis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:8px 0 12px;}
+  .won .won-basis div{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;}
+  .won .won-basis b{display:block;font-family:var(--fellsc);font-size:13px;color:var(--ink);}
+  .won .won-basis span{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.5;display:block;margin-top:2px;}
+  .won .won-basis .big{font-family:var(--fellsc);font-size:20px;color:var(--gold);}
+  .won h4{font-family:var(--fellsc);font-size:14px;color:var(--gold);letter-spacing:0.06em;margin:14px 0 6px;border-bottom:1px solid var(--border);padding-bottom:3px;}
+  .won .won-scroll{overflow-x:auto;}
+  .won table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px;min-width:640px;}
+  .won th{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;padding:6px 7px;text-align:left;border-bottom:1.5px solid var(--border2);vertical-align:bottom;}
+  .won td{padding:6px 7px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top;font-family:var(--fell);}
+  .won td.n,.won th.n{text-align:right;font-family:var(--mono);font-size:11px;white-space:nowrap;}
+  .won tr.eng td{background:#fff5d8;}
+  .won tr.band td:first-child{font-family:var(--fellsc);color:var(--ink);}
+  .won .est{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#8a2a20;border:1px solid #c98a7a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+  .won .src{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#2d6a2d;border:1px solid #8ab88a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+  .won .note{font-family:var(--fell);font-size:12px;color:var(--ink3);line-height:1.5;margin:4px 0;}
+  .won .sources{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
+  .won .sources a{color:var(--blood);}
+  .won .purse{background:linear-gradient(135deg,#fff5d8,#ffeec0);border:2px solid var(--gold);border-radius:4px;padding:10px 12px;margin:10px 0;font-family:var(--fell);font-size:13px;color:var(--ink);line-height:1.5;}
+  </style>
+  <div class="parch-panel won" id="won-panel" style="margin-bottom:14px;">
+    <div class="p-inner">
+      <details open>
+        <summary><div class="sec-title">⚖ The Wealth of Nations — Anno Domini 1526 <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.05em;">(click to fold)</span></div></summary>
+        <div id="won-body"></div>
+      </details>
+    </div>
+  </div>
+  <script>
+  (function(){
+    // ── Sourced constants ─────────────────────────────────────────────
+    // MeasuringWorth, relative value of £1 from 1526 in 2025 (UK):
+    var MW_REAL_PRICE = 1072;     // real price (RPI): what the pound buys in goods
+    var MW_LABOUR     = 10030;    // labour earnings: what the pound is worth as a wage
+    var MW_INCOME     = 23180;    // income value (GDP per capita)
+    // GBP→USD, Trading Economics, 25 Sep 2026:
+    var GBPUSD = 1.3248;
+    // US CPI factor 1990→2025 for Maddison's 1990 international dollars (approximate):
+    var CPI_1990_TO_NOW = 2.46;
+
+    var USD_PER_D_GOODS = MW_REAL_PRICE*GBPUSD/240;   // one penny, as goods
+    var USD_PER_D_WAGE  = MW_LABOUR*GBPUSD/240;       // one penny, as wages
+
+    function lsd(d){ // pence → "£3 15s 10d"
+      d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
+      if(L) out.push('£'+L); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
+    }
+    function usd(x){ if(x>=1e9) return '$'+(x/1e9).toFixed(x>=1e11?0:1)+' bn'; if(x>=1e6) return '$'+(x/1e6).toFixed(1)+' m'; if(x>=100) return '$'+Math.round(x).toLocaleString('en-US'); return '$'+x.toFixed(2); }
+
+    // ── Money of England in 1526 ──────────────────────────────────────
+    var COINS = [
+      ['Farthing','¼d','Smallest coin; a farthing loaf under the Assize of Bread',0.25],
+      ['Halfpenny','½d','Silver coin',0.5],
+      ['Penny','1d','Silver coin; the base unit — 240 to the pound',1],
+      ['Half-groat','2d','Silver coin',2],
+      ['Groat','4d','Silver coin; a labourer\'s day wage',4],
+      ['Shilling','12d','Money of account (the testoon coin was still rare)',12],
+      ['Noble / Angel','6s 8d','Gold angel = 6s 8d; Wolsey\'s recoinage of late 1526 raised it to 7s 6d',80],
+      ['Mark','13s 4d','Money of account (two-thirds of a pound)',160],
+      ['Pound','20s','Money of account = 240d',240],
+      ['Sovereign','20s','Gold; revalued to 22s 6d in the recoinage of late 1526',240],
+    ];
+
+    // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
+    // population is derived as GDP ÷ GDP per head from the same tables
+    var REALMS = [
+      ['England (with Wales, Scotland, Ireland)',2815,714,'Subsidy of 1523 yielded £151,215, collected over four years; the Amicable Grant of 1525 was abandoned after revolt',true],
+      ['France',10912,727,'',false],
+      ['Italian states',11550,1100,'Richest per head in Europe: banking, silk, Venice and Florence',false],
+      ['Spain (Castile & Aragon)',4495,661,'American silver just beginning to arrive',false],
+      ['Portugal',606,606,'Spice route to India via the Cape',false],
+      ['Low Countries (Netherlands)',723,761,'Antwerp: the cloth market where English wool and cloth are sold',false],
+      ['Low Countries (Belgium)',1225,null,'',false],
+      ['German lands (Holy Roman Empire)',8256,688,'',false],
+      ['Ottoman Empire & West Asia',10495,null,'State revenue c. 9.65 million Venetian ducats in 1528',false],
+      ['Russia & former USSR lands',8458,null,'',false],
+      ['Ming China',61800,600,'Largest economy on earth',false],
+      ['India (Mughal empire founded April 1526)',60500,550,'',false],
+      ['Japan',7700,500,'',false],
+      ['Mexico (New Spain)',3188,425,'Conquered 1521',false],
+    ];
+    var WORLD_GDP=248445, WORLD_PC=566;
+
+    // ── What the band earns ───────────────────────────────────────────
+    // Working year of 250 days, split by the English seasons of the game.
+    // Statute "summer" rates ran Easter–Michaelmas (1 Apr–29 Sep in 1526); winter rates the rest.
+    var SEASONS = [
+      ['Spring (Mar–May)', {winter:20, summer:44}],
+      ['Summer (Jun–Aug)', {summer:46, harvest:24}],
+      ['Autumn (Sep–Nov)', {summer:22, winter:42}],
+      ['Winter (Dec–Feb)', {winter:52}],
+    ];
+    var BAND = [
+      {id:1, trade:'Wool dealer on his inherited stock', basis:'A small wool dealer\'s net profit, taken as £12 a year and earned mostly after shearing (15% / 50% / 20% / 15% by season)', annual:2880, split:[0.15,0.5,0.2,0.15], est:true},
+      {id:2, trade:'Fen farmer\'s son — husbandry labour', basis:'Labourer\'s rate: 4d a day in summer, 3d in winter; 5d at harvest', rates:{summer:4,winter:3,harvest:5}, src:true, estNote:'harvest rate'},
+      {id:3, trade:'Tanner\'s son — tan-yard work', basis:'Semi-skilled: 5d summer / 4d winter, between labourer and craftsman (no statute rate for tanners)', rates:{summer:5,winter:4,harvest:5}, est:true},
+      {id:4, trade:'Blacksmith\'s son — smithing', basis:'Craftsman\'s rate: 6d a day in summer, 5d in winter, without food and drink (statute of 1495)', rates:{summer:6,winter:5,harvest:6}, src:true},
+      {id:5, trade:'Cloth merchant\'s son — shop work', basis:'Paid in keep by his father; valued at the labourer\'s rate of 4d / 3d', rates:{summer:4,winter:3,harvest:4}, est:true},
+    ];
+    function seasonPence(b){
+      if(b.annual) return b.split.map(function(f){ return b.annual*f; });
+      return SEASONS.map(function(s){ var d=s[1], t=0; Object.keys(d).forEach(function(k){ t+=d[k]*(b.rates[k]||0); }); return t; });
+    }
+    function nameOf(id){ try{ var m=(S.men||[]).filter(function(x){return x.id===id;})[0]; if(m) return m.name; }catch(e){} return ({1:'Roger Lee Whittlesey IV',2:'Ralph Whittlesey',3:'Thomas Fenne',4:'John Cobbes',5:'Edmund Sayer'})[id]; }
+
+    function render(){
+      var el=document.getElementById('won-body'); if(!el) return;
+      var h='';
+      h+='<div class="won-intro">England in 1526 counts in pounds, shillings and pence: 12 pence to the shilling, 20 shillings to the pound. There is no single "today\'s dollars" for old money, so this ledger shows two honest conversions. <strong>Goods</strong> is what the money would buy in everyday goods. <strong>Wages</strong> is what it is worth measured against what people earn. Wages have risen far faster than prices, so the two differ about ninefold. Use the <em>wage</em> figure to compare incomes, and the <em>goods</em> figure to compare prices.</div>';
+      h+='<div class="won-basis">'+
+        '<div><b>£1 of 1526, as goods</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>£'+MW_REAL_PRICE.toLocaleString()+' in 2025 pounds (real price) × $'+GBPUSD+'</span></div>'+
+        '<div><b>£1 of 1526, as wages</b><span class="big">'+usd(MW_LABOUR*GBPUSD)+'</span><span>£'+MW_LABOUR.toLocaleString()+' in 2025 pounds (labour earnings) × $'+GBPUSD+'</span></div>'+
+        '<div><b>One penny</b><span class="big">'+usd(USD_PER_D_GOODS)+' / '+usd(USD_PER_D_WAGE)+'</span><span>goods / wages</span></div>'+
+        '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_WAGE)+'</span><span>as wages — about a day\'s average pay today</span></div></div>';
+
+      // Purse
+      var purse=0; try{ purse=+S.treasury||0; }catch(e){}
+      h+='<div class="purse"><strong>The band\'s purse:</strong> your ledger shows <strong>$'+purse.toFixed(2)+'</strong>. In 1526 money that is <strong>'+lsd(purse/USD_PER_D_GOODS)+'</strong> as goods, or <strong>'+lsd(purse/USD_PER_D_WAGE)+'</strong> as wages. That comes to '+(purse/USD_PER_D_WAGE/4).toFixed(1)+' days of a labourer\'s pay. In the game each man is worth $100 (about '+lsd(100/USD_PER_D_WAGE)+' in wages): the ledger is a stake, not a fortune.</div>';
+
+      // Coins
+      h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">As goods today</th><th class="n">As wages today</th></tr></thead><tbody>';
+      COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td><td class="n">'+usd(c[3]*USD_PER_D_WAGE)+'</td></tr>'; });
+      h+='</tbody></table></div>';
+
+      // Realms
+      h+='<h4>The wealth of the realms, c. 1500</h4><div class="note">These are Maddison\'s estimates of each economy\'s total output, in 1990 "international dollars" (adjusted for local prices). They are raised to today\'s dollars by US inflation. This is a different yardstick from the pound figures above, so compare realms with each other, not with the band\'s pay.</div>';
+      h+='<div class="won-scroll"><table><thead><tr><th>Realm</th><th class="n">People (m)</th><th class="n">Output, 1990 $</th><th class="n">Output ≈ today</th><th class="n">Per head ≈ today</th><th class="n">Share of world</th><th>Notes</th></tr></thead><tbody>';
+      REALMS.forEach(function(r){
+        var pop=r[2]?r[1]/r[2]:null;
+        h+='<tr'+(r[4]?' class="eng"':'')+'><td>'+r[0]+'</td><td class="n">'+(pop?pop.toFixed(1):'—')+'</td><td class="n">$'+(r[1]/1000).toFixed(1)+' bn</td><td class="n">'+usd(r[1]*1e6*CPI_1990_TO_NOW)+'</td><td class="n">'+(r[2]?usd(r[2]*CPI_1990_TO_NOW):'—')+'</td><td class="n">'+(r[1]/WORLD_GDP*100).toFixed(1)+'%</td><td>'+(r[3]||'')+'</td></tr>';
+      });
+      h+='<tr><td><strong>The whole world</strong></td><td class="n">'+(WORLD_GDP/WORLD_PC).toFixed(0)+'</td><td class="n">$'+(WORLD_GDP/1000).toFixed(0)+' bn</td><td class="n">'+usd(WORLD_GDP*1e6*CPI_1990_TO_NOW)+'</td><td class="n">'+usd(WORLD_PC*CPI_1990_TO_NOW)+'</td><td class="n">100%</td><td></td></tr>';
+      h+='</tbody></table></div>';
+      h+='<div class="note">Maddison\'s England figure includes Wales, Scotland and Ireland. England alone had about 2.8 million people by 1541 (Wrigley &amp; Schofield). Newer work by Broadberry and others puts English output per head higher than Maddison does. Figures for state revenue survive for only a few realms, and none is invented here.</div>';
+
+      // Band incomes
+      h+='<h4>What the band earns — by season and by year</h4><div class="note">Rates are for a working day without food and drink; a man fed by his master was paid less. The year counts 250 working days: Sundays, holy days and short winter days are left out. Summer rates run from Easter to Michaelmas. <span class="src">sourced</span> marks a documented wage rate. <span class="est">estimate</span> marks a reasoned figure where no rate survives.</div>';
+      h+='<div class="won-scroll"><table><thead><tr><th>Man</th><th>Trade &amp; basis</th>'+SEASONS.map(function(s){return '<th class="n">'+s[0].replace(' (','<br>(')+'</th>';}).join('')+'<th class="n">Year</th><th class="n">Year as wages today</th><th class="n">Year as goods today</th></tr></thead><tbody>';
+      BAND.forEach(function(b){
+        var sp=seasonPence(b), yr=sp.reduce(function(a,c){return a+c;},0);
+        h+='<tr class="band"><td>'+nameOf(b.id)+'</td><td>'+b.trade+(b.src?'<span class="src">sourced</span>':'')+(b.est?'<span class="est">estimate</span>':'')+(b.estNote?'<span class="est">'+b.estNote+' est.</span>':'')+'<div class="note">'+b.basis+'</div></td>'+
+          sp.map(function(p){return '<td class="n">'+lsd(p)+'<br><span style="color:var(--ink4)">'+usd(p*USD_PER_D_WAGE)+'</span></td>';}).join('')+
+          '<td class="n"><strong>'+lsd(yr)+'</strong></td><td class="n"><strong>'+usd(yr*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(yr*USD_PER_D_GOODS)+'</td></tr>';
+      });
+      h+='</tbody></table></div>';
+      h+='<div class="note">Why the wage figures look large: a 1526 labourer\'s 4d a day was roughly the ordinary pay of his time, so measured as wages it is about an ordinary day\'s pay today. The goods figure shows how little that bought. Bread, ale and rent took most of it, and a bad harvest could halve what a family could eat.</div>';
+
+      h+='<h4>Sources</h4><div class="sources">'+
+        '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — relative value of £1 from 1526 in 2025: real price £1,072; labour earnings £10,030; income value £23,180.<br>'+
+        '• <a href="https://tradingeconomics.com/united-kingdom/currency" target="_blank" rel="noopener">Trading Economics</a> — GBP/USD 1.3248 on 25 Sep 2026.<br>'+
+        '• <a href="https://www.economics.utoronto.ca/munro5/REH21MunroWageStickiness.pdf" target="_blank" rel="noopener">Munro, wage-stickiness in late-medieval England</a> — building craftsmen 6d summer / 5d winter (4d with food) under the 1495 statute; rates stable until the 1530s.<br>'+
+        '• <a href="https://www.universalfreemasonry.org/en/encyclopedia/wages" target="_blank" rel="noopener">Statute of 1495 on masons\' wages</a> — 6d summer, 5d winter without meals; 4d / 3d with meals.<br>'+
+        '• Phelps Brown &amp; Hopkins, <em>A Perspective of Wages and Prices</em> — southern English building labourers at 4d a day through the early 1500s.<br>'+
+        '• <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)" target="_blank" rel="noopener">Maddison, GDP by region, 1500</a> and <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)_per_capita" target="_blank" rel="noopener">GDP per head, 1500</a>.<br>'+
+        '• <a href="https://www.henryviiithereign.co.uk/1523-subsidy-and-1525-amicable-grant.html" target="_blank" rel="noopener">Subsidy of 1523 and Amicable Grant of 1525</a> — £151,215 yielded.<br>'+
+        '• <a href="https://edizionicafoscari.unive.it/media/pdf/books/978-88-6969-261-1/978-88-6969-261-1-ch-02.pdf" target="_blank" rel="noopener">Early Ottoman revenue records</a> — 9,650,000 Venetian ducats in 1528.<br>'+
+        '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.'+
+        '</div>';
+      el.innerHTML=h;
+    }
+    window.renderWealthOfNations=render;
+    document.addEventListener('DOMContentLoaded', render);
+  })();
+  </script>
+
   <!-- THE BATTLE CONTRACT — full inner-section width, below WB+CC, above Markets -->
   <div class="parch-panel" style="margin-bottom:14px;">
     <div class="p-inner" style="font-family:var(--fell);font-size:14px;line-height:1.75;color:var(--ink);padding:14px 22px;">
@@ -5129,6 +5299,7 @@ function closeModal(id){document.getElementById('modal-'+id).classList.remove('o
 
 function render(){
   renderStats();renderRoster();renderLog();renderManor();renderRecruit();renderTerritory();
+  try{ if(window.renderWealthOfNations) window.renderWealthOfNations(); }catch(e){}
   updateLocationDisplay();
   const nsBtn = document.getElementById('ns-current-season');
   if(nsBtn) nsBtn.textContent='Current: '+S.currentSeason;
