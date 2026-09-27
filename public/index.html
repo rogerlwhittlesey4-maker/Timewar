@@ -1285,243 +1285,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     </div>
   </div>
 
-  <!-- ═════════ THE WEALTH OF NATIONS, 1526 — money, realms and what the band earns ═════════ -->
-  <style>
-  .won details>summary{cursor:pointer;list-style:none;}
-  .won details>summary::-webkit-details-marker{display:none;}
-  .won .won-intro{font-family:var(--fell);font-size:13px;color:var(--ink2);line-height:1.55;margin:4px 0 10px;}
-  .won .won-basis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:8px 0 12px;}
-  .won .won-basis div{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;}
-  .won .won-basis b{display:block;font-family:var(--fellsc);font-size:13px;color:var(--ink);}
-  .won .won-basis span{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.5;display:block;margin-top:2px;}
-  .won .won-basis .big{font-family:var(--fellsc);font-size:20px;color:var(--gold);}
-  .won h4{font-family:var(--fellsc);font-size:14px;color:var(--gold);letter-spacing:0.06em;margin:14px 0 6px;border-bottom:1px solid var(--border);padding-bottom:3px;}
-  .won .won-scroll{overflow-x:auto;}
-  .won table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px;min-width:640px;}
-  .won table.wide{min-width:980px;}
-  .won td.notes{min-width:200px;}
-  .won th{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;padding:6px 7px;text-align:left;border-bottom:1.5px solid var(--border2);vertical-align:bottom;}
-  .won td{padding:6px 7px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top;font-family:var(--fell);}
-  .won td.n,.won th.n{text-align:right;font-family:var(--mono);font-size:11px;white-space:nowrap;}
-  .won tr.eng td{background:#fff5d8;}
-  .won tr.band td:first-child{font-family:var(--fellsc);color:var(--ink);}
-  .won .est{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#8a2a20;border:1px solid #c98a7a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
-  .won .src{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#2d6a2d;border:1px solid #8ab88a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
-  .won .note{font-family:var(--fell);font-size:12px;color:var(--ink3);line-height:1.5;margin:4px 0;}
-  .won .sources{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
-  .won .sources a{color:var(--blood);}
-  .won .purse{background:linear-gradient(135deg,#fff5d8,#ffeec0);border:2px solid var(--gold);border-radius:4px;padding:10px 12px;margin:10px 0;font-family:var(--fell);font-size:13px;color:var(--ink);line-height:1.5;}
-  </style>
-  <div class="parch-panel won" id="won-panel" style="margin-bottom:14px;">
-    <div class="p-inner">
-      <details open>
-        <summary><div class="sec-title">⚖ The Wealth of Nations — Anno Domini 1526 <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.05em;">(click to fold)</span></div></summary>
-        <div id="won-body"></div>
-      </details>
-    </div>
-  </div>
-  <script>
-  (function(){
-    // ── Sourced constants ─────────────────────────────────────────────
-    // MeasuringWorth, relative value of £1 from 1526 in 2025 (UK), brought forward to 2026:
-    var MW_REAL_PRICE_2025 = 1072, UK_RPI_12M = 0.034;      // real price; ONS RPI, 12 months to Aug 2026
-    var MW_REAL_PRICE = MW_REAL_PRICE_2025*(1+UK_RPI_12M);   // what £1 of 1526 buys, in 2026 pounds
-    // GBP→USD, Trading Economics, 25 Sep 2026:
-    var GBPUSD = 1.3248;
-    // Maddison's 1990 dollars → 2026 dollars: US CPI-U Aug 2026 (334.980) ÷ 1990 average (130.7)
-    var CPI_1990_TO_NOW = 334.980/130.7;
-    // Total national wealth: pre-industrial Britain and France held wealth of about 6-7 years of
-    // national income, mostly land (Piketty & Zucman; earliest measured c.1700). Midpoint used.
-    var WEALTH_MULT = 6.5;
 
-    var USD_PER_D_GOODS = MW_REAL_PRICE*GBPUSD/240;   // one penny in 2026 US dollars
-
-    function lsd(d){ // pence → "£3 15s 10d"
-      d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
-      if(L) out.push('£'+L); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
-    }
-    function usd(x){ if(x>=1e12) return '$'+(x/1e12).toFixed(x>=1e13?0:1)+' tn'; if(x>=1e9) return '$'+(x/1e9).toFixed(x>=1e11?0:1)+' bn'; if(x>=1e6) return '$'+(x/1e6).toFixed(1)+' m'; if(x>=100) return '$'+Math.round(x).toLocaleString('en-US'); return '$'+x.toFixed(2); }
-
-    // ── Money of England in 1526 ──────────────────────────────────────
-    var COINS = [
-      ['Farthing','¼d','Smallest coin; a farthing loaf under the Assize of Bread',0.25],
-      ['Halfpenny','½d','Silver coin',0.5],
-      ['Penny','1d','Silver coin; the base unit — 240 to the pound',1],
-      ['Half-groat','2d','Silver coin',2],
-      ['Groat','4d','Silver coin; a labourer\'s day wage',4],
-      ['Shilling','12d','Money of account (the testoon coin was still rare)',12],
-      ['Noble / Angel','6s 8d','Gold angel = 6s 8d; Wolsey\'s recoinage of late 1526 raised it to 7s 6d',80],
-      ['Mark','13s 4d','Money of account (two-thirds of a pound)',160],
-      ['Pound','20s','Money of account = 240d',240],
-      ['Sovereign','20s','Gold; revalued to 22s 6d in the recoinage of late 1526',240],
-    ];
-
-    // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
-    // population is derived as GDP ÷ GDP per head from the same tables
-    var REALMS = [
-      ['England (with Wales, Scotland, Ireland)',2815,714,'Subsidy of 1523 yielded £151,215, collected over four years; the Amicable Grant of 1525 was abandoned after revolt',true,4264794,'United Kingdom'],
-      ['France',10912,727,'',false,3596094,'France'],
-      ['Italian states',11550,1100,'Richest per head in Europe: banking, silk, Venice and Florence',false,2738164,'Italy'],
-      ['Spain (Castile & Aragon)',4495,661,'American silver just beginning to arrive',false,2091222,'Spain'],
-      ['Portugal',606,606,'Spice route to India via the Cape',false,380637,'Portugal'],
-      ['Low Countries (Netherlands)',723,761,'Antwerp: the cloth market where English wool and cloth are sold',false,1449704,'Netherlands'],
-      ['Low Countries (Belgium)',1225,null,'',false,776730,'Belgium'],
-      ['German lands (Holy Roman Empire)',8256,688,'',false,5452858,'Germany'],
-      ['Ottoman Empire & West Asia',10495,null,'State revenue c. 9.65 million Venetian ducats in 1528',false,1640223,'Turkey only'],
-      ['Russia & former USSR lands',8458,null,'',false,2656452,'Russia only'],
-      ['Ming China',61800,600,'Largest economy on earth',false,20851593,'China'],
-      ['India (Mughal empire founded April 1526)',60500,550,'',false,4153191,'India'],
-      ['Japan',7700,500,'',false,4379253,'Japan'],
-      ['Mexico (New Spain)',3188,425,'Conquered 1521',false,2120855,'Mexico'],
-    ];
-    var WORLD_GDP=248445, WORLD_PC=566, WORLD_GDP_2026=126295331;
-
-    // ── What the band earns ───────────────────────────────────────────
-    // Working year of 250 days, split by the English seasons of the game.
-    // Statute "summer" rates ran Easter–Michaelmas (1 Apr–29 Sep in 1526); winter rates the rest.
-    var SEASONS = [
-      ['Spring (Mar–May)', {winter:20, summer:44}],
-      ['Summer (Jun–Aug)', {summer:46, harvest:24}],
-      ['Autumn (Sep–Nov)', {summer:22, winter:42}],
-      ['Winter (Dec–Feb)', {winter:52}],
-    ];
-    var BAND = [
-      {id:1, trade:'Wool dealer on his inherited stock', basis:'A small wool dealer\'s net profit, taken as £12 a year and earned mostly after shearing (15% / 50% / 20% / 15% by season)', annual:2880, split:[0.15,0.5,0.2,0.15], est:true},
-      {id:2, trade:'Fen farmer\'s son — husbandry labour', basis:'Labourer\'s rate: 4d a day in summer, 3d in winter; 5d at harvest', rates:{summer:4,winter:3,harvest:5}, src:true, estNote:'harvest rate'},
-      {id:3, trade:'Tanner\'s son — tan-yard work', basis:'Semi-skilled: 5d summer / 4d winter, between labourer and craftsman (no statute rate for tanners)', rates:{summer:5,winter:4,harvest:5}, est:true},
-      {id:4, trade:'Blacksmith\'s son — smithing', basis:'Craftsman\'s rate: 6d a day in summer, 5d in winter, without food and drink (statute of 1495)', rates:{summer:6,winter:5,harvest:6}, src:true},
-      {id:5, trade:'Cloth merchant\'s son — shop work', basis:'Paid in keep by his father; valued at the labourer\'s rate of 4d / 3d', rates:{summer:4,winter:3,harvest:4}, est:true},
-    ];
-    function seasonPence(b){
-      if(b.annual) return b.split.map(function(f){ return b.annual*f; });
-      return SEASONS.map(function(s){ var d=s[1], t=0; Object.keys(d).forEach(function(k){ t+=d[k]*(b.rates[k]||0); }); return t; });
-    }
-    // ── Households of the band: homes, land and net worth (all in pence) ──
-    // Values are reasoned estimates for Whittlesey c.1526; see the notes under the table.
-    var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
-    var HOUSEHOLDS = [
-      {id:1, who:'his own household (heir since his father died)', band:'yeoman / small merchant',
-       home:'A two-storey timber-framed hall house near the market place: wattle-and-daub walls, reed thatch, a hall open to the roof with a hearth, a parlour and a chamber over it, and a loft for wool. Glass only in the parlour window.',
-       tenure:'Held by copy of the court roll of the manor of Whittlesey St Mary (Thorney Abbey), with rights of common on the fen.',
-       items:[['The house and its yard',2400],['20 acres of pasture held by copy ('+'20 × 17s 6d)',20*ACRE],['60 sheep at 1s 6d',60*18],['Wool in the loft, waiting for the stapler',1920],['A riding horse',160],['Household stuff: beds, pewter, brass pots, linen, a chest',720],['Money in hand and debts owed to him',1200]],
-       own:null},
-      {id:2, who:'his father\'s holding by the mere', band:'husbandman',
-       home:'A one-and-a-half-room cottage of timber and daub under fen reed: one hearth room with an open fire, a sleeping chamber, a cow-house against the gable. Earth floor strewn with rushes; shutters, no glass.',
-       tenure:'Copyhold of the manor of Whittlesey St Andrew (Ely Priory), with common of pasture on the washes, fishing, fowling, and reed and sedge cutting.',
-       items:[['The cottage and toft',720],['12 acres held by copy (12 × 17s 6d)',12*ACRE],['3 cows at 8s',3*96],['12 sheep at 1s 6d',12*18],['A pig',24],['Punt, fowling nets and eel traps',120],['Plough-share, spades, scythe',120],['Household stuff: a bed, pots, a table, stools',240]],
-       own:[['His clothes, knife and fowling net',60]]},
-      {id:3, who:'his father\'s tan-yard', band:'tradesman (tanner)',
-       home:'A timber-framed house facing the street with the tan-yard behind: lime pits, tan pits and a bark store by the water. The smell carries across the town.',
-       tenure:'House and yard held by copy; the pits and water rights are what make it worth having.',
-       items:[['House, yard and tan pits',1920],['Hides lying in the pits (a year and more to finish)',3600],['Oak bark in store',480],['Knives, beams and hooks',120],['Household stuff',360]],
-       own:[['His clothes and knife',60],['Pennies he has hidden away since he was twelve',160]]},
-      {id:4, who:'his father\'s smithy', band:'craftsman (smith)',
-       home:'A low house with the forge built against it: stone hearth, great leather bellows, anvil on its block. The family lives in the hall beside the smithy.',
-       tenure:'House and forge held by copy of the manor.',
-       items:[['House and forge',1200],['Anvil, bellows, hammers, tongs and swages',720],['Iron and charcoal in stock',480],['A cow',96],['Household stuff',240]],
-       own:[['His clothes, his mother\'s wooden cross, his own hammer',72]]},
-      {id:5, who:'his father\'s cloth shop', band:'merchant (draper)',
-       home:'A jettied two-storey house on the market place: shop with a street shutter that folds down as a counter, the hall behind, chambers above. Glazed windows at the front.',
-       tenure:'Held by copy of the manor; one of the better houses in the town.',
-       items:[['House and shop on the market place',2880],['Cloth in stock: kerseys, broadcloth, linen',7200],['Debts owed by customers',1920],['Household stuff: pewter, brass, beds, painted cloths',960],['A horse',160]],
-       own:[['His clothes and a borrowed book',60],['Saved toward a book of his own',40]]},
-    ];
-    function sumItems(a){ return (a||[]).reduce(function(t,x){ return t+x[1]; },0); }
-    function subsidyBand(d){ var L=d/240; if(L<2) return {band:'Under £2 in goods — taxed on wages instead (4d if earning £1 a year)', tax:4}; if(L<20) return {band:'£2–£20 in goods — 6d in the pound', tax:Math.floor(L)*6}; return {band:'Over £20 in goods — 1s in the pound', tax:Math.floor(L)*12}; }
-    // For the companions: a one-line summary of a man's means, in period money
-    window.twHouseholdText=function(id){
-      var h=HOUSEHOLDS.filter(function(x){return x.id===id;})[0]; if(!h) return '';
-      var fam=sumItems(h.items), own=sumItems(h.own);
-      return (h.own?'Lives in '+h.who+', worth about '+lsd(fam)+' all told; his own possessions come to about '+lsd(own)+'.':'Owns '+h.who.replace('his own household','his household')+', worth about '+lsd(fam)+'.')+' Home: '+h.home;
-    };
-    function nameOf(id){ try{ var m=(S.men||[]).filter(function(x){return x.id===id;})[0]; if(m) return m.name; }catch(e){} return ({1:'Roger Lee Whittlesey IV',2:'Ralph Whittlesey',3:'Thomas Fenne',4:'John Cobbes',5:'Edmund Sayer'})[id]; }
-
-    function render(){
-      var el=document.getElementById('won-body'); if(!el) return;
-      var h='';
-      h+='<div class="won-intro"><strong>How the money worked:</strong> England counted in pounds (£), shillings (s) and pence (d). 12 pence made a shilling and 20 shillings made a pound, so a pound was 240 pence. The <strong>penny</strong> was the everyday silver coin, and a labourer earned 3 or 4 of them for a whole day\'s work.</div>';
-      h+='<div class="won-basis">'+
-        '<div><b>£1 of 1526</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
-        '<div><b>1 shilling</b><span class="big">'+usd(12*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
-        '<div><b>1 penny</b><span class="big">'+usd(USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
-        '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div></div>';
-      h+='<div class="note">Conversion: what the money bought then, priced in today\'s goods (UK price inflation from 1526 to 2026, then pounds to dollars at $'+GBPUSD+').</div>';
-
-      // The ledger is lives, not savings
-      var purse=0; try{ purse=+S.treasury||0; }catch(e){}
-      h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each</strong>. It is each man\'s health in the game, and it is your real trading stake. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
-
-      // Coins
-      h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">2026 US $</th></tr></thead><tbody>';
-      COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td></tr>'; });
-      h+='</tbody></table></div>';
-
-      // Realms
-      h+='<h4>The wealth of the realms, c. 1500 — in 2026 US dollars</h4><div class="note"><strong>Yearly GDP</strong> is each realm\'s output in a year (Maddison\'s estimates, raised to 2026 dollars by US inflation). <strong>Total worth</strong> is everything the realm owned — mostly land, then houses, livestock, tools and stock — estimated at 6½ years of output, the ratio measured for pre-industrial England and France. <strong>Same land in 2026</strong> is that country\'s actual GDP today (IMF), for scale.</div>';
-      h+='<div class="won-scroll"><table class="wide"><thead><tr><th>Realm</th><th class="n">People (m)</th><th class="n">Yearly GDP</th><th class="n">Total worth<span class="est">estimate</span></th><th class="n">Per head / year</th><th class="n">Share of world</th><th class="n">Same land in 2026</th><th>Notes</th></tr></thead><tbody>';
-      REALMS.forEach(function(r){
-        var pop=r[2]?r[1]/r[2]:null, gdp=r[1]*1e6*CPI_1990_TO_NOW;
-        h+='<tr'+(r[4]?' class="eng"':'')+'><td>'+r[0]+'</td><td class="n">'+(pop?pop.toFixed(1):'—')+'</td><td class="n"><strong>'+usd(gdp)+'</strong></td><td class="n">'+usd(gdp*WEALTH_MULT)+'</td><td class="n">'+(r[2]?usd(r[2]*CPI_1990_TO_NOW):'—')+'</td><td class="n">'+(r[1]/WORLD_GDP*100).toFixed(1)+'%</td><td class="n">'+usd(r[5]*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+r[6]+' · '+Math.round(r[5]*1e6/gdp).toLocaleString('en-US')+'× bigger</span></td><td class="notes">'+(r[3]||'')+'</td></tr>';
-      });
-      var wg=WORLD_GDP*1e6*CPI_1990_TO_NOW;
-      h+='<tr><td><strong>The whole world</strong></td><td class="n">'+(WORLD_GDP/WORLD_PC).toFixed(0)+'</td><td class="n"><strong>'+usd(wg)+'</strong></td><td class="n">'+usd(wg*WEALTH_MULT)+'</td><td class="n">'+usd(WORLD_PC*CPI_1990_TO_NOW)+'</td><td class="n">100%</td><td class="n">'+usd(WORLD_GDP_2026*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+Math.round(WORLD_GDP_2026*1e6/wg).toLocaleString('en-US')+'× bigger</span></td><td></td></tr>';
-      h+='</tbody></table></div>';
-      h+='<div class="note">Maddison\'s England figure includes Wales, Scotland and Ireland. England alone had about 2.8 million people by 1541 (Wrigley &amp; Schofield). Newer work by Broadberry and others puts English output per head higher than Maddison does. Figures for state revenue survive for only a few realms, and none is invented here. Total worth is an estimate: nobody measured a nation\'s wealth before the late 1600s, so the ratio is taken from the earliest measured balance sheets.</div>';
-
-      // Band incomes
-      h+='<h4>What the band earns — by season and by year</h4><div class="note">Rates are for a working day without food and drink; a man fed by his master was paid less. The year counts 250 working days: Sundays, holy days and short winter days are left out. Summer rates run from Easter to Michaelmas. <span class="src">sourced</span> marks a documented wage rate. <span class="est">estimate</span> marks a reasoned figure where no rate survives.</div>';
-      h+='<div class="won-scroll"><table><thead><tr><th>Man</th><th>Trade &amp; basis</th>'+SEASONS.map(function(s){return '<th class="n">'+s[0].replace(' (','<br>(')+'</th>';}).join('')+'<th class="n">Year</th><th class="n">Year, 2026 US $</th></tr></thead><tbody>';
-      BAND.forEach(function(b){
-        var sp=seasonPence(b), yr=sp.reduce(function(a,c){return a+c;},0);
-        h+='<tr class="band"><td>'+nameOf(b.id)+'</td><td>'+b.trade+(b.src?'<span class="src">sourced</span>':'')+(b.est?'<span class="est">estimate</span>':'')+(b.estNote?'<span class="est">'+b.estNote+' est.</span>':'')+'<div class="note">'+b.basis+'</div></td>'+
-          sp.map(function(p){return '<td class="n">'+lsd(p)+'<br><span style="color:var(--ink4)">'+usd(p*USD_PER_D_GOODS)+'</span></td>';}).join('')+
-          '<td class="n"><strong>'+lsd(yr)+'</strong></td><td class="n"><strong>'+usd(yr*USD_PER_D_GOODS)+'</strong></td></tr>';
-      });
-      h+='</tbody></table></div>';
-      h+='<div class="note">Bread, ale and rent took most of a wage, and a bad harvest could halve what a family could eat.</div>';
-
-      // Households
-      h+='<h4>Homes, land and net worth</h4><div class="note">What each household owned, valued the way a 1520s probate inventory or tax assessor would value it. Roger, as heir, owns his household outright. The other four are young unmarried sons: they live in their fathers\' houses and own little themselves, which was normal at eighteen. Everything here is an <span class="est">estimate</span> built from the sources below. The 1524–25 subsidy rates are shown so you can see which tax band each household fell in.</div>';
-      var bandTotal=0;
-      HOUSEHOLDS.forEach(function(x){
-        var fam=sumItems(x.items), own=sumItems(x.own), sb=subsidyBand(fam), mine=x.own?own:fam; bandTotal+=mine;
-        h+='<div style="border:1px solid var(--border2);border-radius:3px;background:var(--parch2);padding:10px 12px;margin:8px 0;">'+
-          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><div style="font-family:var(--fellsc);font-size:15px;color:var(--ink)">'+(typeof charAvatar==='function'?charAvatar(x.id,28)+' ':'')+nameOf(x.id)+' <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em">'+x.band+'</span></div>'+
-          '<div style="font-family:var(--mono);font-size:11px;color:var(--ink2)">'+(x.own?'Household: <strong>'+lsd(fam)+'</strong> · <span style="color:var(--blood)">His own: <strong>'+lsd(own)+'</strong></span>':'Net worth: <strong>'+lsd(fam)+'</strong>')+'</div></div>'+
-          '<div class="note" style="margin-top:4px"><strong>Home:</strong> '+x.home+'</div><div class="note"><strong>Tenure:</strong> '+x.tenure+'</div>'+
-          '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">2026 US $</th></tr></thead><tbody>'+
-          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
-          '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_GOODS)+'</strong></td></tr>'+
-          (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
-            '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_GOODS)+'</strong></td></tr>':'')+
-          '</tbody></table></div><div class="note">1524–25 subsidy band for the household: '+sb.band+' → about '+lsd(sb.tax)+' tax.</div></div>';
-      });
-      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
-      h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
-
-      h+='<h4>Sources</h4><div class="sources">'+
-        '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 in 2025 (real price); brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a>.<br>'+
-        '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
-        '• <a href="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)" target="_blank" rel="noopener">IMF 2026 GDP by country</a> — same lands today.<br>'+
-        '• <a href="https://eml.berkeley.edu/~saez/course/piketty-zucman13Kisback.pdf" target="_blank" rel="noopener">Piketty &amp; Zucman, Capital is Back</a> — national wealth about 600–700% of national income in pre-industrial Britain and France.<br>'+
-        '• <a href="https://tradingeconomics.com/united-kingdom/currency" target="_blank" rel="noopener">Trading Economics</a> — GBP/USD 1.3248 on 25 Sep 2026.<br>'+
-        '• <a href="https://www.economics.utoronto.ca/munro5/REH21MunroWageStickiness.pdf" target="_blank" rel="noopener">Munro, wage-stickiness in late-medieval England</a> — building craftsmen 6d summer / 5d winter (4d with food) under the 1495 statute; rates stable until the 1530s.<br>'+
-        '• <a href="https://www.universalfreemasonry.org/en/encyclopedia/wages" target="_blank" rel="noopener">Statute of 1495 on masons\' wages</a> — 6d summer, 5d winter without meals; 4d / 3d with meals.<br>'+
-        '• Phelps Brown &amp; Hopkins, <em>A Perspective of Wages and Prices</em> — southern English building labourers at 4d a day through the early 1500s.<br>'+
-        '• <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)" target="_blank" rel="noopener">Maddison, GDP by region, 1500</a> and <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)_per_capita" target="_blank" rel="noopener">GDP per head, 1500</a>.<br>'+
-        '• <a href="https://www.henryviiithereign.co.uk/1523-subsidy-and-1525-amicable-grant.html" target="_blank" rel="noopener">Subsidy of 1523 and Amicable Grant of 1525</a> — £151,215 yielded.<br>'+
-        '• <a href="https://edizionicafoscari.unive.it/media/pdf/books/978-88-6969-261-1/978-88-6969-261-1-ch-02.pdf" target="_blank" rel="noopener">Early Ottoman revenue records</a> — 9,650,000 Venetian ducats in 1528.<br>'+
-        '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.<br>'+
-        '• <a href="https://www.british-history.ac.uk/vch/cambs/vol4/pp123-135" target="_blank" rel="noopener">Victoria County History, Whittlesey</a> — the two manors (Thorney Abbey, Ely Priory), copyhold tenure, the fishery, 355 householders in 1563.<br>'+
-        '• <a href="https://faculty.econ.ucdavis.edu/faculty/gclark/papers/rentereh.pdf" target="_blank" rel="noopener">Clark, Land rental values in England 1500–1912</a> — early-1500s rent about 10.5d an acre.<br>'+
-        '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.'+
-        '</div>';
-      el.innerHTML=h;
-    }
-    window.renderWealthOfNations=render;
-    document.addEventListener('DOMContentLoaded', render);
-  })();
-  </script>
 
   <!-- THE BATTLE CONTRACT — full inner-section width, below WB+CC, above Markets -->
   <div class="parch-panel" style="margin-bottom:14px;">
@@ -2412,6 +2176,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   var START_DATE = '1526-05-01';
   var PLACES = ['The inn','Around the campfire','The market place','The forge','St Andrew\'s churchyard','The edge of the mere','On the road'];
   var PACES = [[30,'Every 30s'],[60,'Every 60s'],[90,'Every 90s'],[120,'Every 2 min']];
+  // Hours as a fen town kept them in 1526: by the church bells (and a town clock, where there was one)
+  var TIMES = [
+    ['dawn','Dawn','the bell for Prime, about six in the morning; work begins'],
+    ['morning','Mid-morning','Terce, about nine; the working morning'],
+    ['noon','Midday','Sext, about noon; dinner, the main meal of the day'],
+    ['afternoon','Afternoon','None, about three; the long working afternoon'],
+    ['evening','Evening','Vespers, about six; supper, and the day\'s work done'],
+    ['night','Night','after Compline and the curfew bell, about eight or nine; fires covered, most folk abed']];
+  var OCCASIONS = ['An ordinary gathering','Market day','After a fight','Sunday, after Mass','A feast day','Bad news has come','A stranger has arrived','Payday — wages are in'];
+  function timeOf(sc){ var k=(sc&&sc.time)||'evening'; return TIMES.filter(function(t){ return t[0]===k; })[0]||TIMES[4]; }
+  function presentMen(sc){ var al=alive(); if(!sc||!Array.isArray(sc.present)) return al; var p=al.filter(function(m){ return sc.present.indexOf(m.id)>=0; }); return p.length?p:al; }
   var AUTO_PAUSE_LINES = 15;       // stop after this many lines without Roger speaking (cost guard)
   var MODEL = 'claude-sonnet-4-6';
 
@@ -2460,13 +2235,13 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   var FIXED={'1-1':'The Circumcision · New Year\'s Day','1-6':'Epiphany · Twelfth Day','2-2':'Candlemas','2-14':'St Valentine','3-25':'Lady Day · the Annunciation (the legal new year)','4-23':'St George','5-1':'SS Philip & James · May Day','5-3':'Holy Cross Day','6-24':'Midsummer · Nativity of St John the Baptist','6-29':'SS Peter & Paul','7-25':'St James','8-1':'Lammas','8-15':'The Assumption','8-24':'St Bartholomew','9-8':'Nativity of Our Lady','9-29':'Michaelmas','10-18':'St Luke','10-28':'SS Simon & Jude','11-1':'All Saints (All Hallows)','11-2':'All Souls','11-11':'Martinmas','11-30':'St Andrew — patron of one of Whittlesey\'s two parishes','12-21':'St Thomas the Apostle','12-25':'Christmas Day','12-26':'St Stephen','12-27':'St John the Evangelist','12-28':'Holy Innocents · Childermas'};
   function dayInfo(s){
     var o=parseD(s), J=jdn(o.y,o.m,o.d), wd=(J+1)%7, E=easterJ(o.y), off=J-E, feasts=[];
-    var MOV={'-48':'Shrove Monday','-47':'Shrove Tuesday','-46':'Ash Wednesday — Lent begins','-7':'Palm Sunday','-3':'Maundy Thursday','-2':'Good Friday','-1':'Holy Saturday','0':'Easter Day','1':'Easter Monday','35':'Rogation Monday','36':'Rogation Tuesday','37':'Rogation Wednesday','39':'Ascension Day','49':'Whitsunday','50':'Whit Monday','56':'Trinity Sunday','60':'Corpus Christi'};
+    var MOV={'-48':'Shrove Monday','-47':'Shrove Tuesday','-46':'Ash Wednesday — Lent begins','-7':'Palm Sunday','-3':'Maundy Thursday','-2':'Good Friday','-1':'Holy Saturday','0':'Easter Day','1':'Easter Monday','35':'Rogation Sunday','36':'Rogation Monday','37':'Rogation Tuesday','38':'Rogation Wednesday','39':'Ascension Day','49':'Whitsunday','50':'Whit Monday','56':'Trinity Sunday','60':'Corpus Christi'};
     if(MOV[off]) feasts.push(MOV[off]);
     if(FIXED[o.m+'-'+o.d]) feasts.push(FIXED[o.m+'-'+o.d]);
     var ep=jdn(o.y,1,6), plough=ep+((8-((ep+1)%7))%7||7); if(J===plough) feasts.push('Plough Monday');
     var lent = off>=-46 && off<=-1;
     var fast = lent ? 'Lent: no meat, fish days' : (wd===5 ? 'Friday: a fish day, no meat' : (wd===6 ? 'Saturday: commonly a fish day' : ''));
-    if(off>=35&&off<=37) fast = fast || 'Rogation days: beating the parish bounds';
+    if(off>=36&&off<=38) fast = fast || 'Rogation days: beating the parish bounds';
     var season = (o.m>=3&&o.m<=5)?'spring':(o.m>=6&&o.m<=8)?'summer':(o.m>=9&&o.m<=11)?'autumn':'winter';
     return { weekday:DAYS[wd], long:DAYS[wd]+', '+o.d+' '+MONTHS[o.m-1]+' '+o.y, short:DAYS[wd].slice(0,3)+' '+o.d+' '+MONTHS[o.m-1].slice(0,3)+' '+o.y,
       feasts:feasts, fast:fast, sunday:wd===0, season:season };
@@ -2659,10 +2434,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sel==='gathering'){
       var sc=curScene(st), di=dayInfo(sc.date);
       var earlier=st.scenes.filter(function(s){ return s.id!==sc.id && s.summary; }).slice(-5).reverse();
-      el.innerHTML='<h3>🍺 '+esc(sc.place)+'</h3><div class="twc-tag">'+esc(di.long)+'</div>'+
+      el.innerHTML='<h3>🍺 '+esc(sc.place)+'</h3><div class="twc-tag">'+esc(di.long)+' · '+esc(timeOf(sc)[1])+'</div>'+
+        '<div class="twc-sec"><div class="twc-h">The hour</div><p>'+esc(timeOf(sc)[1])+': '+esc(timeOf(sc)[2])+'.'+(sc.occasion&&sc.occasion!==OCCASIONS[0]?' <strong>'+esc(sc.occasion)+'.</strong>':'')+'</p>'+(sc.topic?'<p><em>When you arrived they were talking about:</em> '+esc(sc.topic)+'</p>':'')+'</div>'+
         '<div class="twc-sec"><div class="twc-h">The day</div><p>'+(di.feasts.length?esc(di.feasts.join(' · '))+'. ':'An ordinary '+di.weekday.toLowerCase()+'. ')+(di.fast?esc(di.fast)+'.':'')+'</p></div>'+
-        '<div class="twc-sec"><div class="twc-h">Present</div><ul>'+alive().map(function(m){ var s=stateFor(st,m.id); return '<li><strong>'+esc(m.name)+'</strong> — '+esc(s.mood)+', health '+Math.round(m.hp)+'/'+m.maxHp+'</li>'; }).join('')+'</ul></div>'+
-        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or go to the next day when this one is done; the day is summed up in the log and the men remember it.</p></div>'+
+        '<div class="twc-sec"><div class="twc-h">Present</div><ul>'+presentMen(sc).map(function(m){ var s=stateFor(st,m.id); return '<li><strong>'+esc(m.name)+'</strong> — '+esc(s.mood)+', health '+Math.round(m.hp)+'/'+m.maxHp+'</li>'; }).join('')+'</ul></div>'+
+        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or press <strong>⚙ New gathering</strong> to choose the day, the hour, who is there and what they are talking about. When a gathering ends it is summed up in the log, and the men remember it.</p></div>'+
         (earlier.length?'<div class="twc-sec"><div class="twc-h">Earlier days</div>'+earlier.map(function(s){ return '<p><strong>'+esc(dayInfo(s.date).short)+' · '+esc(s.place)+'</strong> — '+esc(s.summary)+'</p>'; }).join('')+'</div>':'');
       return;
     }
@@ -2677,10 +2453,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sel==='log'){
       var rows=st.scenes.slice().reverse().map(function(s){
         var cnt=s.lines.filter(function(l){ return l.who==='man'||l.who==='roger'; }).length;
-        return '<div class="twc-logrow'+((viewSceneId||st.currentScene)===s.id?' cur':'')+'" onclick="twcOpenScene(\''+s.id+'\')"><div class="d">'+esc(dayInfo(s.date).long)+'</div>'+
-          '<div class="m">'+esc(s.place)+' · '+cnt+' line'+(cnt===1?'':'s')+(s.id===st.currentScene?' · today':'')+'</div>'+(s.summary?'<div class="s">'+esc(s.summary)+'</div>':'')+'</div>';
+        return '<div class="twc-logrow'+((viewSceneId||st.currentScene)===s.id?' cur':'')+'" onclick="twcOpenScene(\''+s.id+'\')" style="position:relative"><button title="Delete this gathering" onclick="event.stopPropagation();twcDeleteScene(\''+s.id+'\')" style="position:absolute;top:6px;right:6px;font-size:11px;background:transparent;border:1px solid #c98a7a;color:#8a2a20;border-radius:2px;cursor:pointer;padding:1px 5px">🗑</button><div class="d" style="padding-right:26px">'+esc(dayInfo(s.date).long)+'</div>'+
+          '<div class="m">'+esc(s.place)+' · '+esc(timeOf(s)[1])+' · '+cnt+' line'+(cnt===1?'':'s')+(s.id===st.currentScene?' · today':'')+'</div>'+(s.summary?'<div class="s">'+esc(s.summary)+'</div>':'')+'</div>';
       }).join('');
-      el.innerHTML='<h3>📜 Conversation Log</h3><div class="twc-tag">Every gathering of the band, by date</div>'+(rows||'<p>No gatherings yet.</p>');
+      el.innerHTML='<h3>📜 Conversation Log</h3><div class="twc-tag">Every gathering of the band, by date</div>'+(rows||'<p>No gatherings yet.</p>')+
+        '<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px"><button onclick="twcClearLog()" style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;background:#f3d2c2;border:1px solid #8a2a20;color:#5a1a14;border-radius:2px;padding:5px 9px;cursor:pointer">🗑 Delete every gathering</button> <span style="font-family:var(--fell);font-size:12px;color:var(--ink3)">The men keep their characters, loyalty and memories; signed documents stay on record.</span></div>';
       return;
     }
     var m=manById(sel);
@@ -2733,14 +2510,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       dayEl.textContent=d?dd.long:'Signed Documents';
       feastEl.textContent=d?[d.place, regnal(d.date).plain].filter(Boolean).join(' · '):'The band\'s written record';
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button><span class="twc-status">Kept on record · read only</span>';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button>'+(d?'<button class="stop" onclick="twcDeleteDoc(\''+d.id+'\')">🗑 Tear up this document</button>':'')+'<span class="twc-status">Kept on record · read only</span>';
       inp.disabled=true; btn.disabled=true; inp.placeholder='';
       return;
     }
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       viewingPast = sc.id!==st.currentScene;
-      dateStr=sc.date; place=sc.place;
+      dateStr=sc.date; place=sc.place+' · '+timeOf(sc)[1];
     } else { dateStr=st.storyDate; var m=manById(sel); place=m?'Speaking with '+m.name:''; }
     var di=dayInfo(dateStr);
     dayEl.textContent=di.long;
@@ -2750,16 +2527,17 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       ctrl.style.display='flex';
       ctrl.innerHTML=(live?'<button class="stop" onclick="twcLive(false)">⏸ Pause</button>':'<button class="go" onclick="twcLive(true)">▶ Let them talk</button>')+
         '<select onchange="twcPace(this.value)" title="How often someone speaks">'+PACES.map(function(p){ return '<option value="'+p[0]+'"'+(p[0]===pace?' selected':'')+'>'+p[1]+'</option>'; }).join('')+'</select>'+
-        '<select onchange="twcPlace(this.value)" title="Where the band is gathered">'+PLACES.map(function(p){ return '<option'+(p===sc2.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'</select>'+
+        '<select onchange="twcPlace(this.value)" title="Where the band is gathered">'+(PLACES.indexOf(sc2.place)<0?'<option selected>'+esc(sc2.place)+'</option>':'')+PLACES.map(function(p){ return '<option'+(p===sc2.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'</select>'+
+        '<button onclick="twcNewForm()" title="Choose the day, the hour, the place, who is there and what they are talking about">⚙ New gathering</button>'+
         '<button onclick="twcNextDay()" title="End this day; it is summed up in the log and the men remember it">Next day →</button>'+
         '<button onclick="twcDraft()" title="Put an agreement, oath, bond or receipt in writing for the men to sign">🖋 Draw up a document</button>'+
         '<span class="twc-status" id="twc-status"></span>';
     } else if(sceneMode() && viewingPast){
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcOpenScene(null)">← Back to today</button><span class="twc-status">From the log · read only</span>';
+      ctrl.innerHTML='<button onclick="twcOpenScene(null)">← Back to today</button><button class="stop" onclick="twcDeleteScene(\''+sc.id+'\')">🗑 Delete this gathering</button><span class="twc-status">From the log · read only</span>';
     } else {
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcDraft()" title="Put something in writing between you and him">🖋 Draw up a document</button><button onclick="twcClearChat()" title="Erase this one-to-one conversation">Burn the letters</button><span class="twc-status">Private word</span>';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcDraft()" title="Put something in writing between you and him">🖋 Draw up a document</button><button class="stop" onclick="twcClearChat()" title="Delete this one-to-one conversation">🗑 Delete conversation</button><span class="twc-status">Private word</span>';
     }
     var m2=manById(sel);
     var disabled = (sceneMode()&&viewingPast) || (!sceneMode() && (!m2 || m2.dead));
@@ -2831,7 +2609,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   // Decide who talks next: whoever Roger addressed by name, else a man who has
   // not spoken lately (never the same man twice running); now and then a scene note.
   function pickSpeaker(sc){
-    var men=alive(); if(!men.length) return null;
+    var men=presentMen(sc); if(!men.length) return null;
     var talk=sc.lines.filter(function(l){ return l.who==='man'||l.who==='roger'||l.who==='narr'; });
     var last=talk[talk.length-1];
     if(rogerAwaiting(sc)){
@@ -2860,11 +2638,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   }
 
   async function sceneLine(){
-    var st=ensure(load()), sc=curScene(st), men=alive();
+    var st=ensure(load()), sc=curScene(st), men=presentMen(sc);
     if(!men.length) throw new Error('No living men to speak');
     for(var i=0;i<men.length;i++){ if(!PROFILES[men[i].id]) await ensureProfile(men[i]); }
     st=ensure(load()); sc=curScene(st);
     var system=worldCtx(st, sc.date, sc.place)+'\nTHE MEN PRESENT:\n\n'+men.map(function(m){ return personaText(m,st,true); }).join('\n---\n')+'\n'+RULES+'\n\n'+
+      'TIME OF DAY: '+timeOf(sc)[1]+' — '+timeOf(sc)[2]+'. Light, meals, work and who is about must fit the hour.\n'+
+      (sc.occasion&&sc.occasion!==OCCASIONS[0]?'OCCASION: '+sc.occasion+'.\n':'')+
+      (sc.topic?'WHAT THEY WERE TALKING ABOUT WHEN ROGER ARRIVED: '+sc.topic+'\n':'')+
       'You are running a live, unscripted conversation among these men at '+sc.place+' on this day. Roger Lee Whittlesey IV, their leader, is present and may speak at any time. '+
       'Each turn you write exactly ONE contribution, from the man named in the turn instruction. Men react, agree, disagree, interrupt, tease, answer each other, raise their own worries and ambitions, and let topics drift the way talk does at '+sc.place.toLowerCase()+' — the band\'s fortunes and the purse, prices and trade, the weather and the land, faith and the Church, the King and the Cardinal, news from abroad, family, girls, plans for the future, things happening around them this very day. '+
       'Make each man sound like himself: he reacts to what was just said, or to something said earlier, or brings up his own concern. Never repeat a point already made. 1 to 3 spoken sentences, optionally a short action in *asterisks*. '+
@@ -2931,7 +2712,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sc.place===place) return;
     if(!talkCount(sc)){ sc.place=place; sc.lines=[{who:'narr',text:'The band gathers at '+place.toLowerCase()+'.',ts:Date.now()}]; store(st); renderAll(); return; }
     var old=sc; summarize(old.id);
-    var ns={id:'s'+Date.now(), date:st.storyDate, place:place, lines:[{who:'narr',text:'The band moves on to '+place.toLowerCase()+'.',ts:Date.now()}], summary:''};
+    var ns={id:'s'+Date.now(), date:st.storyDate, place:place, time:sc.time, present:sc.present, occasion:sc.occasion, lines:[{who:'narr',text:'The band moves on to '+place.toLowerCase()+'.',ts:Date.now()}], summary:''};
     st.scenes.push(ns); st.currentScene=ns.id; store(st);
     viewSceneId=null; renderAll();
   };
@@ -2944,7 +2725,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(!confirm('End '+dayInfo(st.storyDate).long+' and go to '+nd.long+'?'+(jumped?'\n\nThe campaign has moved on to '+S.currentSeason+', so the story skips ahead to match.':'')+'\n\nToday is written into the log and the men will remember it.')) return;
     if(talkCount(sc)) summarize(sc.id); else dropIfEmpty(st,sc);
     st.storyDate=next;
-    var ns={id:'s'+Date.now(), date:next, place:sc.place, lines:[], summary:''};
+    var ns={id:'s'+Date.now(), date:next, place:sc.place, time:sc.time||'evening', lines:[], summary:''};
     if(jumped) ns.lines.push({who:'sys',text:'Time has passed. The band has fought on into '+S.currentSeason+'.',ts:Date.now()});
     st.scenes.push(ns); st.currentScene=ns.id; store(st);
     viewSceneId=null; quiet=0;
@@ -2957,7 +2738,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var st=ensure(load()), sc=sceneById(st,sceneId);
     if(!sc || sc.summary || sc.lines.filter(function(l){return l.who==='man'||l.who==='roger';}).length<3) return;
     try{
-      var men=alive();
+      var men=presentMen(sc);
       var sys='You keep the chronicle of a band of young men in Whittlesey, 1526. Summarise faithfully; invent nothing. Reply with JSON only.';
       var prompt='Date: '+dayInfo(sc.date).long+'. Place: '+sc.place+'.\nConversation:\n'+sceneTranscript(sc)+'\n\n'+
         'Return JSON: {"summary": "2-3 sentences: what was discussed and decided, who argued what", '+
@@ -2987,9 +2768,93 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   // ───────── actions ─────────
   window.twcSelect=function(id){ sel=id; if(id!=='log') viewSceneId=null; renderAll(); var i=document.getElementById('twc-input'); if(i&&!i.disabled) i.focus(); };
 
+  // ── New gathering: choose day, hour, place, company, occasion and opening talk ──
+  window.twcNewForm=function(){
+    var st=ensure(load()), sc=curScene(st), old=document.getElementById('twc-form'); if(old) old.remove();
+    var men=alive();
+    var f=document.createElement('div'); f.id='twc-form';
+    f.style.cssText='position:absolute;inset:0;background:rgba(10,7,3,0.78);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;';
+    var lab='font-family:var(--fellsc);font-size:12px;color:var(--gold);letter-spacing:0.06em;text-transform:uppercase;display:block;margin:10px 0 4px;';
+    var inp='width:100%;font-family:var(--fell);font-size:14px;padding:6px 8px;border:1px solid var(--border2);border-radius:3px;background:#fff;color:var(--ink);';
+    f.innerHTML='<div style="background:var(--parch);border:2px solid #c9a227;border-radius:5px;max-width:560px;width:100%;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.6)">'+
+      '<div style="font-family:var(--fellsc);font-size:20px;color:var(--ink)">⚙ A new gathering</div><div style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">The day, the hour, the place and the company</div>'+
+      '<label style="'+lab+'">Day</label><select id="twcf-day" style="'+inp+'"><option value="same">Later the same day — '+esc(dayInfo(st.storyDate).long)+'</option><option value="next">The next day — '+esc(dayInfo(addDays(st.storyDate,1)).long)+'</option><option value="pick">Choose a date…</option></select>'+
+      '<input id="twcf-date" type="date" min="'+st.storyDate+'" value="'+addDays(st.storyDate,1)+'" style="'+inp+'margin-top:6px;display:none">'+
+      '<div id="twcf-dayinfo" style="font-family:var(--fell);font-size:12px;color:var(--ink3);margin-top:4px"></div>'+
+      '<label style="'+lab+'">Hour</label><select id="twcf-time" style="'+inp+'">'+TIMES.map(function(t){ return '<option value="'+t[0]+'"'+(t[0]===((sc&&sc.time)||'evening')?' selected':'')+'>'+t[1]+' — '+esc(t[2])+'</option>'; }).join('')+'</select>'+
+      '<label style="'+lab+'">Place</label><select id="twcf-place" style="'+inp+'">'+PLACES.map(function(p){ return '<option'+(p===sc.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'<option value="__other">Somewhere else…</option></select>'+
+      '<input id="twcf-other" placeholder="e.g. Thorney Abbey gate, the causeway to March, Ralph\'s father\'s cottage" style="'+inp+'margin-top:6px;display:none">'+
+      '<label style="'+lab+'">Who is there</label><div id="twcf-men" style="display:flex;flex-wrap:wrap;gap:6px 14px">'+men.map(function(m){ return '<label style="font-family:var(--fell);font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" value="'+m.id+'" checked> '+esc(m.name)+'</label>'; }).join('')+'</div>'+
+      '<label style="'+lab+'">Occasion</label><select id="twcf-occ" style="'+inp+'">'+OCCASIONS.map(function(o){ return '<option>'+esc(o)+'</option>'; }).join('')+'</select>'+
+      '<label style="'+lab+'">What are they talking about when you arrive? <span style="text-transform:none;font-family:var(--fell);color:var(--ink4)">(optional)</span></label><textarea id="twcf-topic" rows="2" placeholder="e.g. the price of wool at Lynn; rumours of the Turk in Hungary; whether to go for soldiers" style="'+inp+'resize:vertical"></textarea>'+
+      '<label style="font-family:var(--fell);font-size:14px;color:var(--ink);display:block;margin-top:10px;cursor:pointer"><input type="checkbox" id="twcf-live" checked> Let them start talking straight away</label>'+
+      '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button onclick="document.getElementById(\'twc-form\').remove()" style="font-family:var(--mono);font-size:11px;padding:6px 12px;border:1px solid var(--border2);background:var(--parch2);border-radius:3px;cursor:pointer">Cancel</button><button onclick="twcStartGathering()" style="font-family:var(--fellsc);font-size:14px;padding:6px 16px;border:1px solid #7a5c00;background:linear-gradient(180deg,#c9a227,#7a5c00);color:#1a1208;border-radius:3px;cursor:pointer">Begin the gathering</button></div></div>';
+    document.getElementById('tw-companions').style.position='relative';
+    document.getElementById('tw-companions').appendChild(f);
+    function upd(){ var dv=document.getElementById('twcf-day').value, di=document.getElementById('twcf-date');
+      di.style.display = dv==='pick'?'block':'none';
+      var ds = dv==='same'?st.storyDate : dv==='next'?addDays(st.storyDate,1) : (di.value||addDays(st.storyDate,1));
+      if(cmpD(ds,st.storyDate)<0) ds=st.storyDate;
+      var x=dayInfo(ds); document.getElementById('twcf-dayinfo').textContent=x.long+(x.feasts.length?' · '+x.feasts.join(' · '):'')+(x.fast?' · '+x.fast:''); }
+    document.getElementById('twcf-day').onchange=upd; document.getElementById('twcf-date').onchange=upd; upd();
+    document.getElementById('twcf-place').onchange=function(){ document.getElementById('twcf-other').style.display=this.value==='__other'?'block':'none'; };
+  };
+
+  window.twcStartGathering=function(){
+    var st=ensure(load()), sc=curScene(st);
+    var dv=document.getElementById('twcf-day').value, ds;
+    ds = dv==='same'?st.storyDate : dv==='next'?addDays(st.storyDate,1) : (document.getElementById('twcf-date').value||addDays(st.storyDate,1));
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(ds) || cmpD(ds,st.storyDate)<0) ds=st.storyDate;
+    var ss=seasonStart(), jumped=false; if(ss && cmpD(ds,ss)<0){ ds=ss; jumped=true; }
+    var place=document.getElementById('twcf-place').value; if(place==='__other') place=(document.getElementById('twcf-other').value||'').trim()||'Whittlesey';
+    var present=[].slice.call(document.querySelectorAll('#twcf-men input:checked')).map(function(x){ return parseInt(x.value,10); });
+    if(!present.length){ alert('Choose at least one man to be there.'); return; }
+    var time=document.getElementById('twcf-time').value, occ=document.getElementById('twcf-occ').value, topic=(document.getElementById('twcf-topic').value||'').trim().slice(0,300);
+    var goLive=document.getElementById('twcf-live').checked;
+    document.getElementById('twc-form').remove();
+    if(talkCount(sc)) summarize(sc.id); else dropIfEmpty(st,sc);
+    st.storyDate=ds;
+    var names=alive().filter(function(m){ return present.indexOf(m.id)>=0; }).map(function(m){ return m.name.split(' ')[0]; });
+    var ns={id:'s'+Date.now(), date:ds, place:place, time:time, present:present, occasion:occ, topic:topic, summary:'',
+      lines:[{who:'narr',text:timeOf({time:time})[1]+' at '+place.replace(/^The /,'the ')+'. '+(names.length===alive().length?'The whole band is here.':names.join(', ')+(names.length===1?' is':' are')+' here.')+(occ!==OCCASIONS[0]?' '+occ+'.':''),ts:Date.now()}]};
+    if(jumped) ns.lines.unshift({who:'sys',text:'Time has passed. The band has fought on into '+S.currentSeason+'.',ts:Date.now()});
+    st.scenes.push(ns); st.currentScene=ns.id; store(st);
+    sel='gathering'; viewSceneId=null; quiet=0;
+    if(goLive){ live=true; schedule(2500); } else { live=false; clearTimeout(liveTimer); }
+    renderAll();
+  };
+
+  window.twcDeleteScene=function(id){
+    var st=ensure(load()), sc=sceneById(st,id); if(!sc) return;
+    if(!confirm('Delete the gathering of '+dayInfo(sc.date).long+' at '+sc.place+'?\n\nIts conversation is gone for good. The men keep what they already remember, and signed documents stay on record.')) return;
+    st.scenes=st.scenes.filter(function(x){ return x.id!==id; });
+    if(st.currentScene===id){
+      if(live){ live=false; clearTimeout(liveTimer); pendingSpeaker=null; typingShown=false; }
+      var ns={id:'s'+Date.now(), date:st.storyDate, place:sc.place, time:sc.time, present:sc.present, lines:[], summary:''};
+      st.scenes.push(ns); st.currentScene=ns.id;
+    }
+    store(st); viewSceneId=null; renderAll();
+  };
+  window.twcClearLog=function(){
+    if(!confirm('Delete EVERY gathering in the log?\n\nThe men keep their characters, loyalty and memories. Signed documents stay on record.')) return;
+    if(!confirm('Really delete all of them? This cannot be undone.')) return;
+    var st=ensure(load()), cur=curScene(st);
+    if(live){ live=false; clearTimeout(liveTimer); pendingSpeaker=null; typingShown=false; }
+    var ns={id:'s'+Date.now(), date:st.storyDate, place:cur?cur.place:PLACES[0], time:cur?cur.time:'evening', lines:[], summary:''};
+    st.scenes=[ns]; st.currentScene=ns.id; store(st); viewSceneId=null; sel='gathering'; renderAll();
+  };
+  window.twcDeleteDoc=function(id){
+    var st=ensure(load()), d=docById(st,id); if(!d) return;
+    if(!confirm('Tear up "'+d.title+'"?\n\nIt is removed from the record and the men will no longer be bound by it.')) return;
+    st.documents=(st.documents||[]).filter(function(x){ return x.id!==id; });
+    (st.scenes||[]).forEach(function(sc){ sc.lines=sc.lines.filter(function(l){ return !(l.who==='doc'&&l.docId===id); }); });
+    Object.keys(st.men||{}).forEach(function(k){ st.men[k].chat=(st.men[k].chat||[]).filter(function(x){ return !(x.role==='doc'&&x.docId===id); }); });
+    store(st); viewDocId=null; renderAll();
+  };
+
   window.twcClearChat=function(){
     var m=manById(sel); if(!m) return;
-    if(!confirm('Burn your private conversation with '+m.name+'? He keeps his character, loyalty and memories.')) return;
+    if(!confirm('Delete your private conversation with '+m.name+'?\n\nHe keeps his character, loyalty and memories.')) return;
     var st=load(); stateFor(st,m.id).chat=[]; store(st); renderChat();
   };
 
@@ -3042,6 +2907,247 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   });
 })();
 </script>
+
+<div style="margin-top:14px">
+  <!-- ═════════ THE WEALTH OF NATIONS, 1526 — money, realms and what the band earns ═════════ -->
+  <style>
+  .won details>summary{cursor:pointer;list-style:none;}
+  .won details>summary::-webkit-details-marker{display:none;}
+  .won .won-intro{font-family:var(--fell);font-size:13px;color:var(--ink2);line-height:1.55;margin:4px 0 10px;}
+  .won .won-basis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:8px 0 12px;}
+  .won .won-basis div{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;}
+  .won .won-basis b{display:block;font-family:var(--fellsc);font-size:13px;color:var(--ink);}
+  .won .won-basis span{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.5;display:block;margin-top:2px;}
+  .won .won-basis .big{font-family:var(--fellsc);font-size:20px;color:var(--gold);}
+  .won h4{font-family:var(--fellsc);font-size:14px;color:var(--gold);letter-spacing:0.06em;margin:14px 0 6px;border-bottom:1px solid var(--border);padding-bottom:3px;}
+  .won .won-scroll{overflow-x:auto;}
+  .won table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px;min-width:640px;}
+  .won table.wide{min-width:980px;}
+  .won td.notes{min-width:200px;}
+  .won th{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;padding:6px 7px;text-align:left;border-bottom:1.5px solid var(--border2);vertical-align:bottom;}
+  .won td{padding:6px 7px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top;font-family:var(--fell);}
+  .won td.n,.won th.n{text-align:right;font-family:var(--mono);font-size:11px;white-space:nowrap;}
+  .won tr.eng td{background:#fff5d8;}
+  .won tr.band td:first-child{font-family:var(--fellsc);color:var(--ink);}
+  .won .est{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#8a2a20;border:1px solid #c98a7a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+  .won .src{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:#2d6a2d;border:1px solid #8ab88a;border-radius:2px;padding:0 4px;margin-left:4px;white-space:nowrap;}
+  .won .note{font-family:var(--fell);font-size:12px;color:var(--ink3);line-height:1.5;margin:4px 0;}
+  .won .sources{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
+  .won .sources a{color:var(--blood);}
+  .won .purse{background:linear-gradient(135deg,#fff5d8,#ffeec0);border:2px solid var(--gold);border-radius:4px;padding:10px 12px;margin:10px 0;font-family:var(--fell);font-size:13px;color:var(--ink);line-height:1.5;}
+  </style>
+  <div class="parch-panel won" id="won-panel" style="margin-bottom:14px;">
+    <div class="p-inner">
+      <details open>
+        <summary><div class="sec-title">⚖ The Wealth of Nations — Anno Domini 1526 <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.05em;">(click to fold)</span></div></summary>
+        <div id="won-body"></div>
+      </details>
+    </div>
+  </div>
+  <script>
+  (function(){
+    // ── Sourced constants ─────────────────────────────────────────────
+    // MeasuringWorth, relative value of £1 from 1526 in 2025 (UK), brought forward to 2026:
+    var MW_REAL_PRICE_2025 = 1072, UK_RPI_12M = 0.034;      // real price; ONS RPI, 12 months to Aug 2026
+    var MW_REAL_PRICE = MW_REAL_PRICE_2025*(1+UK_RPI_12M);   // what £1 of 1526 buys, in 2026 pounds
+    // GBP→USD, Trading Economics, 25 Sep 2026:
+    var GBPUSD = 1.3248;
+    // Maddison's 1990 dollars → 2026 dollars: US CPI-U Aug 2026 (334.980) ÷ 1990 average (130.7)
+    var CPI_1990_TO_NOW = 334.980/130.7;
+    // Total national wealth: pre-industrial Britain and France held wealth of about 6-7 years of
+    // national income, mostly land (Piketty & Zucman; earliest measured c.1700). Midpoint used.
+    var WEALTH_MULT = 6.5;
+
+    var USD_PER_D_GOODS = MW_REAL_PRICE*GBPUSD/240;   // one penny in 2026 US dollars
+
+    function lsd(d){ // pence → "£3 15s 10d"
+      d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
+      if(L) out.push('£'+L); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
+    }
+    function usd(x){ if(x>=1e12) return '$'+(x/1e12).toFixed(x>=1e13?0:1)+' tn'; if(x>=1e9) return '$'+(x/1e9).toFixed(x>=1e11?0:1)+' bn'; if(x>=1e6) return '$'+(x/1e6).toFixed(1)+' m'; if(x>=100) return '$'+Math.round(x).toLocaleString('en-US'); return '$'+x.toFixed(2); }
+
+    // ── Money of England in 1526 ──────────────────────────────────────
+    var COINS = [
+      ['Farthing','¼d','Smallest coin; a farthing loaf under the Assize of Bread',0.25],
+      ['Halfpenny','½d','Silver coin',0.5],
+      ['Penny','1d','Silver coin; the base unit — 240 to the pound',1],
+      ['Half-groat','2d','Silver coin',2],
+      ['Groat','4d','Silver coin; a labourer\'s day wage',4],
+      ['Shilling','12d','Money of account (the testoon coin was still rare)',12],
+      ['Noble / Angel','6s 8d','Gold angel = 6s 8d; Wolsey\'s recoinage of late 1526 raised it to 7s 6d',80],
+      ['Mark','13s 4d','Money of account (two-thirds of a pound)',160],
+      ['Pound','20s','Money of account = 240d',240],
+      ['Sovereign','20s','Gold; revalued to 22s 6d in the recoinage of late 1526',240],
+    ];
+
+    // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
+    // population is derived as GDP ÷ GDP per head from the same tables
+    var REALMS = [
+      ['England (with Wales, Scotland, Ireland)',2815,714,'Subsidy of 1523 yielded £151,215, collected over four years; the Amicable Grant of 1525 was abandoned after revolt',true,4264794,'United Kingdom'],
+      ['France',10912,727,'',false,3596094,'France'],
+      ['Italian states',11550,1100,'Richest per head in Europe: banking, silk, Venice and Florence',false,2738164,'Italy'],
+      ['Spain (Castile & Aragon)',4495,661,'American silver just beginning to arrive',false,2091222,'Spain'],
+      ['Portugal',606,606,'Spice route to India via the Cape',false,380637,'Portugal'],
+      ['Low Countries (Netherlands)',723,761,'Antwerp: the cloth market where English wool and cloth are sold',false,1449704,'Netherlands'],
+      ['Low Countries (Belgium)',1225,null,'',false,776730,'Belgium'],
+      ['German lands (Holy Roman Empire)',8256,688,'',false,5452858,'Germany'],
+      ['Ottoman Empire & West Asia',10495,null,'State revenue c. 9.65 million Venetian ducats in 1528',false,1640223,'Turkey only'],
+      ['Russia & former USSR lands',8458,null,'',false,2656452,'Russia only'],
+      ['Ming China',61800,600,'Largest economy on earth',false,20851593,'China'],
+      ['India (Mughal empire founded April 1526)',60500,550,'',false,4153191,'India'],
+      ['Japan',7700,500,'',false,4379253,'Japan'],
+      ['Mexico (New Spain)',3188,425,'Conquered 1521',false,2120855,'Mexico'],
+    ];
+    var WORLD_GDP=248445, WORLD_PC=566, WORLD_GDP_2026=126295331;
+
+    // ── What the band earns ───────────────────────────────────────────
+    // Working year of 250 days, split by the English seasons of the game.
+    // Statute "summer" rates ran Easter–Michaelmas (1 Apr–29 Sep in 1526); winter rates the rest.
+    var SEASONS = [
+      ['Spring (Mar–May)', {winter:20, summer:44}],
+      ['Summer (Jun–Aug)', {summer:46, harvest:24}],
+      ['Autumn (Sep–Nov)', {summer:22, winter:42}],
+      ['Winter (Dec–Feb)', {winter:52}],
+    ];
+    var BAND = [
+      {id:1, trade:'Wool dealer on his inherited stock', basis:'A small wool dealer\'s net profit, taken as £12 a year and earned mostly after shearing (15% / 50% / 20% / 15% by season)', annual:2880, split:[0.15,0.5,0.2,0.15], est:true},
+      {id:2, trade:'Fen farmer\'s son — husbandry labour', basis:'Labourer\'s rate: 4d a day in summer, 3d in winter; 5d at harvest', rates:{summer:4,winter:3,harvest:5}, src:true, estNote:'harvest rate'},
+      {id:3, trade:'Tanner\'s son — tan-yard work', basis:'Semi-skilled: 5d summer / 4d winter, between labourer and craftsman (no statute rate for tanners)', rates:{summer:5,winter:4,harvest:5}, est:true},
+      {id:4, trade:'Blacksmith\'s son — smithing', basis:'Craftsman\'s rate: 6d a day in summer, 5d in winter, without food and drink (statute of 1495)', rates:{summer:6,winter:5,harvest:6}, src:true},
+      {id:5, trade:'Cloth merchant\'s son — shop work', basis:'Paid in keep by his father; valued at the labourer\'s rate of 4d / 3d', rates:{summer:4,winter:3,harvest:4}, est:true},
+    ];
+    function seasonPence(b){
+      if(b.annual) return b.split.map(function(f){ return b.annual*f; });
+      return SEASONS.map(function(s){ var d=s[1], t=0; Object.keys(d).forEach(function(k){ t+=d[k]*(b.rates[k]||0); }); return t; });
+    }
+    // ── Households of the band: homes, land and net worth (all in pence) ──
+    // Values are reasoned estimates for Whittlesey c.1526; see the notes under the table.
+    var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
+    var HOUSEHOLDS = [
+      {id:1, who:'his own household (heir since his father died)', band:'yeoman / small merchant',
+       home:'A two-storey timber-framed hall house near the market place: wattle-and-daub walls, reed thatch, a hall open to the roof with a hearth, a parlour and a chamber over it, and a loft for wool. Glass only in the parlour window.',
+       tenure:'Held by copy of the court roll of the manor of Whittlesey St Mary (Thorney Abbey), with rights of common on the fen.',
+       items:[['The house and its yard',2400],['20 acres of pasture held by copy ('+'20 × 17s 6d)',20*ACRE],['60 sheep at 1s 6d',60*18],['Wool in the loft, waiting for the stapler',1920],['A riding horse',160],['Household stuff: beds, pewter, brass pots, linen, a chest',720],['Money in hand and debts owed to him',1200]],
+       own:null},
+      {id:2, who:'his father\'s holding by the mere', band:'husbandman',
+       home:'A one-and-a-half-room cottage of timber and daub under fen reed: one hearth room with an open fire, a sleeping chamber, a cow-house against the gable. Earth floor strewn with rushes; shutters, no glass.',
+       tenure:'Copyhold of the manor of Whittlesey St Andrew (Ely Priory), with common of pasture on the washes, fishing, fowling, and reed and sedge cutting.',
+       items:[['The cottage and toft',720],['12 acres held by copy (12 × 17s 6d)',12*ACRE],['3 cows at 8s',3*96],['12 sheep at 1s 6d',12*18],['A pig',24],['Punt, fowling nets and eel traps',120],['Plough-share, spades, scythe',120],['Household stuff: a bed, pots, a table, stools',240]],
+       own:[['His clothes, knife and fowling net',60]]},
+      {id:3, who:'his father\'s tan-yard', band:'tradesman (tanner)',
+       home:'A timber-framed house facing the street with the tan-yard behind: lime pits, tan pits and a bark store by the water. The smell carries across the town.',
+       tenure:'House and yard held by copy; the pits and water rights are what make it worth having.',
+       items:[['House, yard and tan pits',1920],['Hides lying in the pits (a year and more to finish)',3600],['Oak bark in store',480],['Knives, beams and hooks',120],['Household stuff',360]],
+       own:[['His clothes and knife',60],['Pennies he has hidden away since he was twelve',160]]},
+      {id:4, who:'his father\'s smithy', band:'craftsman (smith)',
+       home:'A low house with the forge built against it: stone hearth, great leather bellows, anvil on its block. The family lives in the hall beside the smithy.',
+       tenure:'House and forge held by copy of the manor.',
+       items:[['House and forge',1200],['Anvil, bellows, hammers, tongs and swages',720],['Iron and charcoal in stock',480],['A cow',96],['Household stuff',240]],
+       own:[['His clothes, his mother\'s wooden cross, his own hammer',72]]},
+      {id:5, who:'his father\'s cloth shop', band:'merchant (draper)',
+       home:'A jettied two-storey house on the market place: shop with a street shutter that folds down as a counter, the hall behind, chambers above. Glazed windows at the front.',
+       tenure:'Held by copy of the manor; one of the better houses in the town.',
+       items:[['House and shop on the market place',2880],['Cloth in stock: kerseys, broadcloth, linen',7200],['Debts owed by customers',1920],['Household stuff: pewter, brass, beds, painted cloths',960],['A horse',160]],
+       own:[['His clothes and a borrowed book',60],['Saved toward a book of his own',40]]},
+    ];
+    function sumItems(a){ return (a||[]).reduce(function(t,x){ return t+x[1]; },0); }
+    function subsidyBand(d){ var L=d/240; if(L<2) return {band:'Under £2 in goods — taxed on wages instead (4d if earning £1 a year)', tax:4}; if(L<20) return {band:'£2–£20 in goods — 6d in the pound', tax:Math.floor(L)*6}; return {band:'Over £20 in goods — 1s in the pound', tax:Math.floor(L)*12}; }
+    // For the companions: a one-line summary of a man's means, in period money
+    window.twHouseholdText=function(id){
+      var h=HOUSEHOLDS.filter(function(x){return x.id===id;})[0]; if(!h) return '';
+      var fam=sumItems(h.items), own=sumItems(h.own);
+      return (h.own?'Lives in '+h.who+', worth about '+lsd(fam)+' all told; his own possessions come to about '+lsd(own)+'.':'Owns '+h.who.replace('his own household','his household')+', worth about '+lsd(fam)+'.')+' Home: '+h.home;
+    };
+    function nameOf(id){ try{ var m=(S.men||[]).filter(function(x){return x.id===id;})[0]; if(m) return m.name; }catch(e){} return ({1:'Roger Lee Whittlesey IV',2:'Ralph Whittlesey',3:'Thomas Fenne',4:'John Cobbes',5:'Edmund Sayer'})[id]; }
+
+    function render(){
+      var el=document.getElementById('won-body'); if(!el) return;
+      var h='';
+      h+='<div class="won-intro"><strong>How the money worked:</strong> England counted in pounds (£), shillings (s) and pence (d). 12 pence made a shilling and 20 shillings made a pound, so a pound was 240 pence. The <strong>penny</strong> was the everyday silver coin, and a labourer earned 3 or 4 of them for a whole day\'s work.</div>';
+      h+='<div class="won-basis">'+
+        '<div><b>£1 of 1526</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>1 shilling</b><span class="big">'+usd(12*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>1 penny</b><span class="big">'+usd(USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div>'+
+        '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_GOODS)+'</span><span>in 2026 US dollars</span></div></div>';
+      h+='<div class="note">Conversion: what the money bought then, priced in today\'s goods (UK price inflation from 1526 to 2026, then pounds to dollars at $'+GBPUSD+').</div>';
+
+      // The ledger is lives, not savings
+      var purse=0; try{ purse=+S.treasury||0; }catch(e){}
+      h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each</strong>. It is each man\'s health in the game, and it is your real trading stake. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
+
+      // Coins
+      h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">2026 US $</th></tr></thead><tbody>';
+      COINS.forEach(function(c){ h+='<tr><td>'+c[0]+'</td><td class="n">'+c[1]+'</td><td>'+c[2]+'</td><td class="n">'+usd(c[3]*USD_PER_D_GOODS)+'</td></tr>'; });
+      h+='</tbody></table></div>';
+
+      // Realms
+      h+='<h4>The wealth of the realms, c. 1500 — in 2026 US dollars</h4><div class="note"><strong>Yearly GDP</strong> is each realm\'s output in a year (Maddison\'s estimates, raised to 2026 dollars by US inflation). <strong>Total worth</strong> is everything the realm owned — mostly land, then houses, livestock, tools and stock — estimated at 6½ years of output, the ratio measured for pre-industrial England and France. <strong>Same land in 2026</strong> is that country\'s actual GDP today (IMF), for scale.</div>';
+      h+='<div class="won-scroll"><table class="wide"><thead><tr><th>Realm</th><th class="n">People (m)</th><th class="n">Yearly GDP</th><th class="n">Total worth<span class="est">estimate</span></th><th class="n">Per head / year</th><th class="n">Share of world</th><th class="n">Same land in 2026</th><th>Notes</th></tr></thead><tbody>';
+      REALMS.forEach(function(r){
+        var pop=r[2]?r[1]/r[2]:null, gdp=r[1]*1e6*CPI_1990_TO_NOW;
+        h+='<tr'+(r[4]?' class="eng"':'')+'><td>'+r[0]+'</td><td class="n">'+(pop?pop.toFixed(1):'—')+'</td><td class="n"><strong>'+usd(gdp)+'</strong></td><td class="n">'+usd(gdp*WEALTH_MULT)+'</td><td class="n">'+(r[2]?usd(r[2]*CPI_1990_TO_NOW):'—')+'</td><td class="n">'+(r[1]/WORLD_GDP*100).toFixed(1)+'%</td><td class="n">'+usd(r[5]*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+r[6]+' · '+Math.round(r[5]*1e6/gdp).toLocaleString('en-US')+'× bigger</span></td><td class="notes">'+(r[3]||'')+'</td></tr>';
+      });
+      var wg=WORLD_GDP*1e6*CPI_1990_TO_NOW;
+      h+='<tr><td><strong>The whole world</strong></td><td class="n">'+(WORLD_GDP/WORLD_PC).toFixed(0)+'</td><td class="n"><strong>'+usd(wg)+'</strong></td><td class="n">'+usd(wg*WEALTH_MULT)+'</td><td class="n">'+usd(WORLD_PC*CPI_1990_TO_NOW)+'</td><td class="n">100%</td><td class="n">'+usd(WORLD_GDP_2026*1e6)+'<br><span style="color:var(--ink4);font-size:9px">'+Math.round(WORLD_GDP_2026*1e6/wg).toLocaleString('en-US')+'× bigger</span></td><td></td></tr>';
+      h+='</tbody></table></div>';
+      h+='<div class="note">Maddison\'s England figure includes Wales, Scotland and Ireland. England alone had about 2.8 million people by 1541 (Wrigley &amp; Schofield). Newer work by Broadberry and others puts English output per head higher than Maddison does. Figures for state revenue survive for only a few realms, and none is invented here. Total worth is an estimate: nobody measured a nation\'s wealth before the late 1600s, so the ratio is taken from the earliest measured balance sheets.</div>';
+
+      // Band incomes
+      h+='<h4>What the band earns — by season and by year</h4><div class="note">Rates are for a working day without food and drink; a man fed by his master was paid less. The year counts 250 working days: Sundays, holy days and short winter days are left out. Summer rates run from Easter to Michaelmas. <span class="src">sourced</span> marks a documented wage rate. <span class="est">estimate</span> marks a reasoned figure where no rate survives.</div>';
+      h+='<div class="won-scroll"><table><thead><tr><th>Man</th><th>Trade &amp; basis</th>'+SEASONS.map(function(s){return '<th class="n">'+s[0].replace(' (','<br>(')+'</th>';}).join('')+'<th class="n">Year</th><th class="n">Year, 2026 US $</th></tr></thead><tbody>';
+      BAND.forEach(function(b){
+        var sp=seasonPence(b), yr=sp.reduce(function(a,c){return a+c;},0);
+        h+='<tr class="band"><td>'+nameOf(b.id)+'</td><td>'+b.trade+(b.src?'<span class="src">sourced</span>':'')+(b.est?'<span class="est">estimate</span>':'')+(b.estNote?'<span class="est">'+b.estNote+' est.</span>':'')+'<div class="note">'+b.basis+'</div></td>'+
+          sp.map(function(p){return '<td class="n">'+lsd(p)+'<br><span style="color:var(--ink4)">'+usd(p*USD_PER_D_GOODS)+'</span></td>';}).join('')+
+          '<td class="n"><strong>'+lsd(yr)+'</strong></td><td class="n"><strong>'+usd(yr*USD_PER_D_GOODS)+'</strong></td></tr>';
+      });
+      h+='</tbody></table></div>';
+      h+='<div class="note">Bread, ale and rent took most of a wage, and a bad harvest could halve what a family could eat.</div>';
+
+      // Households
+      h+='<h4>Homes, land and net worth</h4><div class="note">What each household owned, valued the way a 1520s probate inventory or tax assessor would value it. Roger, as heir, owns his household outright. The other four are young unmarried sons: they live in their fathers\' houses and own little themselves, which was normal at eighteen. Everything here is an <span class="est">estimate</span> built from the sources below. The 1524–25 subsidy rates are shown so you can see which tax band each household fell in.</div>';
+      var bandTotal=0;
+      HOUSEHOLDS.forEach(function(x){
+        var fam=sumItems(x.items), own=sumItems(x.own), sb=subsidyBand(fam), mine=x.own?own:fam; bandTotal+=mine;
+        h+='<div style="border:1px solid var(--border2);border-radius:3px;background:var(--parch2);padding:10px 12px;margin:8px 0;">'+
+          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><div style="font-family:var(--fellsc);font-size:15px;color:var(--ink)">'+(typeof charAvatar==='function'?charAvatar(x.id,28)+' ':'')+nameOf(x.id)+' <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em">'+x.band+'</span></div>'+
+          '<div style="font-family:var(--mono);font-size:11px;color:var(--ink2)">'+(x.own?'Household: <strong>'+lsd(fam)+'</strong> · <span style="color:var(--blood)">His own: <strong>'+lsd(own)+'</strong></span>':'Net worth: <strong>'+lsd(fam)+'</strong>')+'</div></div>'+
+          '<div class="note" style="margin-top:4px"><strong>Home:</strong> '+x.home+'</div><div class="note"><strong>Tenure:</strong> '+x.tenure+'</div>'+
+          '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">2026 US $</th></tr></thead><tbody>'+
+          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+          '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_GOODS)+'</strong></td></tr>'+
+          (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+            '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_GOODS)+'</strong></td></tr>':'')+
+          '</tbody></table></div><div class="note">1524–25 subsidy band for the household: '+sb.band+' → about '+lsd(sb.tax)+' tax.</div></div>';
+      });
+      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
+      h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
+
+      h+='<h4>Sources</h4><div class="sources">'+
+        '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 in 2025 (real price); brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a>.<br>'+
+        '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
+        '• <a href="https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)" target="_blank" rel="noopener">IMF 2026 GDP by country</a> — same lands today.<br>'+
+        '• <a href="https://eml.berkeley.edu/~saez/course/piketty-zucman13Kisback.pdf" target="_blank" rel="noopener">Piketty &amp; Zucman, Capital is Back</a> — national wealth about 600–700% of national income in pre-industrial Britain and France.<br>'+
+        '• <a href="https://tradingeconomics.com/united-kingdom/currency" target="_blank" rel="noopener">Trading Economics</a> — GBP/USD 1.3248 on 25 Sep 2026.<br>'+
+        '• <a href="https://www.economics.utoronto.ca/munro5/REH21MunroWageStickiness.pdf" target="_blank" rel="noopener">Munro, wage-stickiness in late-medieval England</a> — building craftsmen 6d summer / 5d winter (4d with food) under the 1495 statute; rates stable until the 1530s.<br>'+
+        '• <a href="https://www.universalfreemasonry.org/en/encyclopedia/wages" target="_blank" rel="noopener">Statute of 1495 on masons\' wages</a> — 6d summer, 5d winter without meals; 4d / 3d with meals.<br>'+
+        '• Phelps Brown &amp; Hopkins, <em>A Perspective of Wages and Prices</em> — southern English building labourers at 4d a day through the early 1500s.<br>'+
+        '• <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)" target="_blank" rel="noopener">Maddison, GDP by region, 1500</a> and <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)_per_capita" target="_blank" rel="noopener">GDP per head, 1500</a>.<br>'+
+        '• <a href="https://www.henryviiithereign.co.uk/1523-subsidy-and-1525-amicable-grant.html" target="_blank" rel="noopener">Subsidy of 1523 and Amicable Grant of 1525</a> — £151,215 yielded.<br>'+
+        '• <a href="https://edizionicafoscari.unive.it/media/pdf/books/978-88-6969-261-1/978-88-6969-261-1-ch-02.pdf" target="_blank" rel="noopener">Early Ottoman revenue records</a> — 9,650,000 Venetian ducats in 1528.<br>'+
+        '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.<br>'+
+        '• <a href="https://www.british-history.ac.uk/vch/cambs/vol4/pp123-135" target="_blank" rel="noopener">Victoria County History, Whittlesey</a> — the two manors (Thorney Abbey, Ely Priory), copyhold tenure, the fishery, 355 householders in 1563.<br>'+
+        '• <a href="https://faculty.econ.ucdavis.edu/faculty/gclark/papers/rentereh.pdf" target="_blank" rel="noopener">Clark, Land rental values in England 1500–1912</a> — early-1500s rent about 10.5d an acre.<br>'+
+        '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.'+
+        '</div>';
+      el.innerHTML=h;
+    }
+    window.renderWealthOfNations=render;
+    document.addEventListener('DOMContentLoaded', render);
+  })();
+  </script>
+</div>
+
 
 
 
