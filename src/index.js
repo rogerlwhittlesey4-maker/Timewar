@@ -1,5 +1,16 @@
-// Cloudflare Worker entry — routes /api/claude to the Anthropic proxy,
-// and delegates everything else to static assets in ./public.
+// Cloudflare Worker entry.
+//   POST /api/claude  -> Anthropic proxy (key lives in ANTHROPIC_API_KEY secret)
+//   GET  /api/save    -> this user's cloud save
+//   PUT  /api/save    -> store this user's cloud save (keeps hourly backups)
+//   everything else   -> static assets in ./public
+
+// Hosts that sit behind Cloudflare Access. Cloud saves are refused on any other
+// host (e.g. the *.workers.dev URL), because only Access-protected hosts carry a
+// trustworthy Cf-Access-Authenticated-User-Email header.
+const DEFAULT_SAVE_HOSTS = ['timewarrlw.com', 'www.timewarrlw.com'];
+const DEV_HOSTS = ['localhost', '127.0.0.1'];
+const BACKUP_EVERY_MS = 60 * 60 * 1000;       // at most one backup per hour
+const BACKUP_TTL_SECONDS = 60 * 24 * 60 * 60; // backups kept 60 days
 
 export default {
   async fetch(request, env, ctx) {
@@ -12,11 +23,86 @@ export default {
       return handleClaude(request, env);
     }
 
+    if (url.pathname === '/api/save') {
+      return handleSave(request, env, url);
+    }
+
     // Everything else: static files (index.html, css, images, etc.)
     return env.ASSETS.fetch(request);
   },
 };
 
+// ── Cloud save ─────────────────────────────────────────────────────────────
+function saveUser(request, env, url) {
+  const host = url.hostname.toLowerCase();
+  if (DEV_HOSTS.includes(host)) return env.DEV_EMAIL || 'dev@localhost';
+  const allowed = (env.SAVE_HOSTS ? String(env.SAVE_HOSTS).split(',') : DEFAULT_SAVE_HOSTS)
+    .map(h => h.trim().toLowerCase()).filter(Boolean);
+  if (!allowed.includes(host)) return null;
+  const email = request.headers.get('Cf-Access-Authenticated-User-Email');
+  return email ? email.trim().toLowerCase() : null;
+}
+
+async function handleSave(request, env, url) {
+  if (!env.TW_SAVES) {
+    return jsonResponse({ error: 'Cloud save storage (TW_SAVES) is not bound to this Worker' }, 503);
+  }
+  const user = saveUser(request, env, url);
+  if (!user) return jsonResponse({ error: 'Not signed in through Cloudflare Access' }, 401);
+  const key = 'save:' + user;
+
+  if (request.method === 'GET') {
+    const current = await env.TW_SAVES.get(key, 'json');
+    if (!current) return jsonResponse({ empty: true }, 404);
+    return jsonResponse(current, 200);
+  }
+
+  if (request.method === 'PUT') {
+    let body;
+    try { body = await request.json(); } catch (e) {
+      return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    }
+    const updatedAt = Number(body && body.updatedAt);
+    if (!isFinite(updatedAt) || updatedAt <= 0 || !body.data || typeof body.data !== 'object') {
+      return jsonResponse({ error: 'Body needs updatedAt and data' }, 400);
+    }
+
+    const current = await env.TW_SAVES.get(key, 'json');
+    // Refuse to let an out-of-date device overwrite newer cloud data unless forced.
+    if (current && Number(current.updatedAt) > updatedAt && !body.force) {
+      return jsonResponse({ conflict: true, current }, 409);
+    }
+
+    const now = Date.now();
+    const lastBackupAt = current ? Number(current.lastBackupAt || 0) : 0;
+    let nextBackupAt = lastBackupAt;
+    // Back up the copy being replaced: hourly, and always when a device forces an
+    // overwrite of newer data (so the other device's work can be recovered).
+    if (current && (body.force || now - lastBackupAt >= BACKUP_EVERY_MS)) {
+      await env.TW_SAVES.put('backup:' + user + ':' + now, JSON.stringify(current), {
+        expirationTtl: BACKUP_TTL_SECONDS,
+      });
+      nextBackupAt = now;
+    }
+
+    // A forced overwrite must still move the cloud version forward, so every other
+    // device sees it as newer than what it holds.
+    const storedAt = current ? Math.max(updatedAt, Number(current.updatedAt || 0) + 1) : updatedAt;
+    const record = {
+      updatedAt: storedAt,
+      savedAt: now,
+      device: String(body.device || '').slice(0, 120),
+      lastBackupAt: nextBackupAt,
+      data: body.data,
+    };
+    await env.TW_SAVES.put(key, JSON.stringify(record));
+    return jsonResponse({ ok: true, updatedAt: storedAt, savedAt: now }, 200);
+  }
+
+  return jsonResponse({ error: 'Method Not Allowed' }, 405);
+}
+
+// ── Anthropic proxy ────────────────────────────────────────────────────────
 async function handleClaude(request, env) {
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -53,6 +139,6 @@ async function handleClaude(request, env) {
 function jsonResponse(payload, status) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }

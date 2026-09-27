@@ -4,6 +4,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Time War — Whittlesey Defense Band, 1526</title>
+<script>
+/* ═══════════ CLOUD SAVE — keeps every device on the same campaign ═══════════
+   Tracked: every localStorage key starting with "timewar_" or "cal-".
+   Local storage stays the working copy (the game still works offline);
+   this script mirrors it to /api/save and pulls newer saves from other devices.
+   Last write wins; the server keeps hourly backups for 60 days. */
+(function(){
+  var PREFIXES = ['timewar_', 'cal-'];
+  var META_KEY = 'twsync_meta_v1';       // not synced: this device's sync bookkeeping
+  var PUSH_DELAY_MS = 20000;              // batch edits; KV free tier = 1,000 writes/day
+  var ENDPOINT = '/api/save';
+  var LS = window.localStorage;
+  var rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
+  var applying = false, pushTimer = null, pushing = null, disabled = false;
+  var booting = true, bootWrites = false;   // ignore start-up writes until the first cloud check decides
+  var status = { state:'starting', text:'Cloud: connecting…' };
+
+  function tracked(k){ if(k===META_KEY) return false; for(var i=0;i<PREFIXES.length;i++){ if(String(k).indexOf(PREFIXES[i])===0) return true; } return false; }
+  function readMeta(){ try{ return JSON.parse(LS.getItem(META_KEY)||'{}')||{}; }catch(e){ return {}; } }
+  function writeMeta(m){ try{ rawSet.call(LS, META_KEY, JSON.stringify(m)); }catch(e){} }
+  function snapshot(){ var d={}; for(var i=0;i<LS.length;i++){ var k=LS.key(i); if(tracked(k)) d[k]=LS.getItem(k); } return d; }
+  function hasLocalData(){ for(var i=0;i<LS.length;i++){ if(tracked(LS.key(i))) return true; } return false; }
+  function deviceName(){ var ua=navigator.userAgent; return (/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'Mac':'Browser'); }
+  function fmtTime(ts){ try{ return new Date(ts).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); }catch(e){ return ''; } }
+
+  function setStatus(state, text){
+    status = { state:state, text:text };
+    var el = document.getElementById('tw-cloud-status');
+    if(!el) return;
+    el.textContent = text;
+    el.style.color = state==='ok' ? '#9fcf8f' : state==='busy' ? '#d8c27a' : state==='off' ? '#8a7a60' : '#e39a8a';
+  }
+
+  // Any change to a tracked key marks this device dirty and schedules a push.
+  function markDirty(){
+    if(applying || disabled) return;
+    if(booting){ bootWrites = true; return; }
+    var m = readMeta(); m.updatedAt = Date.now(); m.dirty = true; writeMeta(m);
+    setStatus('busy', 'Cloud: changes pending…');
+    clearTimeout(pushTimer); pushTimer = setTimeout(push, PUSH_DELAY_MS);
+  }
+  Storage.prototype.setItem = function(k, v){
+    var before = (this===LS && tracked(k)) ? this.getItem(k) : null;
+    rawSet.call(this, k, v);
+    if(this===LS && tracked(k) && before !== String(v)) markDirty();
+  };
+  Storage.prototype.removeItem = function(k){
+    var had = (this===LS && tracked(k)) ? this.getItem(k)!==null : false;
+    rawRemove.call(this, k);
+    if(had) markDirty();
+  };
+
+  function parseJson(res){ return res.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return null; } }); }
+
+  function applyCloud(rec){
+    applying = true;
+    try{
+      var keep = rec.data || {};
+      var drop = [];
+      for(var i=0;i<LS.length;i++){ var k=LS.key(i); if(tracked(k) && !(k in keep)) drop.push(k); }
+      drop.forEach(function(k){ rawRemove.call(LS, k); });
+      Object.keys(keep).forEach(function(k){ if(tracked(k)) rawSet.call(LS, k, keep[k]); });
+      writeMeta({ updatedAt:rec.updatedAt, syncedAt:rec.updatedAt, dirty:false });
+    } finally { applying = false; }
+  }
+
+  function push(force){
+    clearTimeout(pushTimer); pushTimer = null;
+    if(disabled) return Promise.resolve(false);
+    if(pushing) return pushing.then(function(){ return push(force); });
+    var m = readMeta();
+    if(!m.dirty && !force) return Promise.resolve(true);
+    var body = { updatedAt: m.updatedAt || Date.now(), data: snapshot(), device: deviceName() };
+    if(force) body.force = true;
+    setStatus('busy', 'Cloud: saving…');
+    pushing = fetch(ENDPOINT, { method:'PUT', credentials:'same-origin', keepalive:true,
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+      .then(function(res){
+        return parseJson(res).then(function(j){
+          if(res.ok && j && j.ok){
+            var cur = readMeta();
+            // Only clear dirty if nothing changed while the request was in flight.
+            if(cur.updatedAt === body.updatedAt){ cur.dirty = false; cur.updatedAt = Number(j.updatedAt) || body.updatedAt; }
+            cur.syncedAt = Number(j.updatedAt) || body.updatedAt; writeMeta(cur);
+            setStatus(cur.dirty ? 'busy' : 'ok', cur.dirty ? 'Cloud: changes pending…' : 'Cloud: saved ' + fmtTime(Date.now()));
+            if(cur.dirty){ clearTimeout(pushTimer); pushTimer = setTimeout(push, PUSH_DELAY_MS); }
+            return true;
+          }
+          if(res.status===409 && j && j.current){
+            // Another device saved something newer. This device has unsaved edits too,
+            // so its edits win (the older cloud copy is kept as a server backup).
+            return (pushing = null, push(true));
+          }
+          handleFailure(res.status, j); return false;
+        });
+      })
+      .catch(function(){ setStatus('err', 'Cloud: offline — saved on this device'); return false; })
+      .then(function(r){ pushing = null; return r; });
+    return pushing;
+  }
+
+  function handleFailure(code, j){
+    if(code===401){ setStatus('err', 'Cloud: sign-in expired — reload page'); }
+    else if(code===503){ disabled = true; endBoot(); setStatus('off', 'Cloud: not set up — saved on this device'); }
+    else { setStatus('err', 'Cloud: save failed — saved on this device'); }
+  }
+
+  // Pull the cloud copy. If it is newer than this device and this device has no
+  // unsaved edits, adopt it and reload so every panel re-reads the new state.
+  function endBoot(){
+    if(!booting) return;
+    booting = false;
+    if(bootWrites){ bootWrites = false; markDirty(); }
+  }
+  function pull(isBoot){
+    if(disabled){ endBoot(); return Promise.resolve(); }
+    return fetch(ENDPOINT, { method:'GET', credentials:'same-origin', cache:'no-store' })
+      .then(function(res){
+        return parseJson(res).then(function(j){
+          var m = readMeta();
+          if(res.status===404 && j && j.empty){
+            // First time on the cloud: upload whatever this device has.
+            if(hasLocalData()){ if(!m.updatedAt){ m.updatedAt = Date.now(); } m.dirty = true; writeMeta(m); return push(); }
+            setStatus('ok', 'Cloud: connected'); return;
+          }
+          if(!res.ok || !j || !j.data){ handleFailure(res.status, j); return; }
+          var cloudAt = Number(j.updatedAt)||0, localAt = Number(m.updatedAt)||0;
+          if(cloudAt > localAt && !m.dirty){
+            applyCloud(j);
+            bootWrites = false;
+            if(!sessionStorage.getItem('tw_cloud_reloaded_'+cloudAt)){
+              sessionStorage.setItem('tw_cloud_reloaded_'+cloudAt, '1');
+              setStatus('busy', 'Cloud: loading newer save…');
+              location.reload();
+            }
+            return;
+          }
+          if(m.dirty || localAt > cloudAt){ return push(m.dirty && cloudAt > localAt); }
+          setStatus('ok', 'Cloud: up to date');
+        });
+      })
+      .catch(function(){ setStatus('err', 'Cloud: offline — saved on this device'); })
+      .then(function(){ endBoot(); });
+  }
+
+  // Public hooks
+  window.twCloudFlush = function(){ return push(); };
+  window.twCloudStatus = function(){ return status; };
+
+  // Flush when the tab is hidden or closed; re-check the cloud when it comes back.
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='hidden'){ if(readMeta().dirty) push(); }
+    else { pull(false); }
+  });
+  window.addEventListener('pagehide', function(){ if(readMeta().dirty) push(); });
+  window.addEventListener('online', function(){ pull(false); });
+
+  // Status chip in the bottom ribbon
+  document.addEventListener('DOMContentLoaded', function(){
+    var bar = document.querySelector('#save-bar .save-bar-info');
+    if(bar && !document.getElementById('tw-cloud-status')){
+      var s = document.createElement('span');
+      s.id = 'tw-cloud-status';
+      s.title = 'Cloud save — your campaign is mirrored to your Time War account so every device shows the same game.';
+      s.style.cssText = 'font-family:var(--mono);font-size:10px;letter-spacing:0.02em;white-space:nowrap;margin-left:6px;cursor:pointer;';
+      s.onclick = function(){ push(true).then(function(){ pull(false); }); };
+      bar.appendChild(s);
+    }
+    setStatus(status.state, status.text);
+  });
+
+  pull(true);
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -4192,11 +4366,25 @@ function clearForm(){
   (document.getElementById('split-preview')||{}).innerHTML='Deploy men and enter a P&amp;L to preview the split...';
 }
 
-function clearAll(){
-  if(!confirm('Purge ALL records and reset the band?'))return;
+// ── BEGIN NEW CAMPAIGN — full reset for a clean real-money playthrough ──
+// Wipes: band, treasury, seasons, battles, Chronicle, Discipline Console trade log,
+//        Tier 1 account balance (back to $500).
+// Keeps: Character EXP, Quest Log, calendar reflections/habits.
+async function clearAll(){
+  if(!confirm('BEGIN A NEW CAMPAIGN?\n\nThis wipes the band, treasury, battles, the Chronicle of Battles and the Discipline Console trade log, and resets the account to $500.\n\nKept: Character EXP, Quest Log, calendar.')) return;
+  if(confirm('Download a backup of the current campaign first?\n\nOK = download backup (save file + trade CSV)\nCancel = skip backup')){
+    try{ saveToFile(); }catch(e){}
+    try{ if(typeof window.t1ExportCsv==='function') window.t1ExportCsv(); }catch(e){}
+    await new Promise(r=>setTimeout(r,800));
+  }
+  const typed = prompt('Type BEGIN to wipe the old campaign and start fresh.');
+  if(!typed || typed.trim().toUpperCase()!=='BEGIN'){ alert('New campaign cancelled. Nothing was changed.'); return; }
   S=defaultState();activeBioId=null;councilHistory=[];
-  (document.getElementById('bio-content')||{}).innerHTML='<div class="bio-placeholder"><span class="big">⚔</span>Click a soldier\'s card to read his dossier.</div>';
-  clearBriefings();clearCouncil();save();render();renderConflicts();
+  save();
+  try{ localStorage.setItem('timewar_t1_trades_v1','[]'); }catch(e){}
+  try{ localStorage.setItem('timewar_t1_balance_v1','500'); }catch(e){}
+  try{ if(typeof window.twCloudFlush==='function') await window.twCloudFlush(); }catch(e){}
+  location.reload();
 }
 
 function renderStats(){
@@ -5917,6 +6105,7 @@ _addKbd('debrief-input', ()=>sendGenericAI('debrief'));
     <span class="save-bar-title" style="color:var(--border2);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">⚔ Time War</span>
     <button class="save-btn" onclick="saveToFile()">💾 Save</button>
     <button class="save-btn load-btn" onclick="document.getElementById('save-file-input').click()">📂 Load</button>
+    <button class="save-btn load-btn" onclick="clearAll()" title="Wipe the band, treasury, Chronicle and trade log and start a fresh $500 campaign">⚔ New Campaign</button>
     <input type="file" id="save-file-input" accept=".html" onchange="loadFromFile(event)">
     <span class="save-status" id="save-status"></span>
   </div>

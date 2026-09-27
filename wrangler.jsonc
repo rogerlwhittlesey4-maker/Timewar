@@ -10,5 +10,10 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"
-  }
+  },
+  // Cloud save storage. No "id": Wrangler creates the namespace on first deploy
+  // (automatic resource provisioning) and reuses it after that.
+  "kv_namespaces": [
+    { "binding": "TW_SAVES" }
+  ]
 }
