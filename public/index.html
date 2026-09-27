@@ -2075,6 +2075,12 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .twc-msg.narr{align-self:center;background:transparent;border:none;color:#c9b27a;font-style:italic;font-size:13px;text-align:center;max-width:92%;}
 .twc-msg.sys{align-self:center;background:transparent;color:#8a7a60;font-family:var(--mono);font-size:10px;text-align:center;border:none;}
 .twc-msg.divider{align-self:stretch;max-width:none;text-align:center;font-family:var(--fellsc);font-size:12px;color:#c9a227;letter-spacing:0.08em;border-top:1px solid #5a4520;padding-top:6px;margin-top:4px;background:transparent;}
+.twc-msg.typing{opacity:0.9;}
+.twc-dots{display:inline-flex;gap:4px;align-items:center;height:14px;}
+.twc-dots i{width:6px;height:6px;border-radius:50%;background:#8a6a45;display:block;animation:twcDot 1.2s infinite ease-in-out;}
+.twc-dots i:nth-child(2){animation-delay:.2s;} .twc-dots i:nth-child(3){animation-delay:.4s;}
+.twc-msg.narr .twc-dots i{background:#c9b27a;}
+@keyframes twcDot{0%,80%,100%{opacity:.25;transform:translateY(0);}40%{opacity:1;transform:translateY(-3px);}}
 .twc-msg .mood{font-family:var(--mono);font-size:9px;color:#8a6a45;text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;display:block;}
 .twc-input{display:flex;gap:6px;padding:10px;border-top:1px solid #5a4520;}
 .twc-input textarea{flex:1;min-height:44px;max-height:120px;resize:vertical;background:#f4ead5;border:1px solid #8a6d3b;border-radius:3px;padding:7px 9px;font-family:var(--fell);font-size:14px;color:#2c1f0e;}
@@ -2173,6 +2179,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   var viewSceneId = null;  // scene shown in the chat column (null = current)
   var busy = false;        // a 1:1 reply or scene line is being written
   var live = false, liveTimer = null, nextAt = 0, quiet = 0, pace = 60, fastNext = false;
+  var pendingSpeaker = null, typingShown = false, TYPING_LEAD_MS = 4000;
 
   // ───────── storage ─────────
   function load(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'null') || {}; }catch(e){ return {}; } }
@@ -2368,7 +2375,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   }
 
   function lineHtml(l){
-    if(l.who==='roger') return '<div class="twc-msg me"><span class="who">Roger</span>'+esc(l.text)+'</div>';
+    if(l.who==='roger') return '<div class="twc-msg me"><span class="who">'+(typeof charAvatar==='function'?charAvatar(1,26)+' ':'')+'Roger</span>'+esc(l.text)+'</div>';
     if(l.who==='narr') return '<div class="twc-msg narr">'+esc(l.text)+'</div>';
     if(l.who==='sys') return '<div class="twc-msg sys">'+esc(l.text)+'</div>';
     var sm=manByName(l.speaker), av=(sm&&hasImg(sm))?charAvatar(sm.id,26)+' ':'';
@@ -2413,11 +2420,23 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   function updateStatus(){
     var el=document.getElementById('twc-status'); if(!el) return;
-    if(busy && sceneMode()) el.textContent='Someone is about to speak…';
+    if((busy||typingShown) && sceneMode() && pendingSpeaker) el.textContent=(pendingSpeaker==='narrator'?'Something stirs…':firstName(pendingSpeaker)+' is about to speak…');
+    else if(busy && sceneMode()) el.textContent='Someone is about to speak…';
     else if(live){ var s=Math.max(0,Math.round((nextAt-Date.now())/1000)); el.textContent='● Live · next voice in '+s+'s'; }
     else el.textContent='Paused';
   }
-  setInterval(function(){ if(live) updateStatus(); }, 1000);
+  setInterval(function(){
+    if(!live) return;
+    if(!typingShown && pendingSpeaker && nextAt-Date.now()<=TYPING_LEAD_MS){ typingShown=true; renderChat(); }
+    updateStatus();
+  }, 500);
+  function firstName(n){ return String(n||'').split(' ')[0]; }
+  function typingHtml(name){
+    var dots='<span class="twc-dots"><i></i><i></i><i></i></span>';
+    if(name==='narrator') return '<div class="twc-msg narr typing">'+dots+'</div>';
+    var m=manByName(name), av=(m&&hasImg(m))?charAvatar(m.id,26)+' ':'';
+    return '<div class="twc-msg them typing"><span class="who">'+av+esc(name)+'</span>'+dots+'</div>';
+  }
 
   function renderChat(){
     var box=document.getElementById('twc-msgs'); if(!box) return;
@@ -2427,7 +2446,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       html = sc.lines.length ? sc.lines.map(lineHtml).join('') : '<div class="twc-empty">The band has gathered at '+esc(sc.place.toLowerCase())+'. Press “Let them talk”, or say something.</div>';
-      if(busy) html+='<div class="twc-msg sys">…</div>';
+      if(!viewSceneId && (busy||typingShown) && pendingSpeaker) html+=typingHtml(pendingSpeaker);
+      else if(!viewSceneId && busy) html+='<div class="twc-msg sys">…</div>';
     } else {
       var m=manById(sel);
       if(!m){ box.innerHTML='<div class="twc-empty">Choose a companion.</div>'; return; }
@@ -2439,15 +2459,40 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       });
       if(m.dead) html+='<div class="twc-msg sys">He fell in the service of the band. His words are kept here.</div>';
       else if(!chat.length) html='<div class="twc-empty">He is waiting for you to speak.</div>';
-      if(busy) html+='<div class="twc-msg sys">'+esc(m.name.split(' ')[0])+' is thinking…</div>';
+      if(busy) html+=typingHtml(m.name);
     }
     box.innerHTML=html;
-    if(atBottom || busy) box.scrollTop=box.scrollHeight;
+    if(atBottom || busy || typingShown) box.scrollTop=box.scrollHeight;
   }
   function renderAll(){ renderList(); renderCard(); renderChat(); }
 
   // ───────── live gathering engine ─────────
-  function schedule(ms){ clearTimeout(liveTimer); nextAt=Date.now()+ms; liveTimer=setTimeout(tick, ms); updateStatus(); }
+  function schedule(ms){
+    clearTimeout(liveTimer); nextAt=Date.now()+ms; liveTimer=setTimeout(tick, ms);
+    try{ var st=ensure(load()); pendingSpeaker=pickSpeaker(curScene(st)); }catch(e){ pendingSpeaker=null; }
+    typingShown = ms<=TYPING_LEAD_MS;
+    renderChat();
+  }
+  // Decide who talks next: whoever Roger addressed by name, else a man who has
+  // not spoken lately (never the same man twice running); now and then a scene note.
+  function pickSpeaker(sc){
+    var men=alive(); if(!men.length) return null;
+    var talk=sc.lines.filter(function(l){ return l.who==='man'||l.who==='roger'||l.who==='narr'; });
+    var last=talk[talk.length-1];
+    if(rogerAwaiting(sc)){
+      var said=String(last.text||'').toLowerCase(), hit=null;
+      men.forEach(function(m){ var f=firstName(m.name).toLowerCase(); if(!hit && new RegExp('\\b'+f+'\\b').test(said)) hit=m; });
+      if(hit) return hit.name;
+    } else if(talk.length>=3 && (!last || last.who!=='narr') && Math.random()<0.1){
+      return 'narrator';
+    }
+    var lastMan=null; for(var i=talk.length-1;i>=0;i--){ if(talk[i].who==='man'){ lastMan=talk[i].speaker; break; } }
+    var recent=talk.slice(-8), pool=men.filter(function(m){ return m.name!==lastMan || men.length===1; });
+    var weights=pool.map(function(m){ var n=recent.filter(function(l){ return l.speaker===m.name; }).length; return 1/(1+n*1.5); });
+    var tot=weights.reduce(function(a,b){return a+b;},0), r=Math.random()*tot;
+    for(var k=0;k<pool.length;k++){ r-=weights[k]; if(r<=0) return pool[k].name; }
+    return pool[pool.length-1].name;
+  }
   function jitter(){ return pace*1000*(0.8+Math.random()*0.4); }
 
   function sceneTranscript(sc){
@@ -2466,16 +2511,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     st=ensure(load()); sc=curScene(st);
     var system=worldCtx(st, sc.date, sc.place)+'\nTHE MEN PRESENT:\n\n'+men.map(function(m){ return personaText(m,st,true); }).join('\n---\n')+'\n'+RULES+'\n\n'+
       'You are running a live, unscripted conversation among these men at '+sc.place+' on this day. Roger Lee Whittlesey IV, their leader, is present and may speak at any time. '+
-      'Each turn you write exactly ONE contribution: whoever would most naturally speak next. Men react, agree, disagree, interrupt, tease, answer each other, raise their own worries and ambitions, and let topics drift the way talk does at '+sc.place.toLowerCase()+' — the band\'s fortunes and the purse, prices and trade, the weather and the land, faith and the Church, the King and the Cardinal, news from abroad, family, girls, plans for the future, things happening around them this very day. '+
-      'Make each man sound like himself. Do not let one man dominate or speak twice in a row unless answering a question put to him. Never repeat a point already made. 1 to 3 spoken sentences, optionally a short action in *asterisks*. '+
-      'Occasionally — no more than one turn in eight — the turn may instead be a single short narrator note of something happening at the place (someone arriving, the ale, the weather, church bells), with speaker "narrator". '+
-      'If Roger has just spoken, answer him — whoever it concerns most.\n'+
+      'Each turn you write exactly ONE contribution, from the man named in the turn instruction. Men react, agree, disagree, interrupt, tease, answer each other, raise their own worries and ambitions, and let topics drift the way talk does at '+sc.place.toLowerCase()+' — the band\'s fortunes and the purse, prices and trade, the weather and the land, faith and the Church, the King and the Cardinal, news from abroad, family, girls, plans for the future, things happening around them this very day. '+
+      'Make each man sound like himself: he reacts to what was just said, or to something said earlier, or brings up his own concern. Never repeat a point already made. 1 to 3 spoken sentences, optionally a short action in *asterisks*. '+
+      'If the turn instruction says narrator, write instead a single short narrator note of something happening at the place (someone arriving, the ale, the weather, church bells). '+
+      'If Roger has just spoken, the named man answers him.\n'+
       'Return JSON only: {"speaker": "exact full name or narrator", "text": "...", "mood": "speaker\'s mood in one or two words"}';
     var transcript=sceneTranscript(sc);
-    var cue = rogerAwaiting(sc) ? 'Roger has just spoken. Next line (a reply to Roger):' : (transcript ? 'Next line:' : 'The men have just sat down together. Open the conversation naturally — first line:');
+    var who = pendingSpeaker || pickSpeaker(sc);
+    if(who!=='narrator' && !manByName(who)) who = men[0].name;
+    var turn = who==='narrator' ? 'This turn: a narrator note.' : 'This turn: '+who+' speaks.';
+    var cue = (rogerAwaiting(sc) ? 'Roger has just spoken. ' : (transcript ? '' : 'The men have just sat down together. ')) + turn;
     var moods='Moods right now: '+men.map(function(m){ return m.name.split(' ')[0]+' — '+stateFor(st,m.id).mood; }).join('; ')+'.\n\n';
     var txt=await ai(system,[{role:'user',content:moods+(transcript?'Conversation so far:\n'+transcript+'\n\n':'')+cue}],400);
-    var j=parseJSON(txt)||{speaker:men[0].name,text:txt};
+    var j=parseJSON(txt)||{speaker:who,text:txt};
+    if(!j.speaker) j.speaker=who;
     st=ensure(load()); sc=curScene(st);
     var spk=String(j.speaker||'').trim();
     if(/^narrator$/i.test(spk)) sc.lines.push({who:'narr',text:String(j.text||''),ts:Date.now()});
@@ -2498,16 +2547,16 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     try{
       await sceneLine();
       quiet = answering ? 0 : quiet+1;
-      busy=false;
+      busy=false; pendingSpeaker=null; typingShown=false;
       if(quiet>=AUTO_PAUSE_LINES){
         st=ensure(load()); curScene(st).lines.push({who:'sys',text:'The talk dwindles. Speak to stir them, or press “Let them talk”.',ts:Date.now()}); store(st);
-        live=false; quiet=0; clearTimeout(liveTimer);
+        live=false; quiet=0; clearTimeout(liveTimer); pendingSpeaker=null;
       } else {
         schedule(answering || fastNext ? 12000+Math.random()*8000 : jitter());
         fastNext = answering;   // after answering Roger, a second voice follows up quickly
       }
     }catch(e){
-      busy=false;
+      busy=false; pendingSpeaker=null; typingShown=false;
       st=ensure(load()); curScene(st).lines.push({who:'sys',text:'The talk falters ('+(e&&e.message||'error')+'). Paused.',ts:Date.now()}); store(st);
       live=false; clearTimeout(liveTimer);
     }
@@ -2517,7 +2566,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   window.twcLive=function(on){
     live=!!on; quiet=0;
     if(live){ if(sel!=='gathering'){ sel='gathering'; viewSceneId=null; } schedule(1500); }
-    else { clearTimeout(liveTimer); }
+    else { clearTimeout(liveTimer); pendingSpeaker=null; typingShown=false; }
     renderAll();
   };
   window.twcPace=function(v){ pace=parseInt(v,10)||60; try{ localStorage.setItem('twc_pace', String(pace)); }catch(e){} if(live) schedule(jitter()); };
@@ -4241,12 +4290,14 @@ const SEASONS=['Spring','Summer','Autumn','Winter'];
 // 5 Edmund = cloth merchant's curious son: quill and open book
 // Painted portraits (fall back to the emoji icon when a man has none yet)
 const CHAR_IMAGES={
+  1:'character-portrait.jpg',  // Roger Lee Whittlesey IV
   2:'portrait-ralph-full.jpg',  // Ralph Whittlesey — full figure by Whittlesey Mere, 1526
   3:'portrait-thomas-full.jpg', // Thomas Fenne — in his father's tan-yard, Whittlesey, 1526
   4:'portrait-john-full.jpg',   // John Cobbes — at his father's forge, Whittlesey, 1526
   5:'portrait-edmund-full.jpg',// Edmund Sayer — in his father's cloth shop, Whittlesey, 1526
 };
 const CHAR_FACES={          // head-and-shoulders crops for the small round icons
+  1:'portrait-roger-face.jpg',
   2:'portrait-ralph-face.jpg',
   3:'portrait-thomas-face.jpg',
   4:'portrait-john-face.jpg',
@@ -4776,7 +4827,7 @@ function showBio(id){
   const portrait=CHAR_PORTRAITS[id]||{icon:'⚔',label:'Fighter',flavor:''};
   (document.getElementById('bio-content')||{}).innerHTML=`<div class="bio-section">
     <div class="bio-portrait" style="flex-direction:column;gap:4px;${CHAR_IMAGES[id]?'height:auto;padding:6px;':''}">
-      ${CHAR_IMAGES[id]?`<img src="${CHAR_IMAGES[id]}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;">`:`<span style="font-size:44px">${portrait.icon}</span>`}
+      ${CHAR_IMAGES[id]?`<img src="${CHAR_IMAGES[id]}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 12%;border-radius:3px;">`:`<span style="font-size:44px">${portrait.icon}</span>`}
       <span style="font-family:var(--fellsc);font-size:10px;color:var(--gold-m);letter-spacing:0.06em">${portrait.label}</span>
       <span style="font-size:9px;font-style:italic;color:var(--border2);text-align:center;padding:0 4px">${portrait.flavor}</span>
     </div>
