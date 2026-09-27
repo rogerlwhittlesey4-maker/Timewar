@@ -4242,9 +4242,11 @@ const SEASONS=['Spring','Summer','Autumn','Winter'];
 // Painted portraits (fall back to the emoji icon when a man has none yet)
 const CHAR_IMAGES={
   2:'portrait-ralph-full.jpg',  // Ralph Whittlesey — full figure by Whittlesey Mere, 1526
+  3:'portrait-thomas-full.jpg', // Thomas Fenne — in his father's tan-yard, Whittlesey, 1526
 };
 const CHAR_FACES={          // head-and-shoulders crops for the small round icons
   2:'portrait-ralph-face.jpg',
+  3:'portrait-thomas-face.jpg',
 };
 function charAvatar(id, px, emojiFallback){
   const src=(px<=80 && CHAR_FACES[id]) || CHAR_IMAGES[id];
