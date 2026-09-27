@@ -4241,7 +4241,7 @@ const SEASONS=['Spring','Summer','Autumn','Winter'];
 // 5 William = cloth merchant's curious son: quill and open book
 // Painted portraits (fall back to the emoji icon when a man has none yet)
 const CHAR_IMAGES={
-  2:'portrait-ralph.jpg',  // Ralph Whittlesey — fen farmer's son, by Whittlesey Mere, 1526
+  2:'portrait-ralph-full.jpg',  // Ralph Whittlesey — full figure by Whittlesey Mere, 1526
 };
 const CHAR_FACES={          // head-and-shoulders crops for the small round icons
   2:'portrait-ralph-face.jpg',
@@ -4770,7 +4770,7 @@ function showBio(id){
   const portrait=CHAR_PORTRAITS[id]||{icon:'⚔',label:'Fighter',flavor:''};
   (document.getElementById('bio-content')||{}).innerHTML=`<div class="bio-section">
     <div class="bio-portrait" style="flex-direction:column;gap:4px;${CHAR_IMAGES[id]?'height:auto;padding:6px;':''}">
-      ${CHAR_IMAGES[id]?`<img src="${CHAR_IMAGES[id]}" alt="" style="width:100%;max-height:220px;object-fit:cover;object-position:50% 20%;border-radius:3px;">`:`<span style="font-size:44px">${portrait.icon}</span>`}
+      ${CHAR_IMAGES[id]?`<img src="${CHAR_IMAGES[id]}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;">`:`<span style="font-size:44px">${portrait.icon}</span>`}
       <span style="font-family:var(--fellsc);font-size:10px;color:var(--gold-m);letter-spacing:0.06em">${portrait.label}</span>
       <span style="font-size:9px;font-style:italic;color:var(--border2);text-align:center;padding:0 4px">${portrait.flavor}</span>
     </div>
