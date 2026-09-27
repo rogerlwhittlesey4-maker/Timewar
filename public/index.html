@@ -2146,7 +2146,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       bonds:{2:'Ralph is the brother he never had.',3:'Keeps Thomas honest, and Thomas knows it.',5:'Worries William will read himself into trouble with the Bishop\'s men.'},
       secret:'He once struck a man in anger at the Whitsun ale and has never confessed how badly he hurt him.'
     },
-    5: { // William Draper
+    5: { // William Thurston
       role:'The Seeker', age:18,
       aspirations:[
         'See London, then Calais, then the great cloth marts at Antwerp where the Merchant Adventurers trade',
@@ -4244,11 +4244,13 @@ const CHAR_IMAGES={
   2:'portrait-ralph-full.jpg',  // Ralph Whittlesey — full figure by Whittlesey Mere, 1526
   3:'portrait-thomas-full.jpg', // Thomas Fenne — in his father's tan-yard, Whittlesey, 1526
   4:'portrait-john-full.jpg',   // John Cobbes — at his father's forge, Whittlesey, 1526
+  5:'portrait-william-full.jpg',// William Thurston — in his father's cloth shop, Whittlesey, 1526
 };
 const CHAR_FACES={          // head-and-shoulders crops for the small round icons
   2:'portrait-ralph-face.jpg',
   3:'portrait-thomas-face.jpg',
   4:'portrait-john-face.jpg',
+  5:'portrait-william-face.jpg',
 };
 function charAvatar(id, px, emojiFallback){
   const src=(px<=80 && CHAR_FACES[id]) || CHAR_IMAGES[id];
@@ -4292,7 +4294,7 @@ const BIOS={
     traits:['Protective','Strong','Moral compass','Devout','Patient'],
     quote:`"A shield held firm is worth ten swords swung wild."`},
   5:{origin:'Whittlesey, Cambridgeshire',birth:'1508 AD',
-    background:`William Draper is the cloth merchant's son who grew up knowing the wider world exists beyond the fens. He reads when he can find books — which is rare — and asks questions that occasionally irritate and more often impress.`,
+    background:`William Thurston is the cloth merchant's son who grew up knowing the wider world exists beyond the fens. He reads when he can find books — which is rare — and asks questions that occasionally irritate and more often impress.`,
     personality:`Curious, adaptable, sometimes impulsive. William throws himself into things and figures out the details as he goes. He is most likely to suggest going somewhere none of them have been.`,
     traits:['Curious','Adaptable','Impulsive','Well-traveled mind','Book-learned'],
     quote:`"There's a whole world past these fens. I intend to see it."`},
@@ -4456,7 +4458,7 @@ function defaultState(){
       {id:2,name:'Ralph Whittlesey',        age:18,isCmd:false,rankIdx:0,hp:100,maxHp:100,xp:0,scars:0,dead:false},
       {id:3,name:'Thomas Fenne',            age:18,isCmd:false,rankIdx:0,hp:100,maxHp:100,xp:0,scars:0,dead:false},
       {id:4,name:'John Cobbes',             age:18,isCmd:false,rankIdx:0,hp:100,maxHp:100,xp:0,scars:0,dead:false},
-      {id:5,name:'William Draper',          age:18,isCmd:false,rankIdx:0,hp:100,maxHp:100,xp:0,scars:0,dead:false},
+      {id:5,name:'William Thurston',          age:18,isCmd:false,rankIdx:0,hp:100,maxHp:100,xp:0,scars:0,dead:false},
     ],
   };
 }
@@ -4679,7 +4681,7 @@ function buildCouncilCtx(){
   const desc=alive.map(m=>`${m.name} (${rankId(m)}, HP:${m.hp.toFixed(0)}/${m.maxHp}, XP:${m.xp.toFixed(0)}, scars:${m.scars})`).join('; ');
   return `You are the narrator and character engine for "Time War," a historical RPG set in 1526 AD England. Player is Roger Lee Whittlesey IV, commander of the Whittlesey Defense Band, Cambridgeshire.
 Season: ${S.currentSeason}. Campaign: ${S.campaign}. Treasury: $${S.treasury.toFixed(0)}. Record: ${S.wins}W/${S.losses}L. Living men: ${desc}.
-Characters: Roger (Commander — calm, strategic, merchant's son); Ralph Whittlesey (taciturn, stubborn, fen farmer's son, man of few words); Thomas Fenne (sharp, observant, quick wit, tanner's son); John Cobbes (large, protective, devout, blacksmith's son, moral conscience); William Draper (curious, impulsive, book-learned, cloth merchant's son).
+Characters: Roger (Commander — calm, strategic, merchant's son); Ralph Whittlesey (taciturn, stubborn, fen farmer's son, man of few words); Thomas Fenne (sharp, observant, quick wit, tanner's son); John Cobbes (large, protective, devout, blacksmith's son, moral conscience); William Thurston (curious, impulsive, book-learned, cloth merchant's son).
 Historical context: 1526. Henry VIII rules England (Catholic, pre-Reformation). Suleiman marching on Hungary. Italian Wars. Mughal Empire just founded. League of Cognac forming.
 Write vivid, historically grounded roleplay. Characters speak with distinct voices. Period-appropriate but readable. Bold named dialogue as **Name:** "speech". Under 320 words.`;
 }
@@ -6702,7 +6704,10 @@ function updateMapClock(){
 setInterval(updateMapClock,1000);
 updateMapClock();
 
-load();render();renderConflicts();initHoldings();initDayNightMap();
+load();
+// v2 rename: William Draper -> William Thurston (surname no longer names his father's trade)
+try{ (S.men||[]).forEach(m=>{ if(m.id===5 && m.name==='William '+'Draper'){ m.name='William Thurston'; save(); } }); }catch(e){}
+render();renderConflicts();initHoldings();initDayNightMap();
 // Null-safe init — contract-input was removed when Battle Contract became a static panel
 const _addKbd = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)) fn(); }); };
 { const el = document.getElementById('f-outcome'); if(el) el.addEventListener('change', updatePreview); }
