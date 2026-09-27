@@ -3236,7 +3236,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     function lsd(d){ // pence → "£3 15s 10d"
       d=Math.round(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
-      if(L) out.push('£'+L); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
+      if(L) out.push('£'+L.toLocaleString('en-US')); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return out.join(' ');
     }
     function pd(d){ // pence with quarters: 1.5 → 1½d, 0.25 → ¼d, 15 → 1s 3d
       var w=Math.floor(d), f=d-w, fr=f>=0.7?'¾':f>=0.45?'½':f>=0.2?'¼':'';
@@ -3310,6 +3310,27 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       ['A barber-surgeon\'s bleeding',2,''],
       ['A physician\'s fee',80,'A noble — no fen labourer ever paid it'],
     ];
+
+    // ── Whittlesey, the town ───────────────────────────────────────────
+    // People through the centuries. est. = estimated from the record named.
+    var POP_HIST = [
+      [1086,190,true,'Domesday: 38 tenant households on the two manors'],
+      [1526,1400,true,'about 290 households, scaled back from 1563 (England had 2.4 million people)'],
+      [1563,1600,true,'355 householders in the diocesan survey: 266 in St Mary\'s, 89 in St Andrew\'s'],
+      [1676,3000,true,'2,021 people of communicant age (Compton census)'],
+      [1801,3841,false,'the first census'],
+      [1851,7687,false,'census; the Mere drained that year'],
+      [1951,8609,false,'census'],
+      [2011,16058,false,'census, the parish'],
+      [2021,17667,false,'census, the parish; the town itself about 13,800'],
+    ];
+    var TOWN_1526_POP=1400, TOWN_2026_POP=17667, ENGLAND_1526_POP=2.4e6;
+    var TOWN_PC_1526=714*CPI_1990_TO_NOW;              // Maddison's English output per head, 2026 $
+    var FENLAND_GVA_PER_HEAD_GBP=21896;                // 2023
+    var FENLAND_MEDIAN_FT_GBP=31300, FENLAND_GDHI_GBP=Math.round(23300*(1-0.181)), FENLAND_EMPLOYMENT=71.3, FENLAND_LOW_PAY=24.4;
+    var WHITTLESEY_HOUSE_GBP=250053, WHITTLESEY_DETACHED=309289, WHITTLESEY_SEMI=222828, WHITTLESEY_TERRACED=186056;
+    var MANOR_STMARY_D=83*240+8*12+7.5, MANOR_STANDREW_D=51*240+2*12+5;   // 1539-40 values, in pence
+    var UK_MEAN_WEALTH_PER_ADULT_USD=292808;           // UBS 2026
 
     // ── Realms, c.1500 (Maddison, 1990 Geary-Khamis $) ────────────────
     // gdp: millions of 1990 international $; pc: per head. People = gdp ÷ pc.
@@ -3574,6 +3595,32 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is about '+usd(bandTotal*USD_PER_D_GOODS)+' in 2026 dollars, and most of it is the few belongings each man owns outright. Remember that the $500 ledger is their lives, not this money.</div>';
       h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
 
+      // ── Whittlesey, the town: then and now ──
+      var townOut1526=TOWN_1526_POP*TOWN_PC_1526, manorD=MANOR_STMARY_D+MANOR_STANDREW_D, townOutD=TOWN_1526_POP*TOWN_PC_1526/USD_PER_D_GOODS;
+      var townOut2026=TOWN_2026_POP*FENLAND_GVA_PER_HEAD_GBP*GBPUSD, pc2026=FENLAND_GVA_PER_HEAD_GBP*GBPUSD;
+      var hh2026=Math.round(TOWN_2026_POP/2.32), adults2026=Math.round(TOWN_2026_POP*0.79), wealth2026=adults2026*UK_MEAN_WEALTH_PER_ADULT_USD;
+      var dayPay2026=FENLAND_MEDIAN_FT_GBP/260*GBPUSD;
+      h+='<h4>Whittlesey, the town — then and now</h4><div class="note">The fen town the band lives in: what it was in 1526 and what stands on the same ground today. 1526 figures are <span class="est">estimates</span> built from the manorial and diocesan records named below; 2026 figures are the census, the ONS and the district\'s own economic assessment (Whittlesey is not measured on its own, so where a figure is for Fenland district it says so).</div>';
+      h+='<div class="won-scroll"><table class="wide"><thead><tr><th></th><th>1526</th><th>2026</th></tr></thead><tbody>'+
+        '<tr><td><strong>People</strong></td><td>About '+TOWN_1526_POP.toLocaleString('en-US')+' <span class="est">estimate</span> in two parishes, St Mary\'s (three-quarters of the town) and St Andrew\'s, their churches a quarter-mile apart. One of the biggest towns in the Isle of Ely; England had about 2.4 million people, London perhaps 55,000, Norwich 9,000, Cambridge under 3,000.</td><td>'+TOWN_2026_POP.toLocaleString('en-US')+' in the parish (2021 census), about 13,800 in the town itself — '+(TOWN_2026_POP/TOWN_1526_POP).toFixed(0)+'× the town of 1526. The 9th largest place in Cambridgeshire; Peterborough has 216,000.</td></tr>'+
+        '<tr><td><strong>Households</strong></td><td>About 290 <span class="est">estimate</span> — 355 were counted in 1563. Timber, wattle-and-daub and reed thatch; a few better houses round the market place.</td><td>About '+hh2026.toLocaleString('en-US')+' <span class="est">derived</span> (at the district\'s 2.32 people to a household). Average sold price '+usd(WHITTLESEY_HOUSE_GBP*GBPUSD)+' (£'+WHITTLESEY_HOUSE_GBP.toLocaleString('en-US')+'): detached '+usd(WHITTLESEY_DETACHED*GBPUSD)+', semi '+usd(WHITTLESEY_SEMI*GBPUSD)+', terraced '+usd(WHITTLESEY_TERRACED*GBPUSD)+'; 11% down on the year before.</td></tr>'+
+        '<tr><td><strong>Output in a year</strong></td><td><strong>'+usd(townOut1526)+'</strong> <span class="est">estimate</span> — about '+lsd(townOutD)+' in the money of the day, at Maddison\'s English output per head. That is '+(TOWN_1526_POP/ENGLAND_1526_POP*100).toFixed(2)+'% of England.</td><td><strong>'+usd(townOut2026)+'</strong> <span class="est">estimate</span> — at Fenland district\'s £'+FENLAND_GVA_PER_HEAD_GBP.toLocaleString('en-US')+' of output per head (2023), the lowest in Cambridgeshire. About '+Math.round(townOut2026/townOut1526).toLocaleString('en-US')+'× the town of 1526.</td></tr>'+
+        '<tr><td><strong>Output per head</strong></td><td>'+usd(TOWN_PC_1526)+' a year — about '+lsd(TOWN_PC_1526/USD_PER_D_GOODS)+'.</td><td>'+usd(pc2026)+' a year — '+(pc2026/TOWN_PC_1526).toFixed(0)+'× as much for each person.</td></tr>'+
+        '<tr><td><strong>What the town is worth</strong></td><td>About '+usd(townOut1526*WEALTH_MULT)+' <span class="est">estimate</span> — 6½ years of output, nearly all of it land, houses, beasts and the fen\'s rights of common.</td><td>Roughly '+usd(wealth2026)+' <span class="est">estimate</span> if its '+adults2026.toLocaleString('en-US')+' adults held the UK average ($'+UK_MEAN_WEALTH_PER_ADULT_USD.toLocaleString('en-US')+' each, UBS); Fenland is poorer than average, so likely less. Mostly the houses.</td></tr>'+
+        '<tr><td><strong>A day\'s pay</strong></td><td>4d for a labourer ('+usd(4*USD_PER_D_GOODS)+'); 6d for a craftsman. Most of the town lived by its holdings and the fen, not by wages; a wage-earner was a poor man.</td><td>About '+usd(dayPay2026)+' — Fenland\'s median full-time pay of £'+FENLAND_MEDIAN_FT_GBP.toLocaleString('en-US')+' a year (2024), 17% below England. '+FENLAND_LOW_PAY+'% of employees are paid below the Living Wage; '+FENLAND_EMPLOYMENT+'% of working-age people are in work; household income after tax about £'+FENLAND_GDHI_GBP.toLocaleString('en-US')+' a head.</td></tr>'+
+        '<tr><td><strong>Who takes the rent</strong></td><td>Two monastic lords: Thorney Abbey (manor of St Mary\'s, worth £83 8s 7½d a year) and Ely Priory (St Andrew\'s, £51 2s 5d), together £134 11s ½d ('+usd(manorD*USD_PER_D_GOODS)+') — about '+(manorD/townOutD*100).toFixed(0)+'% of everything the town made. Both houses will be dissolved within fifteen years.</td><td>Private landlords, mortgage lenders and Fenland District Council. The abbeys\' lands passed to the Crown in 1539–40 and were sold on.</td></tr>'+
+        '<tr><td><strong>How people live</strong></td><td>Husbandmen holding by copy of the court roll, with rights of common on the fen: cattle and sheep on the washes, geese, turf for fuel, reed and sedge for thatch, eels, pike and perch and fowl from the Mere. Two mills (leased in 1522 to Robert Brown for ten years). A smith, a tanner, a draper, alehouses, two parish priests. A market only by custom — the charter came in 1715.</td><td>Food and farming still: McCain\'s chip factory, the last of the Fletton brickworks at King\'s Dyke, packing and logistics, and commuting to Peterborough — 44% of Fenland residents work within 5 km of home.</td></tr>'+
+        '<tr><td><strong>The land and the Mere</strong></td><td>About 1,550 acres of open arable, 2,400 of pasture and 20,000 acres of fen common (as later surveyed). Whittlesey Mere: 1,870 acres of water in summer, 3,000 in winter — the largest lake in lowland England.</td><td>The fen drained and farmed; the Mere drained in 1851 and under wheat and potatoes ever since.</td></tr>'+
+        '<tr><td><strong>To Peterborough</strong></td><td>Six miles west by the old Roman Fen Causeway — half a day on foot with the water up. London 80 miles, four days by carrier.</td><td>Fifteen minutes by the A605; London under two hours by train from Peterborough.</td></tr>'+
+        '</tbody></table></div>';
+      // People through the centuries
+      var pmax=Math.max.apply(null, POP_HIST.map(function(x){ return x[1]; }));
+      h+='<div class="note" style="margin-top:8px"><strong>People through the centuries.</strong> The town grew slowly for seven hundred years and then, once the fen was drained and the brickfields opened, fast.</div><div class="rank">';
+      POP_HIST.forEach(function(x){
+        h+='<div class="row'+(x[0]===1526?' eng':'')+'"><div class="rk">'+x[0]+'</div><div class="nm">'+(x[0]===1526?'The year of the story':x[3].charAt(0).toUpperCase()+x[3].slice(1))+(x[0]===1526?'<small>'+x[3]+'</small>':'')+'</div><div class="bar"><i style="width:'+Math.max(0.6,x[1]/pmax*100).toFixed(1)+'%"></i></div><div class="val"><strong>'+x[1].toLocaleString('en-US')+'</strong>'+(x[2]?'<small>about</small>':'')+'</div></div>';
+      });
+      h+='</div>';
+
       h+='<h4>Sources</h4><div class="sources">'+
         '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 in 2025 (real price); brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a>.<br>'+
         '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
@@ -3593,6 +3640,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '• <a href="https://www.british-history.ac.uk/vch/cambs/vol4/pp123-135" target="_blank" rel="noopener">Victoria County History, Whittlesey</a> — the two manors (Thorney Abbey, Ely Priory), copyhold tenure, the fishery, 355 householders in 1563.<br>'+
         '• <a href="https://faculty.econ.ucdavis.edu/faculty/gclark/papers/rentereh.pdf" target="_blank" rel="noopener">Clark, Land rental values in England 1500–1912</a> — early-1500s rent about 10.5d an acre.<br>'+
         '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.<br>'+
+        '• <a href="https://en.wikipedia.org/wiki/Whittlesey" target="_blank" rel="noopener">Whittlesey, 2021 census</a> — 17,667 in the parish; <a href="https://en.wikipedia.org/wiki/Whittlesey_Mere" target="_blank" rel="noopener">Whittlesey Mere</a> — 1,870 acres in summer, 3,000 in winter, drained 1851.<br>'+
+        '• <a href="https://cambridgeshirepeterborough-ca.gov.uk/wp-content/uploads/Oxford-to-Cambridge-Growth-Corridor-Economic-Insights-202526-version-1.0-1.pdf" target="_blank" rel="noopener">Cambridgeshire &amp; Peterborough Economic Insights 2025/26</a> — Fenland GVA £2,267m, £21,896 a head (2023).<br>'+
+        '• <a href="https://cambridgeshireinsight.org.uk/wp-content/uploads/2025/10/Workforce-Jobs-Skills.pdf" target="_blank" rel="noopener">State of the Region 2025: Workforce, Jobs &amp; Skills</a> — Fenland median full-time pay £31,300 (2024), employment rate 71.3%, 24.4% below the Living Wage, household income 18.1% below England.<br>'+
+        '• <a href="https://www.rightmove.co.uk/house-prices/whittlesey.html" target="_blank" rel="noopener">Rightmove, Whittlesey sold prices</a> — average £250,053 over the last year.<br>'+
         '• J. E. Thorold Rogers, <em>A History of Agriculture and Prices in England</em>, vol. IV (1401–1582) — decade averages for grain, beasts, cloth, candles and wages; Christopher Dyer, <em>Standards of Living in the Later Middle Ages</em> — what a labourer\'s wage bought; the Assize of Bread and Ale; the acts of 1515 (bows), 1531 (wine) and 1533 (meat).'+
         '</div>';
       el.innerHTML=h;
