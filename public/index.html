@@ -2453,11 +2453,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sel==='log'){
       var rows=st.scenes.slice().reverse().map(function(s){
         var cnt=s.lines.filter(function(l){ return l.who==='man'||l.who==='roger'; }).length;
-        return '<div class="twc-logrow'+((viewSceneId||st.currentScene)===s.id?' cur':'')+'" onclick="twcOpenScene(\''+s.id+'\')" style="position:relative"><button title="Delete this gathering" onclick="event.stopPropagation();twcDeleteScene(\''+s.id+'\')" style="position:absolute;top:6px;right:6px;font-size:11px;background:transparent;border:1px solid #c98a7a;color:#8a2a20;border-radius:2px;cursor:pointer;padding:1px 5px">🗑</button><div class="d" style="padding-right:26px">'+esc(dayInfo(s.date).long)+'</div>'+
+        return '<div class="twc-logrow'+((viewSceneId||st.currentScene)===s.id?' cur':'')+'" onclick="twcOpenScene(\''+s.id+'\')" style="position:relative"><div class="d">'+esc(dayInfo(s.date).long)+'</div>'+
           '<div class="m">'+esc(s.place)+' · '+esc(timeOf(s)[1])+' · '+cnt+' line'+(cnt===1?'':'s')+(s.id===st.currentScene?' · today':'')+'</div>'+(s.summary?'<div class="s">'+esc(s.summary)+'</div>':'')+'</div>';
       }).join('');
-      el.innerHTML='<h3>📜 Conversation Log</h3><div class="twc-tag">Every gathering of the band, by date</div>'+(rows||'<p>No gatherings yet.</p>')+
-        '<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px"><button onclick="twcClearLog()" style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;background:#f3d2c2;border:1px solid #8a2a20;color:#5a1a14;border-radius:2px;padding:5px 9px;cursor:pointer">🗑 Delete every gathering</button> <span style="font-family:var(--fell);font-size:12px;color:var(--ink3)">The men keep their characters, loyalty and memories; signed documents stay on record.</span></div>';
+      el.innerHTML='<h3>📜 Conversation Log</h3><div class="twc-tag">Every gathering of the band, by date</div>'+(rows||'<p>No gatherings yet.</p>');
       return;
     }
     var m=manById(sel);
@@ -2510,7 +2509,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       dayEl.textContent=d?dd.long:'Signed Documents';
       feastEl.textContent=d?[d.place, regnal(d.date).plain].filter(Boolean).join(' · '):'The band\'s written record';
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button>'+(d?'<button class="stop" onclick="twcDeleteDoc(\''+d.id+'\')">🗑 Tear up this document</button>':'')+'<span class="twc-status">Kept on record · read only</span>';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">← Back to today</button><span class="twc-status">Kept on record · read only</span>';
       inp.disabled=true; btn.disabled=true; inp.placeholder='';
       return;
     }
@@ -2534,10 +2533,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<span class="twc-status" id="twc-status"></span>';
     } else if(sceneMode() && viewingPast){
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcOpenScene(null)">← Back to today</button><button class="stop" onclick="twcDeleteScene(\''+sc.id+'\')">🗑 Delete this gathering</button><span class="twc-status">From the log · read only</span>';
+      ctrl.innerHTML='<button onclick="twcOpenScene(null)">← Back to today</button><span class="twc-status">From the log · read only</span>';
     } else {
       ctrl.style.display='flex';
-      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcDraft()" title="Put something in writing between you and him">🖋 Draw up a document</button><button class="stop" onclick="twcClearChat()" title="Delete this one-to-one conversation">🗑 Delete conversation</button><span class="twc-status">Private word</span>';
+      ctrl.innerHTML='<button onclick="twcSelect(\'gathering\')">🍺 Join the gathering</button><button onclick="twcDraft()" title="Put something in writing between you and him">🖋 Draw up a document</button><button onclick="twcClearChat()" title="Erase this one-to-one conversation">Burn the letters</button><span class="twc-status">Private word</span>';
     }
     var m2=manById(sel);
     var disabled = (sceneMode()&&viewingPast) || (!sceneMode() && (!m2 || m2.dead));
@@ -2824,37 +2823,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     renderAll();
   };
 
-  window.twcDeleteScene=function(id){
-    var st=ensure(load()), sc=sceneById(st,id); if(!sc) return;
-    if(!confirm('Delete the gathering of '+dayInfo(sc.date).long+' at '+sc.place+'?\n\nIts conversation is gone for good. The men keep what they already remember, and signed documents stay on record.')) return;
-    st.scenes=st.scenes.filter(function(x){ return x.id!==id; });
-    if(st.currentScene===id){
-      if(live){ live=false; clearTimeout(liveTimer); pendingSpeaker=null; typingShown=false; }
-      var ns={id:'s'+Date.now(), date:st.storyDate, place:sc.place, time:sc.time, present:sc.present, lines:[], summary:''};
-      st.scenes.push(ns); st.currentScene=ns.id;
-    }
-    store(st); viewSceneId=null; renderAll();
-  };
-  window.twcClearLog=function(){
-    if(!confirm('Delete EVERY gathering in the log?\n\nThe men keep their characters, loyalty and memories. Signed documents stay on record.')) return;
-    if(!confirm('Really delete all of them? This cannot be undone.')) return;
-    var st=ensure(load()), cur=curScene(st);
-    if(live){ live=false; clearTimeout(liveTimer); pendingSpeaker=null; typingShown=false; }
-    var ns={id:'s'+Date.now(), date:st.storyDate, place:cur?cur.place:PLACES[0], time:cur?cur.time:'evening', lines:[], summary:''};
-    st.scenes=[ns]; st.currentScene=ns.id; store(st); viewSceneId=null; sel='gathering'; renderAll();
-  };
-  window.twcDeleteDoc=function(id){
-    var st=ensure(load()), d=docById(st,id); if(!d) return;
-    if(!confirm('Tear up "'+d.title+'"?\n\nIt is removed from the record and the men will no longer be bound by it.')) return;
-    st.documents=(st.documents||[]).filter(function(x){ return x.id!==id; });
-    (st.scenes||[]).forEach(function(sc){ sc.lines=sc.lines.filter(function(l){ return !(l.who==='doc'&&l.docId===id); }); });
-    Object.keys(st.men||{}).forEach(function(k){ st.men[k].chat=(st.men[k].chat||[]).filter(function(x){ return !(x.role==='doc'&&x.docId===id); }); });
-    store(st); viewDocId=null; renderAll();
-  };
-
   window.twcClearChat=function(){
     var m=manById(sel); if(!m) return;
-    if(!confirm('Delete your private conversation with '+m.name+'?\n\nHe keeps his character, loyalty and memories.')) return;
+    if(!confirm('Burn your private conversation with '+m.name+'? He keeps his character, loyalty and memories.')) return;
     var st=load(); stateFor(st,m.id).chat=[]; store(st); renderChat();
   };
 
