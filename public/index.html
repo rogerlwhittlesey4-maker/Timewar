@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#1a1208">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Time War">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<script>if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); }</script>
 <title>Time War — Whittlesey Defense Band, 1526</title>
 <script>
 /* ═══════════ CLOUD SAVE — keeps every device on the same campaign ═══════════
@@ -2186,6 +2195,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     ['night','Night','after Compline and the curfew bell, about eight or nine; fires covered, most folk abed']];
   var OCCASIONS = ['An ordinary gathering','Market day','After a fight','Sunday, after Mass','A feast day','Bad news has come','A stranger has arrived','Payday — wages are in'];
   function timeOf(sc){ var k=(sc&&sc.time)||'evening'; return TIMES.filter(function(t){ return t[0]===k; })[0]||TIMES[4]; }
+  function timeKeyForClock(hm){ var h=parseInt(String(hm).split(':')[0],10); if(!isFinite(h)) return 'evening'; return h<5?'night':h<8?'dawn':h<11?'morning':h<14?'noon':h<17?'afternoon':h<20?'evening':'night'; }
+  function clockText(hm){ var p=String(hm||'').split(':'), h=parseInt(p[0],10), m=parseInt(p[1],10)||0; if(!isFinite(h)) return ''; var part=h<5?'at night':h<12?'in the morning':h<17?'in the afternoon':h<21?'in the evening':'at night'; var hh=h%12||12; return (h===12&&m===0)?'noon':(h===0&&m===0)?'midnight':hh+(m?':'+(m<10?'0':'')+m:' o\'clock')+' '+part; }
+  function timeText(sc){ return sc&&sc.clock ? clockText(sc.clock).replace(/^./,function(c){return c.toUpperCase();}) : timeOf(sc)[1]; }
   function presentMen(sc){ var al=alive(); if(!sc||!Array.isArray(sc.present)) return al; var p=al.filter(function(m){ return sc.present.indexOf(m.id)>=0; }); return p.length?p:al; }
   var AUTO_PAUSE_LINES = 15;       // stop after this many lines without Roger speaking (cost guard)
   var MODEL = 'claude-sonnet-4-6';
@@ -2520,7 +2532,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     if(sceneMode()){
       var sc=sceneById(st, viewSceneId||st.currentScene)||curScene(st);
       viewingPast = sc.id!==st.currentScene;
-      dateStr=sc.date; place=sc.place+' · '+timeOf(sc)[1];
+      dateStr=sc.date; place=sc.place+' · '+timeText(sc);
     } else { dateStr=st.storyDate; var m=manById(sel); place=m?'Speaking with '+m.name:''; }
     var di=dayInfo(dateStr);
     dayEl.textContent=di.long;
@@ -2531,6 +2543,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       ctrl.innerHTML=(live?'<button class="stop" onclick="twcLive(false)">⏸ Pause</button>':'<button class="go" onclick="twcLive(true)">▶ Let them talk</button>')+
         '<select onchange="twcPace(this.value)" title="How often someone speaks">'+PACES.map(function(p){ return '<option value="'+p[0]+'"'+(p[0]===pace?' selected':'')+'>'+p[1]+'</option>'; }).join('')+'</select>'+
         '<select onchange="twcPlace(this.value)" title="Where the band is gathered">'+(PLACES.indexOf(sc2.place)<0?'<option selected>'+esc(sc2.place)+'</option>':'')+PLACES.map(function(p){ return '<option'+(p===sc2.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'</select>'+
+        '<select onchange="twcSetTime(this.value)" title="The hour of this gathering">'+TIMES.map(function(t){ return '<option value="'+t[0]+'"'+(t[0]===timeOf(sc2)[0]?' selected':'')+'>🕰 '+t[1]+'</option>'; }).join('')+'<option value="__clock">🕰 Exact time…</option></select>'+
         '<button onclick="twcNewForm()" title="Choose the day, the hour, the place, who is there and what they are talking about">⚙ New gathering</button>'+
         '<button onclick="twcNextDay()" title="End this day; it is summed up in the log and the men remember it">Next day →</button>'+
         '<button onclick="twcDraft()" title="Put an agreement, oath, bond or receipt in writing for the men to sign">🖋 Draw up a document</button>'+
@@ -2646,7 +2659,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     for(var i=0;i<men.length;i++){ if(!PROFILES[men[i].id]) await ensureProfile(men[i]); }
     st=ensure(load()); sc=curScene(st);
     var system=worldCtx(st, sc.date, sc.place)+'\nTHE MEN PRESENT:\n\n'+men.map(function(m){ return personaText(m,st,true); }).join('\n---\n')+'\n'+RULES+'\n\n'+
-      'TIME OF DAY: '+timeOf(sc)[1]+' — '+timeOf(sc)[2]+'. Light, meals, work and who is about must fit the hour.\n'+
+      'TIME OF DAY: '+(sc.clock?'about '+clockText(sc.clock)+'; ':'')+timeOf(sc)[1]+' — '+timeOf(sc)[2]+'. Light, meals, work and who is about must fit the hour.\n'+
       (sc.occasion&&sc.occasion!==OCCASIONS[0]?'OCCASION: '+sc.occasion+'.\n':'')+
       (sc.topic?'WHAT THEY WERE TALKING ABOUT WHEN ROGER ARRIVED: '+sc.topic+'\n':'')+
       'You are running a live, unscripted conversation among these men at '+sc.place+' on this day. Roger Lee Whittlesey IV, their leader, is present and may speak at any time. '+
@@ -2772,6 +2785,20 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   window.twcSelect=function(id){ recoverView=null; sel=id; if(id!=='log') viewSceneId=null; renderAll(); var i=document.getElementById('twc-input'); if(i&&!i.disabled) i.focus(); };
 
   // ── New gathering: choose day, hour, place, company, occasion and opening talk ──
+  window.twcSetTime=function(k){
+    var st=ensure(load()), sc=curScene(st), clock=null;
+    if(k==='__clock'){
+      var v=prompt('What time is it? (24-hour clock, e.g. 07:30 or 19:45)', sc.clock||'19:00'); if(!v) { renderChat(); return; }
+      if(!/^\d{1,2}:\d{2}$/.test(v.trim())){ alert('Please write the time like 07:30 or 19:45.'); renderChat(); return; }
+      clock=v.trim().padStart(5,'0'); k=timeKeyForClock(clock);
+    }
+    if(!talkCount(sc)){ sc.time=k; sc.clock=clock; store(st); renderAll(); return; }
+    summarize(sc.id);
+    var ns={id:'s'+Date.now(), date:st.storyDate, place:sc.place, time:k, clock:clock, present:sc.present, occasion:sc.occasion, summary:'',
+      lines:[{who:'narr',text:'Later: '+timeText({time:k,clock:clock}).toLowerCase()+', still at '+sc.place.replace(/^The /,'the ')+'.',ts:Date.now()}]};
+    st.scenes.push(ns); st.currentScene=ns.id; store(st); viewSceneId=null; renderAll();
+  };
+
   window.twcNewForm=function(){
     var st=ensure(load()), sc=curScene(st), old=document.getElementById('twc-form'); if(old) old.remove();
     var men=alive();
@@ -2784,7 +2811,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       '<label style="'+lab+'">Day</label><select id="twcf-day" style="'+inp+'"><option value="same">Later the same day — '+esc(dayInfo(st.storyDate).long)+'</option><option value="next">The next day — '+esc(dayInfo(addDays(st.storyDate,1)).long)+'</option><option value="pick">Choose a date…</option></select>'+
       '<input id="twcf-date" type="date" min="'+st.storyDate+'" value="'+addDays(st.storyDate,1)+'" style="'+inp+'margin-top:6px;display:none">'+
       '<div id="twcf-dayinfo" style="font-family:var(--fell);font-size:12px;color:var(--ink3);margin-top:4px"></div>'+
-      '<label style="'+lab+'">Hour</label><select id="twcf-time" style="'+inp+'">'+TIMES.map(function(t){ return '<option value="'+t[0]+'"'+(t[0]===((sc&&sc.time)||'evening')?' selected':'')+'>'+t[1]+' — '+esc(t[2])+'</option>'; }).join('')+'</select>'+
+      '<label style="'+lab+'">Hour</label><div style="display:flex;gap:8px;align-items:center"><select id="twcf-time" style="'+inp+'flex:1">'+TIMES.map(function(t){ return '<option value="'+t[0]+'"'+(t[0]===((sc&&sc.time)||'evening')?' selected':'')+'>'+t[1]+' — '+esc(t[2])+'</option>'; }).join('')+'</select>'+
+      '<input id="twcf-clock" type="time" title="Exact time (optional)" style="'+inp+'width:130px"></div><div style="font-family:var(--fell);font-size:12px;color:var(--ink3);margin-top:3px">Pick an hour by the bells, or set an exact time on the clock.</div>'+
       '<label style="'+lab+'">Place</label><select id="twcf-place" style="'+inp+'">'+PLACES.map(function(p){ return '<option'+(p===sc.place?' selected':'')+'>'+esc(p)+'</option>'; }).join('')+'<option value="__other">Somewhere else…</option></select>'+
       '<input id="twcf-other" placeholder="e.g. Thorney Abbey gate, the causeway to March, Ralph\'s father\'s cottage" style="'+inp+'margin-top:6px;display:none">'+
       '<label style="'+lab+'">Who is there</label><div id="twcf-men" style="display:flex;flex-wrap:wrap;gap:6px 14px">'+men.map(function(m){ return '<label style="font-family:var(--fell);font-size:14px;color:var(--ink);cursor:pointer"><input type="checkbox" value="'+m.id+'" checked> '+esc(m.name)+'</label>'; }).join('')+'</div>'+
@@ -2812,14 +2840,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var place=document.getElementById('twcf-place').value; if(place==='__other') place=(document.getElementById('twcf-other').value||'').trim()||'Whittlesey';
     var present=[].slice.call(document.querySelectorAll('#twcf-men input:checked')).map(function(x){ return parseInt(x.value,10); });
     if(!present.length){ alert('Choose at least one man to be there.'); return; }
-    var time=document.getElementById('twcf-time').value, occ=document.getElementById('twcf-occ').value, topic=(document.getElementById('twcf-topic').value||'').trim().slice(0,300);
+    var clock=(document.getElementById('twcf-clock').value||'').trim(), time=clock?timeKeyForClock(clock):document.getElementById('twcf-time').value, occ=document.getElementById('twcf-occ').value, topic=(document.getElementById('twcf-topic').value||'').trim().slice(0,300);
     var goLive=document.getElementById('twcf-live').checked;
     document.getElementById('twc-form').remove();
     if(talkCount(sc)) summarize(sc.id); else dropIfEmpty(st,sc);
     st.storyDate=ds;
     var names=alive().filter(function(m){ return present.indexOf(m.id)>=0; }).map(function(m){ return m.name.split(' ')[0]; });
-    var ns={id:'s'+Date.now(), date:ds, place:place, time:time, present:present, occasion:occ, topic:topic, summary:'',
-      lines:[{who:'narr',text:timeOf({time:time})[1]+' at '+place.replace(/^The /,'the ')+'. '+(names.length===alive().length?'The whole band is here.':names.join(', ')+(names.length===1?' is':' are')+' here.')+(occ!==OCCASIONS[0]?' '+occ+'.':''),ts:Date.now()}]};
+    var ns={id:'s'+Date.now(), date:ds, place:place, time:time, clock:clock||null, present:present, occasion:occ, topic:topic, summary:'',
+      lines:[{who:'narr',text:timeText({time:time,clock:clock})+' at '+place.replace(/^The /,'the ')+'. '+(names.length===alive().length?'The whole band is here.':names.join(', ')+(names.length===1?' is':' are')+' here.')+(occ!==OCCASIONS[0]?' '+occ+'.':''),ts:Date.now()}]};
     if(jumped) ns.lines.unshift({who:'sys',text:'Time has passed. The band has fought on into '+S.currentSeason+'.',ts:Date.now()});
     st.scenes.push(ns); st.currentScene=ns.id; store(st);
     sel='gathering'; viewSceneId=null; quiet=0;
