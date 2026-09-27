@@ -1399,21 +1399,60 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       if(b.annual) return b.split.map(function(f){ return b.annual*f; });
       return SEASONS.map(function(s){ var d=s[1], t=0; Object.keys(d).forEach(function(k){ t+=d[k]*(b.rates[k]||0); }); return t; });
     }
+    // ── Households of the band: homes, land and net worth (all in pence) ──
+    // Values are reasoned estimates for Whittlesey c.1526; see the notes under the table.
+    var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
+    var HOUSEHOLDS = [
+      {id:1, who:'his own household (heir since his father died)', band:'yeoman / small merchant',
+       home:'A two-storey timber-framed hall house near the market place: wattle-and-daub walls, reed thatch, a hall open to the roof with a hearth, a parlour and a chamber over it, and a loft for wool. Glass only in the parlour window.',
+       tenure:'Held by copy of the court roll of the manor of Whittlesey St Mary (Thorney Abbey), with rights of common on the fen.',
+       items:[['The house and its yard',2400],['20 acres of pasture held by copy ('+'20 × 17s 6d)',20*ACRE],['60 sheep at 1s 6d',60*18],['Wool in the loft, waiting for the stapler',1920],['A riding horse',160],['Household stuff: beds, pewter, brass pots, linen, a chest',720],['Money in hand and debts owed to him',1200]],
+       own:null},
+      {id:2, who:'his father\'s holding by the mere', band:'husbandman',
+       home:'A one-and-a-half-room cottage of timber and daub under fen reed: one hearth room with an open fire, a sleeping chamber, a cow-house against the gable. Earth floor strewn with rushes; shutters, no glass.',
+       tenure:'Copyhold of the manor of Whittlesey St Andrew (Ely Priory), with common of pasture on the washes, fishing, fowling, and reed and sedge cutting.',
+       items:[['The cottage and toft',720],['12 acres held by copy (12 × 17s 6d)',12*ACRE],['3 cows at 8s',3*96],['12 sheep at 1s 6d',12*18],['A pig',24],['Punt, fowling nets and eel traps',120],['Plough-share, spades, scythe',120],['Household stuff: a bed, pots, a table, stools',240]],
+       own:[['His clothes, knife and fowling net',60]]},
+      {id:3, who:'his father\'s tan-yard', band:'tradesman (tanner)',
+       home:'A timber-framed house facing the street with the tan-yard behind: lime pits, tan pits and a bark store by the water. The smell carries across the town.',
+       tenure:'House and yard held by copy; the pits and water rights are what make it worth having.',
+       items:[['House, yard and tan pits',1920],['Hides lying in the pits (a year and more to finish)',3600],['Oak bark in store',480],['Knives, beams and hooks',120],['Household stuff',360]],
+       own:[['His clothes and knife',60],['Pennies he has hidden away since he was twelve',160]]},
+      {id:4, who:'his father\'s smithy', band:'craftsman (smith)',
+       home:'A low house with the forge built against it: stone hearth, great leather bellows, anvil on its block. The family lives in the hall beside the smithy.',
+       tenure:'House and forge held by copy of the manor.',
+       items:[['House and forge',1200],['Anvil, bellows, hammers, tongs and swages',720],['Iron and charcoal in stock',480],['A cow',96],['Household stuff',240]],
+       own:[['His clothes, his mother\'s wooden cross, his own hammer',72]]},
+      {id:5, who:'his father\'s cloth shop', band:'merchant (draper)',
+       home:'A jettied two-storey house on the market place: shop with a street shutter that folds down as a counter, the hall behind, chambers above. Glazed windows at the front.',
+       tenure:'Held by copy of the manor; one of the better houses in the town.',
+       items:[['House and shop on the market place',2880],['Cloth in stock: kerseys, broadcloth, linen',7200],['Debts owed by customers',1920],['Household stuff: pewter, brass, beds, painted cloths',960],['A horse',160]],
+       own:[['His clothes and a borrowed book',60],['Saved toward a book of his own',40]]},
+    ];
+    function sumItems(a){ return (a||[]).reduce(function(t,x){ return t+x[1]; },0); }
+    function subsidyBand(d){ var L=d/240; if(L<2) return {band:'Under £2 in goods — taxed on wages instead (4d if earning £1 a year)', tax:4}; if(L<20) return {band:'£2–£20 in goods — 6d in the pound', tax:Math.floor(L)*6}; return {band:'Over £20 in goods — 1s in the pound', tax:Math.floor(L)*12}; }
+    // For the companions: a one-line summary of a man's means, in period money
+    window.twHouseholdText=function(id){
+      var h=HOUSEHOLDS.filter(function(x){return x.id===id;})[0]; if(!h) return '';
+      var fam=sumItems(h.items), own=sumItems(h.own);
+      return (h.own?'Lives in '+h.who+', worth about '+lsd(fam)+' all told; his own possessions come to about '+lsd(own)+'.':'Owns '+h.who.replace('his own household','his household')+', worth about '+lsd(fam)+'.')+' Home: '+h.home;
+    };
     function nameOf(id){ try{ var m=(S.men||[]).filter(function(x){return x.id===id;})[0]; if(m) return m.name; }catch(e){} return ({1:'Roger Lee Whittlesey IV',2:'Ralph Whittlesey',3:'Thomas Fenne',4:'John Cobbes',5:'Edmund Sayer'})[id]; }
 
     function render(){
       var el=document.getElementById('won-body'); if(!el) return;
       var h='';
-      h+='<div class="won-intro">England in 1526 counts in pounds, shillings and pence: 12 pence to the shilling, 20 shillings to the pound. There is no single "today\'s dollars" for old money, so this ledger shows two honest conversions. <strong>Goods</strong> is what the money would buy in everyday goods. <strong>Wages</strong> is what it is worth measured against what people earn. Wages have risen far faster than prices, so the two differ about ninefold. Use the <em>wage</em> figure to compare incomes, and the <em>goods</em> figure to compare prices.</div>';
+      h+='<div class="won-intro"><strong>How the money worked:</strong> England counted in pounds (£), shillings (s) and pence (d). 12 pence made a shilling and 20 shillings made a pound, so a pound was 240 pence. The <strong>penny</strong> was the everyday silver coin, and a labourer earned 3 or 4 of them for a whole day\'s work.</div>';
+      h+='<div class="purse" style="background:var(--parch2);border-color:var(--border2)"><strong>Why there are two dollar figures.</strong> Take one penny. <strong>As goods</strong> it is worth about '+usd(USD_PER_D_GOODS)+' today, because it bought roughly what '+usd(USD_PER_D_GOODS)+' buys now: a little bread and ale. <strong>As wages</strong> it is worth about '+usd(USD_PER_D_WAGE)+' today, because it was a quarter of a day\'s work, and a quarter of a day\'s work today pays about that much. Both are true. The gap is how poor 1526 was: a full day\'s labour bought only a little food. <em>Use the wage figure to judge incomes and fortunes, and the goods figure to judge prices.</em></div>';
       h+='<div class="won-basis">'+
         '<div><b>£1 of 1526, as goods</b><span class="big">'+usd(MW_REAL_PRICE*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
         '<div><b>£1 of 1526, as wages</b><span class="big">'+usd(MW_LABOUR*GBPUSD)+'</span><span>in 2026 US dollars</span></div>'+
         '<div><b>One penny</b><span class="big">'+usd(USD_PER_D_GOODS)+' / '+usd(USD_PER_D_WAGE)+'</span><span>goods / wages, 2026 US dollars</span></div>'+
         '<div><b>A labourer\'s day (4d)</b><span class="big">'+usd(4*USD_PER_D_WAGE)+'</span><span>as wages — about a day\'s average pay today</span></div></div>';
 
-      // Purse
+      // The ledger is lives, not savings
       var purse=0; try{ purse=+S.treasury||0; }catch(e){}
-      h+='<div class="purse"><strong>The band\'s purse:</strong> your ledger shows <strong>$'+purse.toFixed(2)+'</strong>. In 1526 money that is <strong>'+lsd(purse/USD_PER_D_GOODS)+'</strong> as goods, or <strong>'+lsd(purse/USD_PER_D_WAGE)+'</strong> as wages. That comes to '+(purse/USD_PER_D_WAGE/4).toFixed(1)+' days of a labourer\'s pay. In the game each man is worth $100 (about '+lsd(100/USD_PER_D_WAGE)+' in wages): the ledger is a stake, not a fortune.</div>';
+      h+='<div class="purse"><strong>The ledger\'s $'+purse.toFixed(2)+' is not savings.</strong> The $500 you started with stands for the five men\'s <strong>lives: $100 each</strong>. It is each man\'s health in the game, and it is your real trading stake. None of it is coin in anyone\'s purse in 1526. Their actual homes, land and belongings are in the table <em>Homes, land and net worth</em> below.</div>';
 
       // Coins
       h+='<h4>The money of England</h4><div class="won-scroll"><table><thead><tr><th>Coin / unit</th><th>Value</th><th>Notes</th><th class="n">As goods (2026 $)</th><th class="n">As wages (2026 $)</th></tr></thead><tbody>';
@@ -1444,6 +1483,25 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       h+='</tbody></table></div>';
       h+='<div class="note">Why the wage figures look large: a 1526 labourer\'s 4d a day was roughly the ordinary pay of his time, so measured as wages it is about an ordinary day\'s pay today. The goods figure shows how little that bought. Bread, ale and rent took most of it, and a bad harvest could halve what a family could eat.</div>';
 
+      // Households
+      h+='<h4>Homes, land and net worth</h4><div class="note">What each household owned, valued the way a 1520s probate inventory or tax assessor would value it. Roger, as heir, owns his household outright. The other four are young unmarried sons: they live in their fathers\' houses and own little themselves, which was normal at eighteen. Everything here is an <span class="est">estimate</span> built from the sources below. The 1524–25 subsidy rates are shown so you can see which tax band each household fell in.</div>';
+      var bandTotal=0;
+      HOUSEHOLDS.forEach(function(x){
+        var fam=sumItems(x.items), own=sumItems(x.own), sb=subsidyBand(fam), mine=x.own?own:fam; bandTotal+=mine;
+        h+='<div style="border:1px solid var(--border2);border-radius:3px;background:var(--parch2);padding:10px 12px;margin:8px 0;">'+
+          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><div style="font-family:var(--fellsc);font-size:15px;color:var(--ink)">'+(typeof charAvatar==='function'?charAvatar(x.id,28)+' ':'')+nameOf(x.id)+' <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em">'+x.band+'</span></div>'+
+          '<div style="font-family:var(--mono);font-size:11px;color:var(--ink2)">'+(x.own?'Household: <strong>'+lsd(fam)+'</strong> · <span style="color:var(--blood)">His own: <strong>'+lsd(own)+'</strong></span>':'Net worth: <strong>'+lsd(fam)+'</strong>')+'</div></div>'+
+          '<div class="note" style="margin-top:4px"><strong>Home:</strong> '+x.home+'</div><div class="note"><strong>Tenure:</strong> '+x.tenure+'</div>'+
+          '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">As wages (2026 $)</th><th class="n">As goods (2026 $)</th></tr></thead><tbody>'+
+          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_WAGE)+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+          '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(fam*USD_PER_D_GOODS)+'</td></tr>'+
+          (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_WAGE)+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+            '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_WAGE)+'</strong></td><td class="n">'+usd(own*USD_PER_D_GOODS)+'</td></tr>':'')+
+          '</tbody></table></div><div class="note">1524–25 subsidy band for the household: '+sb.band+' → about '+lsd(sb.tax)+' tax.</div></div>';
+      });
+      h+='<div class="purse">Together the five men personally own about <strong>'+lsd(bandTotal)+'</strong>. That is '+usd(bandTotal*USD_PER_D_WAGE)+' as wages, or '+usd(bandTotal*USD_PER_D_GOODS)+' as goods, and almost all of it is Roger\'s inheritance. Remember that the $500 ledger is their lives, not this money.</div>';
+      h+='<div class="note">How the values were set: land is valued at about 10½d a year of rent per acre (Clark\'s early-1500s average) times the customary 20 years\' purchase, giving 17s 6d an acre. Whittlesey land was held by copy from the two manors, St Mary\'s (Thorney Abbey) and St Andrew\'s (Ely Priory), with rights of common on the fen. The town had about 355 households by 1563. Houses, stock and goods are priced as a probate appraiser of the period would list them. They are estimates, not records of these men, who are characters in your story.</div>';
+
       h+='<h4>Sources</h4><div class="sources">'+
         '• <a href="https://www.measuringworth.com/calculators/ukcompare/" target="_blank" rel="noopener">MeasuringWorth</a> — £1 of 1526 = £1,072 (real price) and £10,030 (labour earnings) in 2025; brought to 2026 with <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/august2026" target="_blank" rel="noopener">UK RPI +3.4%</a> and <a href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/bulletins/averageweeklyearningsingreatbritain/september2026" target="_blank" rel="noopener">UK pay growth +3.9%</a>.<br>'+
         '• <a href="https://www.bls.gov/news.release/cpi.htm" target="_blank" rel="noopener">US CPI-U, August 2026</a> — 334.980, used to bring Maddison\'s 1990 dollars to 2026.<br>'+
@@ -1456,7 +1514,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '• <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)" target="_blank" rel="noopener">Maddison, GDP by region, 1500</a> and <a href="https://en.wikipedia.org/wiki/List_of_regions_by_past_GDP_(PPP)_per_capita" target="_blank" rel="noopener">GDP per head, 1500</a>.<br>'+
         '• <a href="https://www.henryviiithereign.co.uk/1523-subsidy-and-1525-amicable-grant.html" target="_blank" rel="noopener">Subsidy of 1523 and Amicable Grant of 1525</a> — £151,215 yielded.<br>'+
         '• <a href="https://edizionicafoscari.unive.it/media/pdf/books/978-88-6969-261-1/978-88-6969-261-1-ch-02.pdf" target="_blank" rel="noopener">Early Ottoman revenue records</a> — 9,650,000 Venetian ducats in 1528.<br>'+
-        '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.'+
+        '• Wrigley &amp; Schofield, <em>The Population History of England</em> — 2.77 million in 1541.<br>'+
+        '• <a href="https://www.british-history.ac.uk/vch/cambs/vol4/pp123-135" target="_blank" rel="noopener">Victoria County History, Whittlesey</a> — the two manors (Thorney Abbey, Ely Priory), copyhold tenure, the fishery, 355 householders in 1563.<br>'+
+        '• <a href="https://faculty.econ.ucdavis.edu/faculty/gclark/papers/rentereh.pdf" target="_blank" rel="noopener">Clark, Land rental values in England 1500–1912</a> — early-1500s rent about 10.5d an acre.<br>'+
+        '• <a href="https://lowestoftoldandnow.org/heritage/1500s/lay-subsidy-1524-5-1" target="_blank" rel="noopener">The Lay Subsidy of 1524–5</a> — rates: lands and goods over £20 at 1s in the pound; goods £2–£20 at 6d; wages of £1 or more at 4d.'+
         '</div>';
       el.innerHTML=h;
     }
@@ -2433,7 +2494,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     '- Period-correct money (pounds, shillings, pence, marks, groats, nobles, angels), wages, prices, measures, food and drink (ale, bread, pottage, eels, fowl, fish on fish days), church calendar, law and custom. A labourer earns a few pence a day. No anachronisms: no potatoes, tobacco, tea, coffee, forks at table, newspapers, modern slang or modern ideas presented as common.\n'+
     '- Speech: readable modern English with period flavour and vocabulary — not mock-Shakespearean thee/thou overload.\n'+
     '- Each man has his own mind, opinions and agenda. They disagree with Roger and with each other, joke, grumble, grieve, change the subject, and ask questions back. Never flatter Roger.\n'+
-    '- The purse and the ranks in the ledger are the game\'s bookkeeping; in speech the men talk of "the purse" and describe standing plainly, never in dollars or modern rank titles.\n'+
+    '- The game\'s ledger (dollar figures and ranks) measures each man\'s strength and standing; it is not money anyone holds. The men never mention dollars or modern rank titles. Their real means are their households, in pounds, shillings and pence, as given in each man\'s description.\n'+
     '- Never write lines for Roger.';
 
   function worldCtx(st, dateStr, place){
@@ -2446,7 +2507,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'PLACE: '+(place||'Whittlesey')+', in Whittlesey — a fen market town on the edge of the Isle of Ely, Cambridgeshire, with its two parishes of St Mary and St Andrew, near Whittlesey Mere.\n'+
       'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a wool merchant\'s son. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
-      'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost. Purse: '+((S&&S.treasury)||0).toFixed(2)+' in ledger units (start was 500).\n'+
+      'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
       (recent.length?'Recent fights: '+recent.join(' | ')+'\n':'')+
       (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'');
   }
@@ -2458,7 +2519,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'Background: '+(b.background||p.background||'')+'\nTemperament: '+(b.personality||p.personality||'')+'\n'+
       (p.aspirations?'Aspirations: '+p.aspirations.join('; ')+'\n':'')+(p.fears?'Fears: '+p.fears.join('; ')+'\n':'')+
       (p.beliefs?'Faith and opinions: '+p.beliefs+'\n':'')+(p.skills?'Skills: '+p.skills.join('; ')+'\n':'')+
-      (p.speech?'How he speaks: '+p.speech+'\n':'')+(bonds?'How he sees the others: '+bonds+'\n':'')+
+      (p.speech?'How he speaks: '+p.speech+'\n':'')+
+      ((typeof window.twHouseholdText==='function' && window.twHouseholdText(m.id))?'His means and home: '+window.twHouseholdText(m.id)+'\n':'')+(bonds?'How he sees the others: '+bonds+'\n':'')+
       (p.secret?'Private matter (only if trust is high and it fits naturally): '+p.secret+'\n':'')+
       'Loyalty to Roger (0-100): '+Math.round(s.loyalty)+'.'+(noMood?'':' Mood lately: '+s.mood+'.')+'\n'+
       (s.memories&&s.memories.length?'He remembers about Roger: '+s.memories.slice(-10).join(' | ')+'\n':'');
@@ -2550,6 +2612,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     } else if(!m.dead){
       h+='<div class="twc-sec"><div class="twc-h">Unknown</div><p>You know little of this man yet. Speak with him and his character will be written down.</p></div>';
     }
+    if(typeof window.twHouseholdText==='function' && window.twHouseholdText(m.id)) h+='<div class="twc-sec"><div class="twc-h">Home &amp; means</div><p>'+esc(window.twHouseholdText(m.id))+'</p></div>';
     if(s.memories && s.memories.length) h+='<div class="twc-sec"><div class="twc-h">What he remembers of you</div><ul>'+s.memories.slice(-12).map(function(a){return '<li>'+esc(a)+'</li>';}).join('')+'</ul></div>';
     el.innerHTML=h;
   }
