@@ -1145,9 +1145,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
     <!-- WORLD BRIEFER -->
     <div class="parch-panel ai-panel briefer-bg-panel" style="border-color:var(--border3);flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;">
-      <!-- Aged-paper backdrop fills the box; map sits inside at its natural edges (no horizontal cropping) -->
+      <!-- Aged-paper backdrop fills the box; the whole map is fitted inside it, undistorted, with a margin all round -->
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, #5a3a18 0%, #2a1c0c 80%, #14100a 100%);z-index:0;"></div>
-      <div style="position:absolute;inset:0;background-image:url('world-map-1526-v2.png');background-size:130% 87%;background-position:left bottom;background-repeat:no-repeat;filter:sepia(0.75) saturate(0.7) contrast(0.95) brightness(0.85);z-index:1;"></div>
+      <div style="position:absolute;inset:14px;background-image:url('world-map-1526-v2.png');background-size:contain;background-position:center center;background-repeat:no-repeat;filter:sepia(0.75) saturate(0.7) contrast(0.95) brightness(0.85);z-index:1;"></div>
       <div style="position:absolute;inset:0;background:linear-gradient(rgba(101,67,33,0.22),rgba(60,40,20,0.32)),radial-gradient(ellipse at center, transparent 50%, rgba(20,12,6,0.55) 100%);z-index:2;pointer-events:none;"></div>
       <div class="p-inner" style="flex:1;display:flex;flex-direction:column;position:relative;z-index:3;background:transparent;">
         <div class="sec-title" style="color:#f5dba0;border-bottom-color:rgba(243,233,210,0.35);background:rgba(20,12,6,0.6);padding:6px 10px;border-radius:3px;letter-spacing:0.08em;text-shadow:0 1px 2px rgba(0,0,0,0.8);">🌐 World Briefer — <span id="briefer-season-label">Spring, 1526 AD</span></div>
@@ -3043,200 +3043,6 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 })();
 </script>
 
-<!-- ═════════ AZEROTH 1–20, TRANSPOSED ONTO ENGLAND IN 1526 ═════════ -->
-<style>
-.twz{background:#1a1208;border:3px solid #c9a227;border-radius:6px;margin-top:14px;box-shadow:0 4px 14px rgba(0,0,0,0.5);overflow:hidden;}
-.twz-title{background:linear-gradient(180deg,#3a2818,#1a1208);color:#f5dba0;font-family:var(--fellsc);font-size:14px;letter-spacing:0.1em;padding:8px 14px;border-bottom:2px solid #c9a227;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-.twz-title small{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:#b99a5a;text-transform:uppercase;}
-.twz-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);background:#0e0a04;}
-@media (max-width:1000px){.twz-body{grid-template-columns:1fr;}}
-.twz-map{height:560px;border-right:2px solid #c9a227;position:relative;background:#d8c9a3;}
-@media (max-width:1000px){.twz-map{height:420px;border-right:none;border-bottom:2px solid #c9a227;}}
-.twz-map .leaflet-tile-pane{filter:sepia(0.65) saturate(0.75) contrast(0.95) brightness(0.97);}
-.twz-detail{padding:14px 16px;background:var(--parch);color:var(--ink);max-height:560px;overflow-y:auto;}
-.twz-lvl{display:flex;align-items:center;gap:10px;background:#1a1208;border:1px solid #8a6d3b;border-radius:3px;padding:8px 10px;margin-bottom:10px;color:#f5dba0;font-family:var(--fellsc);}
-.twz-lvl b{font-size:22px;color:#ffd24a;}
-.twz-lvl span{font-family:var(--mono);font-size:10px;color:#b99a5a;text-transform:uppercase;letter-spacing:0.05em;}
-.twz-detail h3{font-family:var(--fellsc);font-size:21px;line-height:1.15;color:var(--ink);}
-.twz-sub{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.08em;margin:3px 0 8px;}
-.twz-sec{margin-bottom:10px;}
-.twz-sec .h{font-family:var(--fellsc);font-size:12px;color:var(--gold);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:2px;margin-bottom:4px;}
-.twz-sec p,.twz-sec li{font-family:var(--fell);font-size:13px;line-height:1.5;color:var(--ink2);}
-.twz-sec ul{padding-left:18px;}
-.twz-hub{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-family:var(--fell);font-size:13px;}
-.twz-hub .w{font-family:var(--mono);font-size:10px;color:#6b5a8a;white-space:nowrap;padding-top:2px;}
-.twz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;padding:10px;background:#120d06;border-top:2px solid #c9a227;}
-.twz-card{border:1px solid #5a4520;border-radius:3px;padding:8px 10px;cursor:pointer;background:linear-gradient(180deg,#2a1c10,#1c130a);}
-.twz-card:hover{border-color:#c9a227;}
-.twz-card.sel{border-color:#f5dba0;box-shadow:0 0 8px rgba(201,162,39,0.45);}
-.twz-card.locked{opacity:0.5;}
-.twz-card .n{font-family:var(--fellsc);font-size:13px;color:#f5dba0;}
-.twz-card .e{font-family:var(--fell);font-size:12px;color:#e9d9b0;margin-top:2px;}
-.twz-card .m{font-family:var(--mono);font-size:9px;color:#b99a5a;text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;display:flex;justify-content:space-between;gap:6px;}
-.twz-tag{display:inline-block;font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.06em;border-radius:2px;padding:1px 5px;margin-left:4px;}
-.twz-tag.a{background:#1f3a66;color:#cfe0ff;} .twz-tag.h{background:#6b1f1f;color:#ffd8d0;} .twz-tag.you{background:#2d6a2d;color:#e8f5e8;} .twz-tag.route{background:#5a4520;color:#f5dba0;}
-.twz-note{font-family:var(--fell);font-size:12px;color:#b99a5a;padding:8px 12px;background:#120d06;line-height:1.5;border-top:1px solid #5a4520;}
-</style>
-
-<div class="twz" id="tw-zones">
-  <div class="twz-title">
-    <span>🗺 Azeroth 1–20 · the Alliance Road through England, 1526</span>
-    <small>Your WoW level decides where you stand · click a zone</small>
-  </div>
-  <div class="twz-body">
-    <div class="twz-map" id="twz-map"></div>
-    <div class="twz-detail" id="twz-detail"></div>
-  </div>
-  <div class="twz-grid" id="twz-grid"></div>
-  <div class="twz-note">The Alliance zones you have built in your Azeroth tracker for levels 1–20, each set on a real part of England in 1526, chosen because its land and its troubles match. The foes are the real dangers of the day: outlaws, reivers, floods, fen ague, the tides of the Wash. No monsters. England's wolves were gone by this time, and wild boar survived only in parks.</div>
-</div>
-
-<script>
-(function(){
-  // Each zone: WoW name and level range, the English region it becomes, and its hubs.
-  var ZONES = [
-    {key:'teldrassil', wow:'Teldrassil', lv:[1,10], side:'a', route:true,
-     eng:'The Isle of Ely & Whittlesey', c:[52.47,0.02], r:22000,
-     why:'An island world raised above everything around it. Teldrassil is a tree standing out of the sea; the Isle of Ely is the clay island standing out of the fens, reached only by causeway and boat. The kaldorei start here, and so do you.',
-     hubs:[['Shadowglen','Whittlesey',52.558,-0.130,'Your home town. Two parishes, St Mary\'s and St Andrew\'s, and the mere to the west.'],
-           ['Dolanaar','March',52.551,0.088,'The next fen town east, on the Nene, and the first stop on the road to Ely.'],
-           ['Oracle Glade','Thorney Abbey',52.620,-0.108,'The Benedictine abbey that holds Whittlesey St Mary\'s manor; your lord, in the end.'],
-           ['Darnassus','Ely',52.399,0.262,'The cathedral city, the Bishop\'s seat and the capital of the Isle. The Ship of the Fens can be seen for miles.']],
-     dungeon:null,
-     dangers:['Floods that drown the summer grazing','Fen ague: the fen fever, a malaria that shakes men every few days','Disputes over fishing, fowling and turf rights with the manor bailiffs','Cattle thieves on the drove roads'],
-     history:'Both Whittlesey manors belong to religious houses: St Mary\'s to Thorney Abbey and St Andrew\'s to Ely Priory. Nobody yet imagines the fens will ever be drained.',
-     trial:'The foundations: a daily routine you keep without fail, whatever the weather.'},
-    {key:'elwynn', wow:'Elwynn Forest', lv:[1,10], side:'a',
-     eng:'Middlesex & the edge of London', c:[51.56,-0.16], r:18000,
-     why:'The green, well-kept country around the great capital. Stormwind is London, Northshire Abbey is Westminster, and Goldshire is the inns on the Great North Road.',
-     hubs:[['Northshire Abbey','Westminster Abbey',51.4994,-0.1273,'The abbey where kings are crowned, and the royal palace beside it.'],
-           ['Goldshire','Highgate',51.571,-0.147,'Inns and the hill road north out of London.'],
-           ['Stormwind','The City of London',51.5155,-0.0922,'Some 50,000 souls. The Merchant Adventurers, the Steelyard of the Hanse, and Paul\'s Cross.']],
-     dungeon:{wow:'The Stockade',eng:'Newgate Gaol',ll:[51.5155,-0.1010]},
-     dangers:['Cutpurses and footpads on the roads into the City','Plague, which comes back to London almost every summer','The apprentices, who rioted on Evil May Day in 1517'],
-     history:'Cardinal Wolsey rules from York Place and Hampton Court. Paul\'s Cross is where books of heresy are burned.',
-     trial:'Learn the ways of the city: keep accounts, reckon, and bargain.'},
-    {key:'dunmorogh', wow:'Dun Morogh', lv:[1,10], side:'a',
-     eng:'The High Peak of Derbyshire', c:[53.32,-1.76], r:20000,
-     why:'Cold moor and limestone, with a people who live by digging. Lead mining is the Peak\'s trade the way mining is the dwarves\', and it has its own law.',
-     hubs:[['Coldridge Valley','Tideswell',53.277,-1.772,'A moorland market town with a great fourteenth-century church, far grander than the town.'],
-           ['Kharanos','Bradwell',53.325,-1.741,'A lead-miners\' village.'],
-           ['Ironforge','Castleton & Peveril Castle',53.344,-1.776,'A castle above the great cavern the locals call the Devil\'s Arse.']],
-     dungeon:{wow:'Gnomeregan',eng:'The lead rakes of Wirksworth',ll:[53.082,-1.574]},
-     dangers:['Collapsing mine workings and bad air','Snow and fog on the moor tops','Disputes at the Barmote Court, which rules on miners\' claims'],
-     history:'Lead from the Peak roofs England\'s churches and abbeys. Its miners have the ancient right to dig anywhere they find a vein, except in churchyards, orchards and highways.',
-     trial:'Strength: heavy work done cleanly, a little more each week.'},
-    {key:'westfall', wow:'Westfall', lv:[10,20], side:'a',
-     eng:'The enclosure country of Northamptonshire', c:[52.40,-0.90], r:24000,
-     why:'Farmland turned hard, with evicted farmhands gone bad as the Defias. In 1526 whole villages are being emptied for sheep pasture. Thomas More wrote that sheep now "devour men".',
-     hubs:[['Sentinel Hill','Northampton',52.237,-0.894,'The county town, where the justices sit.'],
-           ['Moonbrook','A deserted village of the Midlands',52.470,-0.990,'Its houses pulled down for sheep-walk. Hundreds of villages went this way.'],
-           ['Saldean\'s Farm','Market Harborough',52.478,-0.921,'A market for cattle and grain.']],
-     dungeon:{wow:'The Deadmines',eng:'The outlaws\' hold in Rockingham Forest',ll:[52.52,-0.72]},
-     dangers:['Masterless men: evicted husbandmen and discharged soldiers turned to robbery','Riot against enclosure hedges','Hunger in a dear year'],
-     history:'Wolsey\'s commission of 1517 enquired into enclosures and ordered some pulled down. The resentment has not gone away.',
-     trial:'Justice: take on the thing you have been avoiding and see it through.'},
-    {key:'lochmodan', wow:'Loch Modan', lv:[10,20], side:'a',
-     eng:'The Great Meres of Huntingdonshire', c:[52.48,-0.20], r:16000,
-     why:'A great lake held back by earthworks, with a busy town on its shore. Whittlesey Mere, Ramsey Mere and Ugg Mere are the largest inland waters in lowland England, ringed by dykes and causeways.',
-     hubs:[['Thelsamar','Ramsey',52.450,-0.100,'Ramsey Abbey, one of the richest Benedictine houses in England.'],
-           ['Stonewrought Dam','King\'s Dyke & the causeways',52.555,-0.180,'The old banks and dykes that tame the water.'],
-           ['The Farstrider Lodge','Whittlesey Mere',52.505,-0.260,'Fowlers and eel-men on the open water.']],
-     dungeon:null,
-     dangers:['Squalls on the open mere that swamp a punt','Drowning in the dykes','Abbey bailiffs taking fish and fowl as their due'],
-     history:'Whittlesey Mere is about three miles long and full of pike, eels and wildfowl, and the monks count every catch. It will be another three centuries before it is drained.',
-     trial:'Mastery: sharpen a skill you already have until it is second nature.'},
-    {key:'darkshore', wow:'Darkshore', lv:[10,20], side:'a', route:true,
-     eng:'The Wash & the Norfolk marsh coast', c:[52.86,0.45], r:26000,
-     why:'A long grey coast of old ruins, sea mists and a busy port. The Wash is a wide tidal bay with salt marsh and treacherous sands, and Bishop\'s Lynn is its harbour. It is the next step for a Night Elf, and for you.',
-     hubs:[['Auberdine','Bishop\'s Lynn',52.753,0.395,'A Hanseatic port town, not yet called King\'s Lynn.'],
-           ['Ruins of Mathystra','Castle Rising',52.795,0.469,'An old Norman keep above the marsh.'],
-           ['Grove of the Ancients','Walsingham',52.893,0.875,'The shrine of Our Lady, England\'s greatest pilgrimage.']],
-     dungeon:{wow:'Blackfathom Deeps',eng:'The quicksands of the Wash',ll:[52.84,0.25]},
-     dangers:['Tides of the Wash that come in faster than a horse, where King John lost his baggage in 1216','Sea fog','Smugglers of wool and grain dodging the customs'],
-     history:'Lynn still belongs to the Bishop of Norwich. It will become King\'s Lynn only when the Crown takes it in 1537.',
-     trial:'Distance: walks and runs that take you farther than you have been.'},
-    {key:'redridge', wow:'Redridge Mountains', lv:[15,25], side:'a',
-     eng:'The Welsh Marches of Shropshire', c:[52.40,-2.75], r:22000,
-     why:'A red-earth frontier of hills and rivers, held by a watchful garrison town against raiders from beyond the border. The Marches are England\'s western frontier, a patchwork of private lordships where a thief can ride out of one jurisdiction into the next.',
-     hubs:[['Lakeshire','Ludlow',52.367,-2.718,'A walled town on the Teme; the seat of the Council of Wales and the Marches.'],
-           ['Stonewatch Keep','Ludlow Castle',52.367,-2.723,'Where Princess Mary, the King\'s only child by Queen Katherine, keeps her household since 1525.'],
-           ['Three Corners','Stokesay',52.430,-2.831,'A fortified manor house guarding the valley road north.'],
-           ['Alther\'s Mill','The mills of the Teme',52.360,-2.740,'Corn and fulling mills along the river below the town.']],
-     dungeon:null,
-     dangers:['Marcher thieves slipping from one lordship to the next to escape justice','Cattle raids across the Welsh border','Sudden floods of the Teme and the Corve'],
-     history:'The Council of Wales and the Marches governs the west from Ludlow in Princess Mary\'s name. Harder justice comes in the 1530s, when Bishop Rowland Lee hangs thieves by the hundred.',
-     trial:'Guard the frontier: defend what you have built against the habits that raid it.'}
-  ];
-
-  var sel = 'teldrassil', map=null, layers={};
-  function lvl(){ try{ return (typeof CHAR_EXP!=='undefined' && CHAR_EXP.level) ? CHAR_EXP.level : 1; }catch(e){ return 1; } }
-  function here(z){ var L=lvl(); return L>=z.lv[0] && L<=z.lv[1]; }
-  function open(z){ return lvl()>=z.lv[0]; }
-  function youZone(){ var L=lvl(); var r=ZONES.filter(function(z){ return z.route && L>=z.lv[0] && L<=z.lv[1]; })[0]; return r || ZONES.filter(function(z){ return L>=z.lv[0] && L<=z.lv[1]; })[0] || ZONES[ZONES.length-1]; }
-  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-
-  function renderDetail(){
-    var z=ZONES.filter(function(x){ return x.key===sel; })[0]; if(!z) return;
-    var L=lvl(), yz=youZone();
-    var st=here(z)?'<span class="twz-tag you">You are here</span>':(open(z)?'':'<span class="twz-tag" style="background:#3a2a14;color:#b99a5a">Opens at level '+z.lv[0]+'</span>');
-    var h='<div class="twz-lvl"><b>'+L+'</b><div>Your level<br><span>'+(L<=20?'Recommended zone: '+esc(yz.wow)+' → '+esc(yz.eng):'Beyond level 20: the whole of England lies open')+'</span></div></div>'+
-      '<h3>'+esc(z.eng)+'</h3><div class="twz-sub">'+esc(z.wow)+' · levels '+z.lv[0]+'–'+z.lv[1]+' <span class="twz-tag '+z.side+'">'+(z.side==='a'?'Alliance':'Horde')+'</span>'+(z.route?'<span class="twz-tag route">Night Elf route</span>':'')+st+'</div>'+
-      '<div class="twz-sec"><div class="h">Why it matches</div><p>'+esc(z.why)+'</p></div>'+
-      '<div class="twz-sec"><div class="h">Places</div><div class="twz-hub">'+z.hubs.map(function(hb){ return '<div class="w">'+esc(hb[0])+' →</div><div><strong>'+esc(hb[1])+'</strong> — '+esc(hb[4])+'</div>'; }).join('')+
-        (z.dungeon?'<div class="w">'+esc(z.dungeon.wow)+' →</div><div><strong>'+esc(z.dungeon.eng)+'</strong> <span style="font-family:var(--mono);font-size:9px;color:#7a1c1c">(dungeon)</span></div>':'')+'</div></div>'+
-      '<div class="twz-sec"><div class="h">Dangers of 1526</div><ul>'+z.dangers.map(function(d){ return '<li>'+esc(d)+'</li>'; }).join('')+'</ul></div>'+
-      '<div class="twz-sec"><div class="h">The year 1526 here</div><p>'+esc(z.history)+'</p></div>'+
-      '<div class="twz-sec"><div class="h">The trial of this zone</div><p>'+esc(z.trial)+'</p></div>';
-    var el=document.getElementById('twz-detail'); if(el) el.innerHTML=h;
-  }
-  function renderGrid(){
-    var el=document.getElementById('twz-grid'); if(!el) return;
-    el.innerHTML=ZONES.map(function(z){
-      return '<div class="twz-card'+(z.key===sel?' sel':'')+(open(z)?'':' locked')+'" onclick="twzSelect(\''+z.key+'\')"><div class="n">'+esc(z.wow)+(here(z)?' <span class="twz-tag you">here</span>':'')+'</div><div class="e">'+esc(z.eng)+'</div><div class="m"><span>Lv '+z.lv[0]+'–'+z.lv[1]+'</span><span class="twz-tag '+z.side+'" style="margin:0">'+(z.side==='a'?'Alliance':'Horde')+'</span></div></div>';
-    }).join('');
-  }
-  function styleFor(z){
-    var col=z.side==='a'?'#2f5fa8':'#a8322f';
-    return {color:z.key===sel?'#ffd24a':col, weight:z.key===sel?3:1.5, fillColor:col, fillOpacity:here(z)?0.32:(open(z)?0.18:0.07), dashArray:open(z)?null:'4 4'};
-  }
-  function initMap(){
-    if(map || typeof L==='undefined') return !!map;
-    var box=document.getElementById('twz-map'); if(!box || !box.offsetWidth) return false;
-    map=L.map(box,{zoomControl:true,attributionControl:true,scrollWheelZoom:false}).setView([52.6,-1.2],6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:12,minZoom:5,attribution:'© OpenStreetMap contributors'}).addTo(map);
-    ZONES.forEach(function(z){
-      var c=L.circle(z.c,Object.assign({radius:z.r},styleFor(z))).addTo(map);
-      c.bindTooltip('<b>'+esc(z.wow)+'</b> ('+z.lv[0]+'–'+z.lv[1]+')<br>'+esc(z.eng),{sticky:true});
-      c.on('click',function(){ window.twzSelect(z.key); });
-      layers[z.key]={circle:c, hubs:[]};
-      z.hubs.forEach(function(hb){ var m=L.circleMarker([hb[2],hb[3]],{radius:3,color:'#2c1f0e',weight:1,fillColor:'#f5dba0',fillOpacity:1}).addTo(map); m.bindTooltip(esc(hb[1])+' <span style="color:#6b5a8a">('+esc(hb[0])+')</span>'); layers[z.key].hubs.push(m); });
-      if(z.dungeon){ var d=L.circleMarker(z.dungeon.ll,{radius:4,color:'#7a1c1c',weight:2,fillColor:'#2c1f0e',fillOpacity:1}).addTo(map); d.bindTooltip('⚔ '+esc(z.dungeon.eng)+' <span style="color:#7a1c1c">('+esc(z.dungeon.wow)+')</span>'); }
-    });
-    // Home: Whittlesey
-    L.circleMarker([52.558,-0.130],{radius:7,color:'#2c1f0e',weight:2,fillColor:'#ffd24a',fillOpacity:1}).addTo(map).bindTooltip('🏠 Whittlesey — home');
-    return true;
-  }
-  function refreshMap(){ if(!map) return; ZONES.forEach(function(z){ layers[z.key].circle.setStyle(styleFor(z)); }); }
-  window.twzSelect=function(k){
-    sel=k; renderDetail(); renderGrid(); refreshMap();
-    var z=ZONES.filter(function(x){ return x.key===k; })[0];
-    if(map&&z) map.flyTo(z.c, 8, {duration:0.8});
-  };
-  window.twzRender=function(){
-    if(!document.getElementById('twz-leaflet-css')){ var css=document.createElement('link'); css.id='twz-leaflet-css'; css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(css); }
-    renderDetail(); renderGrid();
-    var tries=0; (function go(){
-      if(initMap()){ setTimeout(function(){ map.invalidateSize(); refreshMap(); },60); return; }
-      if(tries===8 && typeof L==='undefined' && !document.getElementById('twz-leaflet')){   // load the map library ourselves if nothing else has
-        var js=document.createElement('script'); js.id='twz-leaflet'; js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; document.head.appendChild(js);
-      }
-      if(++tries<60) setTimeout(go,250);
-    })();
-  };
-  document.addEventListener('DOMContentLoaded', function(){ sel=youZone().key; renderDetail(); renderGrid(); });
-})();
-</script>
 
 
   </div>
@@ -7163,7 +6969,7 @@ function switchPage(name){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
-  if(name==='character'){ updateCharacterPage(); try{ if(window.twcRender) window.twcRender(); }catch(e){} try{ if(window.twzRender) window.twzRender(); }catch(e){} }
+  if(name==='character'){ updateCharacterPage(); try{ if(window.twcRender) window.twcRender(); }catch(e){} }
   window.scrollTo(0,0);
 }
 
