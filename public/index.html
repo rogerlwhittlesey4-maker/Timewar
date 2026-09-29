@@ -2289,7 +2289,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   function sceneById(st,id){ return (st.scenes||[]).filter(function(s){ return s.id===id; })[0]; }
   function curScene(st){ return sceneById(st, st.currentScene); }
   function talkCount(sc){ return sc.lines.filter(function(l){ return l.who==='man'||l.who==='roger'; }).length; }
-  function dropIfEmpty(st,sc){ if(sc && !talkCount(sc)) st.scenes=st.scenes.filter(function(x){ return x.id!==sc.id; }); }
+  function dropIfEmpty(st,sc){ if(sc && !talkCount(sc) && !sc.lines.some(function(l){ return l.who==='event'; })) st.scenes=st.scenes.filter(function(x){ return x.id!==sc.id; }); }
 
   // ───────── the Julian calendar England used in 1526 ─────────
   function parseD(s){ var p=String(s).split('-'); return {y:+p[0], m:+p[1], d:+p[2]}; }
@@ -2318,7 +2318,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   }
   // Keep the story's calendar from falling behind the campaign's season
   function seasonStart(){
-    try{ var p=String(S.currentSeason||'').split(', '); var y=parseInt(p[1],10); var sm={Spring:3,Summer:6,Autumn:9,Winter:12}[p[0]]; if(!y||!sm) return null; return fmtD({y:y,m:sm,d:1}); }catch(e){ return null; }
+    try{ var p=String(S.currentSeason||'').split(', '); var y=parseInt(p[1],10); var q={Spring:[3,25],Summer:[6,24],Autumn:[9,29],Winter:[12,25]}[p[0]]; if(!y||!q) return null; return fmtD({y:y,m:q[0],d:q[1]}); }catch(e){ return null; }
   }
 
   // ───────── band data ─────────
@@ -2342,7 +2342,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     '- Period-correct money (pounds, shillings, pence, marks, groats, nobles, angels), wages, prices, measures, food and drink (ale, bread, pottage, eels, fowl, fish on fish days), church calendar, law and custom. A labourer earns a few pence a day. No anachronisms: no potatoes, tobacco, tea, coffee, forks at table, newspapers, modern slang or modern ideas presented as common.\n'+
     '- Speech: readable modern English with period flavour and vocabulary — not mock-Shakespearean thee/thou overload.\n'+
     '- Each man has his own mind, opinions and agenda. They disagree with Roger and with each other, joke, grumble, grieve, change the subject, and ask questions back. Never flatter Roger.\n'+
-    '- The game\'s ledger (dollar figures and ranks) measures each man\'s strength and standing; it is not money anyone holds. The men never mention dollars or modern rank titles. Their real means are their households, in pounds, shillings and pence, as given in each man\'s description.\n'+
+    '- The game\'s ledger (dollar figures and ranks) measures each man\'s strength and standing; it is not money anyone holds. The men never mention dollars or modern rank titles. Their real money is the pence in each man\'s purse and the band\'s chest, as given; their means are their households, in pounds, shillings and pence.\n'+
     '- Never write lines for Roger.';
 
   function worldCtx(st, dateStr, place){
@@ -2355,6 +2355,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a wool merchant\'s son. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
+      (window.twEconomy?'MONEY NOW (real pence, not the ledger): '+window.twEconomy.chestText()+' '+window.twEconomy.purseText(1)+'. '+window.twEconomy.pricesText()+'\n':'')+
       (recent.length?'RECENT FIGHTS (the men were there; wounds are real and slow to heal): '+recent.join(' | ')+'\n':'')+
       (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'')+
       docsContext(st)+newsContext(dateStr);
@@ -2368,7 +2369,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       (p.aspirations?'Aspirations: '+p.aspirations.join('; ')+'\n':'')+(p.fears?'Fears: '+p.fears.join('; ')+'\n':'')+
       (p.beliefs?'Faith and opinions: '+p.beliefs+'\n':'')+(p.skills?'Skills: '+p.skills.join('; ')+'\n':'')+
       (p.speech?'How he speaks: '+p.speech+'\n':'')+
-      ((typeof window.twHouseholdText==='function' && window.twHouseholdText(m.id))?'His means and home: '+window.twHouseholdText(m.id)+'\n':'')+(bonds?'How he sees the others: '+bonds+'\n':'')+
+      ((typeof window.twHouseholdText==='function' && window.twHouseholdText(m.id))?'His means and home: '+window.twHouseholdText(m.id)+'\n':'')+
+      ((window.twEconomy&&window.twEconomy.purseText(m.id))?'His own money: '+window.twEconomy.purseText(m.id)+'\n':'')+(bonds?'How he sees the others: '+bonds+'\n':'')+
       (p.secret?'Private matter (only if trust is high and it fits naturally): '+p.secret+'\n':'')+
       'Loyalty to Roger (0-100): '+Math.round(s.loyalty)+'.'+(noMood?'':' Mood lately: '+s.mood+'.')+'\n'+
       (s.memories&&s.memories.length?'He remembers about Roger: '+s.memories.slice(-10).join(' | ')+'\n':'');
@@ -2512,7 +2514,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<div class="twc-sec"><div class="twc-h">The hour</div><p>'+esc(timeOf(sc)[1])+': '+esc(timeOf(sc)[2])+'.'+(sc.occasion&&sc.occasion!==OCCASIONS[0]?' <strong>'+esc(sc.occasion)+'.</strong>':'')+'</p>'+(sc.topic?'<p><em>When you arrived they were talking about:</em> '+esc(sc.topic)+'</p>':'')+'</div>'+
         '<div class="twc-sec"><div class="twc-h">The day</div><p>'+(di.feasts.length?esc(di.feasts.join(' · '))+'. ':'An ordinary '+di.weekday.toLowerCase()+'. ')+(di.fast?esc(di.fast)+'.':'')+'</p></div>'+
         '<div class="twc-sec"><div class="twc-h">Present</div><ul>'+presentMen(sc).map(function(m){ var s=stateFor(st,m.id); return '<li><strong>'+esc(m.name)+'</strong> — '+esc(s.mood)+', health '+Math.round(m.hp)+'/'+m.maxHp+'</li>'; }).join('')+'</ul></div>'+
-        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or press <strong>⚙ New gathering</strong> to choose the day, the hour, who is there and what they are talking about. When a gathering ends it is summed up in the log, and the men remember it. Every trade you log is a fight: a win is experience for the men who went, a loss is wounds, and the band hears of it here. Real news of 1526 arrives as the days turn, late and by word of mouth, and at each month\'s end the clerk writes the month into the Annals.</p></div>'+
+        '<div class="twc-sec"><div class="twc-h">How it works</div><p>Press <strong>Let them talk</strong> and the men carry on among themselves — about one voice a minute, each with his own mind. Speak whenever you like and they will turn to you. Change the place to move the band, or press <strong>⚙ New gathering</strong> to choose the day, the hour, who is there and what they are talking about. When a gathering ends it is summed up in the log, and the men remember it. Every trade you log is a fight: a win is experience for the men who went, a loss is wounds, and the band hears of it here. A season of the campaign is one real day: at midnight it turns and the story moves to the quarter day, the men are paid and the chest is filled. Real news arrives as the days turn, late and by word of mouth, and at each month\'s end the clerk writes the month into the Annals.</p></div>'+
         (earlier.length?'<div class="twc-sec"><div class="twc-h">Earlier days</div>'+earlier.map(function(s){ return '<p><strong>'+esc(dayInfo(s.date).short)+' · '+esc(s.place)+'</strong> — '+esc(s.summary)+'</p>'; }).join('')+'</div>':'');
       return;
     }
@@ -2919,6 +2921,40 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     }catch(e){ console.warn('[twcBattle]', e); }
   };
 
+  // ───────── the economy speaks to the band ─────────
+  window.twcEcoLines=function(lines){
+    try{ var st=ensure(load()), sc=curScene(st); st.events=st.events||[];
+      (lines||[]).forEach(function(l){ sc.lines.push({who:'event', ico:l.ico||'📜', text:l.text, note:l.note||'', grave:!!l.grave, ts:Date.now()}); st.events.push({ts:Date.now(), date:st.storyDate, kind:'quarter', text:l.text, note:l.note||''}); });
+      if(st.events.length>80) st.events=st.events.slice(-80); if(sc.lines.length>400) sc.lines=sc.lines.slice(-400);
+      store(st); renderAll(); }catch(e){ console.warn('[twcEcoLines]', e); }
+  };
+  window.twcPersonaBrief=function(id){
+    try{ var st=ensure(load()), m=manById(id); if(!m) return ''; var pr=profileOf(m,st), b=pr.bio, p=pr.p||{}, x=stateFor(st,m.id);
+      return (p.role||'')+'. '+(b.personality||p.personality||'')+' Hopes: '+((p.aspirations||[]).slice(0,2).join('; '))+'. Fears: '+((p.fears||[]).slice(0,1).join(''))+'. Mood: '+x.mood+'; loyalty to Roger '+Math.round(x.loyalty)+'.'+(x.memories.length?' Lately: '+x.memories.slice(-1)[0]:''); }catch(e){ return ''; }
+  };
+  window.twcRemember=function(id,text,dl){ try{ var st=ensure(load()), x=stateFor(st,id); x.memories.push(dayInfo(st.storyDate).short+': '+text); if(x.memories.length>24) x.memories=x.memories.slice(-24); if(dl) x.loyalty=Math.max(0,Math.min(100,x.loyalty+dl)); store(st); }catch(e){} };
+  // The season has turned (one real day = one season): the story moves to the quarter day
+  window.twcSeasonTurn=function(info){
+    var st=ensure(load()), sc=curScene(st), old=st.storyDate;
+    var next=cmpD(info.date, old)>0 ? info.date : old;
+    var done=talkCount(sc)?summarize(sc.id):Promise.resolve(); if(!talkCount(sc)) dropIfEmpty(st,sc);
+    var ns={id:'s'+Date.now(), date:next, place:sc.place, time:sc.time||'evening', lines:[], summary:''};
+    ns.lines.push({who:'narr', text:(cmpD(next,old)>0?'The season turns. It is '+dayInfo(next).long+'. ':'')+(info.flavour||''), ts:Date.now()});
+    newsBetween(old,next).forEach(function(n){ ns.lines.push({who:'event', news:true, ico:KIND_ICON[n.kind]||'📯', text:'Word reaches Whittlesey: '+n.text, note:n.head+' · '+n.truth+' Reached the fen '+dayInfo(newsArrives(n)).short+'.', ts:Date.now()}); });
+    st.events=st.events||[];
+    (info.lines||[]).forEach(function(l){ ns.lines.push({who:'event', ico:l.ico||'📜', text:l.text, note:l.note||'', grave:!!l.grave, ts:Date.now()}); st.events.push({ts:Date.now(), date:next, kind:'quarter', text:l.text, note:l.note||''}); });
+    if(st.events.length>80) st.events=st.events.slice(-80);
+    st.storyDate=next; st.scenes.push(ns); st.currentScene=ns.id; store(st);
+    viewSceneId=null; quiet=0;
+    if(monthKey(old)!==monthKey(next)){
+      var keys=[], mk=monthKey(old);
+      while(mk<monthKey(next) && keys.length<24){ keys.push(mk); var p=mk.split('-'), y=+p[0], mo=+p[1]+1; if(mo>12){ mo=1; y++; } mk=y+'-'+(mo<10?'0':'')+mo; }
+      Promise.resolve(done).then(function(){ return keys.reduce(function(pr,k){ return pr.then(function(){ return writeAnnal(k,false); }); }, Promise.resolve()); });
+    }
+    if(live) schedule(4000);
+    renderAll();
+  };
+
   // ───────── the annals: each month written up in the clerk's hand ─────────
   function monthKey(ds){ return String(ds).slice(0,7); }
   function monthName(key){ var p=key.split('-'); return MONTHS[+p[1]-1]+' '+p[0]; }
@@ -3152,6 +3188,401 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 </script>
 
 <div style="margin-top:14px">
+  <!-- ═════════ THE RECKONING — purses, the chest, the quarter days and the prices of the year ═════════ -->
+  <style>
+  .rk .rk-clock{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin:6px 0 10px;}
+  .rk .rk-clock div{background:var(--parch2);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;font-family:var(--fell);font-size:12.5px;color:var(--ink2);line-height:1.45;}
+  .rk .rk-clock b{display:block;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink4);margin-bottom:2px;}
+  .rk .rk-clock .big{display:block;font-family:var(--fellsc);font-size:17px;color:var(--ink);margin-bottom:2px;}
+  .rk .rk-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin:8px 0 12px;}
+  .rk .rk-card{border:1px solid var(--border2);border-radius:3px;background:var(--parch2);padding:10px 12px;}
+  .rk .rk-card h5{font-family:var(--fellsc);font-size:15px;color:var(--ink);margin:0 0 6px;font-weight:normal;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .rk .rk-card h5 .sum{font-family:var(--mono);font-size:12px;color:var(--blood);}
+  .rk .rk-card ul{margin:0 0 6px 16px;font-family:var(--fell);font-size:12.5px;color:var(--ink2);line-height:1.5;}
+  .rk .rk-act{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .rk .rk-act button{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;background:#fff5d8;border:1px solid var(--border2);color:var(--ink);border-radius:2px;padding:4px 7px;cursor:pointer;}
+  .rk .rk-act button:hover{border-color:var(--gold);}
+  .rk .rk-act button.gold{background:var(--gold-l);border-color:var(--gold-m);color:var(--gold);}
+  .rk table.acct td.n{font-family:var(--mono);}
+  .rk tr.tot td{font-family:var(--fellsc);border-top:1.5px solid var(--border2);}
+  .rk .rk-log{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
+  .rk .rk-quote{font-family:var(--fell);font-style:italic;color:var(--ink3);font-size:12px;}
+  .rk .warn{color:#8a2a20;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;}
+  </style>
+  <div class="parch-panel won rk" id="rk-panel" style="margin-bottom:14px;">
+    <div class="p-inner" style="padding:14px 18px;">
+      <details open>
+        <summary><div class="sec-title">⚖ The Reckoning — purses, the chest and the quarter days <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.05em;">(click to fold)</span></div></summary>
+        <div id="rk-body"></div>
+      </details>
+    </div>
+  </div>
+  <script>
+  (function(){
+    // ─────────────────────────────────────────────────────────────────────────
+    // THE ECONOMY OF THE BAND
+    //   · A season of the campaign is one real day. Each season turns at midnight (local time) and
+    //     the quarter day is reckoned: Lady Day, Midsummer, Michaelmas, Christmas.
+    //   · Roger's purse is the player's: coin in, coin out, by his choice.
+    //   · The men's incomes are generated — wages in cash, keep in kind — and they spend as they like.
+    //   · The band's common chest holds their quarterage; three keys.
+    //   · Prices follow the real record: Phelps Brown & Hopkins' basket of consumables (Munro's
+    //     five-year means) with Hoskins' harvest of each year driving grain; wages follow the
+    //     statutory/customary rates of the same tables. Coin follows the real debasements.
+    // ─────────────────────────────────────────────────────────────────────────
+    var KEY='timewar_economy_v1', MODEL='claude-sonnet-4-6';
+    var SEAS=['Spring','Summer','Autumn','Winter'];
+    var QDAY=[[3,25,'Lady Day'],[6,24,'Midsummer'],[9,29,'Michaelmas'],[12,25,'Christmas']];
+    var QFLAVOUR={
+      'Lady Day':'Lady Day, the Annunciation of Our Lady: the quarter\'s rents fall due, the lawyers begin a new year, and the spring ploughing is done.',
+      'Midsummer':'Midsummer: bonfires on St John\'s Eve, the watch set through the short night, the fleeces off the sheep and the wool gone to the staplers.',
+      'Michaelmas':'Michaelmas: the harvest carried, rents and accounts settled, servants hired for the year at the fair, the goose on the table and the manor court sitting.',
+      'Christmas':'Christmas: twelve days of feasting to Twelfth Night, the lord\'s dinner in the hall, servants\' wages paid, and the plough idle till Plough Monday.'};
+
+    // ── The real price record ────────────────────────────────────────────
+    // Phelps Brown & Hopkins index of the price of a composite unit of consumables in southern England
+    // (1451-75 = 100): Munro's five-year means, with the customary daily wage of a craftsman and a
+    // labourer in pence (the same tables). Wages are sticky: 6d and 4d until the 1530s and 1540s.
+    var PBH5=[[1516,120.438,6,4],[1521,146.045,6,4],[1526,157.345,6,4],[1531,155.640,6,4],[1536,152.330,6.5,4],[1541,176.545,6.9,4],[1546,229.640,7.2,5],[1551,275.453,8.4,6.4],[1556,315.846,9.6,7.2],[1561,289.311,10,7.5],[1566,292.292,10,7.5],[1571,296.095,10.2,7.5],[1576,336.495,11.4,7.7],[1581,337.515,12,8],[1586,387.170,12,8],[1591,416.010,12,8],[1596,540.540,12,8],[1601,461.265,12,8],[1606,496.995,12,8],[1611,532.840,12,8],[1616,520.390,12,8]];
+    // Hoskins, Harvest fluctuations and English economic history 1480-1619: the deviation of the year's
+    // wheat price from its 31-year trend, in per cent. A harvest year runs from Michaelmas.
+    var HARVEST={1523:-15.6,1524:-23.5,1525:-25.5,1526:-18.1,1527:66.5,1528:27.4,1529:17.7,1530:-12.5,1531:7.1,1532:2.3,1533:-9.1,1534:-22.6,1535:35.7,1536:-4.6,1537:-33.6,1538:-32.2,1539:-30.8,1540:-23.9,1541:-23.8,1542:-27.5,1543:-7.3,1544:-4.3,1545:42.7,1546:-33.7,1547:-52.5,1548:-31.2,1549:15.5,1550:32.6,1551:40.7,1552:-10.7,1553:-22.9,1554:8.9,1555:50.3,1556:104.5,1557:-28.7,1558:-40.8,1559:4.2,1560:25.6,1561:-12.8,1562:43.8,1563:-8.5,1564:-8.0,1565:34.2,1566:-16.5,1567:-19.6,1568:-19.4,1569:-21.0,1570:-21.4,1571:-11.8,1572:-7.4,1573:28.3,1574:2.2,1575:8.8,1576:11.5,1577:6.3,1578:-13.7,1579:-13.1,1580:0,1581:-0.1,1582:-20.2,1583:-26.1,1584:-24.7,1585:9.7,1586:42.0,1587:-21.5,1588:-25.4,1589:0.9,1590:-5.5,1591:-27.3,1592:-32.0,1593:-13.2,1594:29.5,1595:35.7,1596:82.9,1597:64.0,1598:-2.8,1599:-13.3,1600:-0.4,1601:-13.8,1602:-14.9,1603:-24.1,1604:-16.5,1605:-19.9,1606:-11.1,1607:8.4,1608:35.4,1609:-6.9,1610:-9.7,1611:0.5,1612:9.4,1613:23.7,1614:-2.4,1615:3.8,1616:2.0,1617:11.7,1618:-15.0,1619:-24.5};
+    var GRAIN_SHARE=0.45;   // bread and drink are about 45% of the basket, and they are what a harvest moves
+    function hv(y){ return HARVEST[y]!==undefined?HARVEST[y]:0; }
+    function harvestClass(y){ var d=hv(y); return d>=50?'a dearth':d>=25?'bad':d>=10?'deficient':d>-10?'average':d>-30?'good':'abundant'; }
+    function pbh(y){ for(var i=PBH5.length-1;i>=0;i--){ if(y>=PBH5[i][0]) return PBH5[i]; } return PBH5[0]; }
+    // The year's composite index: the five-year mean, moved by that year's harvest within the period
+    function priceIndex(y){ var p=pbh(y), sum=0; for(var k=p[0];k<p[0]+5;k++) sum+=1+GRAIN_SHARE*hv(k)/100; return p[1]*(1+GRAIN_SHARE*hv(y)/100)/(sum/5); }
+    var BASE=priceIndex(1525);                       // the harvest year running when the story opens (Michaelmas 1525 - Michaelmas 1526)
+    function priceMult(hy){ return priceIndex(hy)/BASE; }
+    function harvestYearOf(i){ return idxS(i)>=2 ? idxYear(i) : idxYear(i)-1; }   // the harvest that feeds a season: Michaelmas to Michaelmas
+    function nowHY(){ return harvestYearOf(seasonIdx(S.currentSeason)); }
+    function grainMult(hy){ return (pbh(hy)[1]*(1+hv(hy)/100))/(pbh(1525)[1]*(1+hv(1525)/100)); }
+    function labRate(y){ return pbh(y)[3]; } function craftRate(y){ return pbh(y)[2]; }
+
+    // ── The coin ─────────────────────────────────────────────────────────
+    // Fine silver in a penny, in grains, by the real indentures: 11.1 sterling until Wolsey's lighter penny of
+    // 5 Nov 1526 (one ninth off), then the Great Debasement of 1544-51 and the restoration of Oct 1551.
+    var SILVER=[['1526-11-05',9.87],['1544-05-16',7.5],['1545-03-27',5.0],['1546-04-01',3.33],['1549-04-05',4.0],['1551-04-11',2.0],['1551-10-05',7.36]];
+    function fineAt(d){ var f=11.1; SILVER.forEach(function(s){ if(d>=s[0]) f=s[1]; }); return f; }
+    // The angel: 6s 8d, raised to 7s 4d (22 Aug 1526) and 7s 6d (5 Nov 1526); 8s in 1544; 10s from 1551
+    var ANGEL=[['1526-08-22',88],['1526-11-05',90],['1544-05-16',96],['1551-10-05',120]];
+    function angelAt(d){ var v=80; ANGEL.forEach(function(a){ if(d>=a[0]) v=a[1]; }); return v; }
+    var CRY_DOWN='1551-08-17';   // the base shilling cried down: debased coin passes at half face
+
+    function newPurse(cur, sock){ return {cur:cur||0, old:[], angels:0, sock:sock||0}; }
+    function purseSilver(p){ return (p.cur||0)+(p.old||[]).reduce(function(t,o){ return t+o.d; },0)+(p.sock||0); }
+    function purseTotal(p,d){ return purseSilver(p)+(p.angels||0)*angelAt(d); }
+    // Pay from a purse: the worst coin first, then the sock, then break an angel. Returns what was actually paid.
+    function pay(p, amount, d){
+      amount=Math.round(amount); var paid=0, nowFine=fineAt(d);
+      // buckets of coin, worst silver first: a man spends the base coin and keeps the good
+      var buckets=(p.old||[]).map(function(o){ return {o:o, fine:o.fine}; });
+      buckets.push({o:null, fine:nowFine});
+      buckets.sort(function(a,b){ return a.fine-b.fine; });
+      buckets.forEach(function(b){ if(paid>=amount) return; if(b.o){ var v=Math.min(b.o.d, amount-paid); b.o.d-=v; paid+=v; } else { var w=Math.min(p.cur, amount-paid); p.cur-=w; paid+=w; } });
+      p.old=(p.old||[]).filter(function(o){ return o.d>0; });
+      if(paid<amount){ var sv=Math.min(p.sock, amount-paid); p.sock-=sv; paid+=sv; }
+      while(paid<amount && p.angels>0){ p.angels--; p.cur+=angelAt(d); var w2=Math.min(p.cur, amount-paid); p.cur-=w2; paid+=w2; }
+      return paid;
+    }
+    // Debasement: everything in the purse today becomes "old coin" of the old fineness
+    function debase(p, oldFine){ if(p.cur>0){ p.old.push({fine:oldFine, d:p.cur}); p.cur=0; } if(p.sock>0){ p.old.push({fine:oldFine, d:p.sock, sock:true}); p.sock=0; } }
+    function goldsmithOffer(p, d){ var f=fineAt(d), t=0; (p.old||[]).forEach(function(o){ t+=o.d*o.fine/f; }); return Math.floor(t*0.95); }
+
+    // ── Money words ──────────────────────────────────────────────────────
+    function lsd(d){ d=Math.round(d); var neg=d<0; d=Math.abs(d); var L=Math.floor(d/240), s=Math.floor((d%240)/12), p=d%12, out=[];
+      if(L) out.push('£'+L.toLocaleString('en-US')); if(s) out.push(s+'s'); if(p||!out.length) out.push(p+'d'); return (neg?'−':'')+out.join(' '); }
+    function usd(d){ var x=d*6.12; return x>=1000?'$'+Math.round(x).toLocaleString('en-US'):'$'+x.toFixed(2); }
+    function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function pad(n){ return (n<10?'0':'')+n; }
+    function dayText(ds){ try{ return window.twcDayInfo(ds).long; }catch(e){ return ds; } }
+    function shortDay(ds){ try{ return window.twcDayInfo(ds).short; }catch(e){ return ds; } }
+
+    // ── Seasons and real days ────────────────────────────────────────────
+    function seasonIdx(str){ var p=String(str||'Spring, 1526 AD').split(', '); var y=parseInt(p[1],10)||1526, s=SEAS.indexOf(p[0]); return y*4+(s<0?0:s); }
+    function idxYear(i){ return Math.floor(i/4); } function idxS(i){ return ((i%4)+4)%4; }
+    function idxLabel(i){ return SEAS[idxS(i)]+', '+idxYear(i)+' AD'; }
+    function qdate(i){ var q=QDAY[idxS(i)]; return idxYear(i)+'-'+pad(q[0])+'-'+pad(q[1]); }
+    function qname(i){ return QDAY[idxS(i)][2]; }
+    function todayLocal(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+    function daysBetween(a,b){ var A=a.split('-'),B=b.split('-'); return Math.round((Date.UTC(+B[0],+B[1]-1,+B[2])-Date.UTC(+A[0],+A[1]-1,+A[2]))/864e5); }
+    function msToMidnight(){ var n=new Date(), m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,5); return m-n; }
+
+    // ── Storage ──────────────────────────────────────────────────────────
+    function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null')||{}; }catch(e){ return {}; } }
+    function store(E){ localStorage.setItem(KEY, JSON.stringify(E)); }
+    function men(){ return (typeof S!=='undefined'&&Array.isArray(S.men))?S.men.filter(function(m){ return !m.isCmd; }):[]; }
+    function manById(id){ return men().filter(function(m){ return String(m.id)===String(id); })[0]; }
+    function first(n){ return String(n||'').split(' ')[0]; }
+    function ensure(E){
+      if(!E.roger) E.roger=newPurse(83,0);                         // the 83d in his purse of the household table
+      if(!E.roger.goods) E.roger.goods=[]; if(!E.roger.acres) E.roger.acres=0; if(!E.roger.arrears) E.roger.arrears=0; if(!E.roger.yearIncome) E.roger.yearIncome=0;
+      if(!E.chest) E.chest={cur:0, old:[], angels:0, sock:0, keys:[2,4], quarterage:2, log:[]};
+      if(!E.men) E.men={};
+      var seed={2:[8,0],3:[0,160],4:[4,0],5:[0,40]};                 // Ralph's pennies; Thomas's hoard since he was twelve; John; Edmund's book money
+      men().forEach(function(m){ if(!E.men[m.id]){ var s=seed[m.id]||[6,0]; E.men[m.id]=newPurse(s[0],s[1]); E.men[m.id].arrears=0; E.men[m.id].bought=[]; } });
+      if(!E.quarters) E.quarters=[];
+      return E;
+    }
+
+    // ── The men's work: what each quarter pays ───────────────────────────
+    // Working days by season (250 a year): Spring = Lady Day to Midsummer, and so on. 'summer' rates run
+    // Easter–Michaelmas under the statute; 'harvest' is August. Cash share: a son at home is mostly paid in keep.
+    var SEASON_DAYS=[{winter:20,summer:44},{summer:46,harvest:24},{summer:22,winter:42},{winter:52}];
+    var WORK={
+      2:{name:'husbandry labour on his father\'s holding', base:'lab', rates:{summer:4,winter:3,harvest:5}, cash:0.30},
+      3:{name:'tan-yard work', base:'mid', rates:{summer:5,winter:4,harvest:5}, cash:0.35},
+      4:{name:'work at the forge', base:'craft', rates:{summer:6,winter:5,harvest:6}, cash:0.40},
+      5:{name:'the cloth shop', base:'lab', rates:{summer:4,winter:3,harvest:4}, cash:0.25},
+    };
+    var ROGER_SPLIT=[0.15,0.5,0.2,0.15];   // his commission by season: nearly all after shearing
+    function wageScale(base,y){ var l=labRate(y)/4, c=craftRate(y)/6; return base==='lab'?l:base==='craft'?c:(l+c)/2; }
+    function quarterWork(id, s, y){
+      var w=WORK[id]||{name:'odd work',base:'lab',rates:{summer:4,winter:3,harvest:4},cash:0.4}, days=SEASON_DAYS[s], d=0, n=0;
+      Object.keys(days).forEach(function(k){ d+=days[k]*(w.rates[k]||0); n+=days[k]; });
+      var gross=Math.round(d*wageScale(w.base,y));
+      return {name:w.name, days:n, gross:gross, cash:Math.round(gross*w.cash), keep:gross-Math.round(gross*w.cash)};
+    }
+
+    // ── Taxes that reached men of small means (simplified from the acts) ─
+    var TAXES=[
+      {year:1544, name:'the subsidy of 1543, first payment', goodsFrom:240, rate:4}, {year:1545, name:'the subsidy of 1543, second payment', goodsFrom:240, rate:4}, {year:1546, name:'the subsidy of 1543, third payment', goodsFrom:240, rate:4},
+      {year:1547, name:'the subsidy of 1545', goodsFrom:1200, rate:8},
+      {year:1550, name:'the relief of 1549', goodsFrom:1200, rate:12},
+      {year:1556, name:'the subsidy of 1555', goodsFrom:1200, rate:8},
+      {year:1559, name:'the subsidy of 1558', goodsFrom:720, rate:16},{year:1560, name:'the subsidy of 1558, second payment', goodsFrom:720, rate:16},
+      {year:1564, name:'the subsidy of 1563', goodsFrom:720, rate:16},{year:1565, name:'the subsidy of 1563, second payment', goodsFrom:720, rate:16},
+      {year:1567, name:'the subsidy of 1566', goodsFrom:720, rate:16},{year:1572, name:'the subsidy of 1571', goodsFrom:720, rate:16},
+      {year:1577, name:'the subsidy of 1576', goodsFrom:720, rate:16},{year:1582, name:'the subsidy of 1581', goodsFrom:720, rate:16},
+      {year:1586, name:'the subsidy of 1585', goodsFrom:720, rate:16},{year:1590, name:'the subsidy of 1589', goodsFrom:720, rate:16},
+      {year:1594, name:'the subsidy of 1593', goodsFrom:720, rate:16},{year:1598, name:'the subsidy of 1597', goodsFrom:720, rate:16},{year:1602, name:'the subsidy of 1601', goodsFrom:720, rate:16},
+    ];
+    function rogerGoodsValue(E,d){ return purseTotal(E.roger,d)+E.roger.goods.reduce(function(t,g){ return t+g.d; },0)+E.roger.acres*210+244; }  // 244d of clothes, sword, bed and chest
+
+    // ── What a man may buy (1526 pence; scaled by the year's prices) ─────
+    // degree: 1 labourer/husbandman, 2 craftsman, 3 merchant's son / yeoman. The 1515 Act of Apparel keeps a
+    // labourer out of broadcloth; the 1512 act forbids dice and cards to servants and labourers save at Christmas.
+    var SHOP=[
+      {k:'ale',n:'evenings at the alehouse',d:8,cat:'drink'},{k:'shoes',n:'a pair of shoes',d:6,cat:'clothes'},{k:'hose',n:'a pair of hose',d:12,cat:'clothes'},
+      {k:'shirt',n:'a shirt',d:10,cat:'clothes'},{k:'cap',n:'a cap',d:6,cat:'clothes'},{k:'coat',n:'a coat of frieze',d:30,cat:'clothes'},
+      {k:'doublet',n:'a doublet of broadcloth',d:48,cat:'clothes',degree:2},{k:'knife',n:'a knife',d:4,cat:'gear'},{k:'dagger',n:'a dagger',d:12,cat:'gear'},
+      {k:'bow',n:'a yew bow',d:24,cat:'arms'},{k:'arrows',n:'a sheaf of arrows',d:18,cat:'arms'},{k:'sword',n:'a sword',d:40,cat:'arms'},{k:'jack',n:'a jack',d:80,cat:'arms'},
+      {k:'tools',n:'tools of his trade',d:12,cat:'gear'},{k:'candle',n:'a candle to the rood',d:1,cat:'church',fixed:true},{k:'alms',n:'alms to the poor',d:1,cat:'church',fixed:true},
+      {k:'mass',n:'a mass said for a soul',d:4,cat:'church',fixed:true},{k:'pilgrimage',n:'a pilgrimage to Walsingham',d:24,cat:'church'},
+      {k:'ribbon',n:'a ribbon for a girl',d:2,cat:'pleasure'},{k:'fairing',n:'a fairing at the fair',d:3,cat:'pleasure'},{k:'dice',n:'losses at dice',d:6,cat:'pleasure',unlawful:true},
+      {k:'primer',n:'a printed primer',d:8,cat:'books'},{k:'testament',n:'an English Testament, bought in secret',d:30,cat:'books',unlawful:true},{k:'feast',n:'his share of the Christmas feast',d:6,cat:'pleasure'},
+      {k:'save',n:'put by in his sock',d:0,cat:'save'},
+    ];
+    var DEGREE={1:3,2:1,3:2,4:2,5:3};
+    function shopPrice(it, pm){ return it.fixed?it.d:Math.max(1,Math.round(it.d*pm)); }
+    // Roger's dealings at the market
+    var ROGER_SHOP=[['sword','a sword',40],['bow','a yew bow',24],['arrows','a sheaf of arrows',18],['jack','a jack',80],['dagger','a dagger',12],['horse','a common horse',240],['coat','a coat of frieze',30],['doublet','a doublet of broadcloth',48],['shoes','a pair of shoes',6],['shirt','a shirt',10],['hose','a pair of hose',12],['primer','a printed primer',8],['testament','an English Testament, in secret',30],['mass','a mass said for his father\'s soul',4],['candle','a candle to the rood',1],['pilgrimage','a pilgrimage to Walsingham',24],['acre','an acre of copyhold pasture, at the manor court (17s 6d and the entry fine)',231]];
+
+    // ── The reckoning of a quarter day ───────────────────────────────────
+    // Season i is being entered; its quarter day reckons the season just finished (i-1).
+    function coinEvents(E, from, to, lines){
+      SILVER.forEach(function(s){ if(s[0]>from && s[0]<=to){ var oldFine=fineAt(new Date(Date.parse(s[0])-864e5).toISOString().slice(0,10));
+        [E.roger,E.chest].concat(Object.keys(E.men).map(function(k){return E.men[k];})).forEach(function(p){ debase(p, oldFine); });
+        lines.push({who:'the coin',kind:'note',text:'New silver from the mint: the penny now carries '+(Math.round(100-s[1]/oldFine*100))+'% less silver. Every penny already in a purse or the chest is old coin, worth more than the new as bullion — the goldsmith will give more than a penny for it.',d:0}); } });
+      ANGEL.forEach(function(a){ if(a[0]>from && a[0]<=to){ var n=E.roger.angels+E.chest.angels; lines.push({who:'the coin',kind:'note',text:'Proclamation: the angel now passes for '+lsd(a[1])+(n?'. Roger and the chest hold '+n+' angel'+(n===1?'':'s')+', worth '+lsd(n*a[1])+' now':''),d:0}); } });
+      if(CRY_DOWN>from && CRY_DOWN<=to){ [E.roger,E.chest].concat(Object.keys(E.men).map(function(k){return E.men[k];})).forEach(function(p){ (p.old||[]).forEach(function(o){ if(o.fine<7) o.d=Math.floor(o.d/2); }); });
+        lines.push({who:'the coin',kind:'note',text:'The base shilling is cried down: debased coin now passes for half what it did.',d:0}); }
+    }
+    function reckon(E, i, initial){
+      var date=qdate(i), y=idxYear(i), s=idxS(i), prev=i-1, py=idxYear(prev), ps=idxS(prev);
+      var hy=ps>=2?py:py-1, pm=priceMult(hy), gm=grainMult(hy), foodMult=0.5*gm+0.5*pm;
+      var Q={id:'q'+i, idx:i, date:date, qday:qname(i), year:y, reckoned:idxLabel(prev), harvestYear:hy, harvest:harvestClass(hy), index:Math.round(priceIndex(hy)), pm:pm, gm:gm, lab:labRate(py), craft:craftRate(py), lines:[], bought:{}, remarks:{}, notes:[]};
+      var L=Q.lines, chestIn=0;
+      coinEvents(E, E.lastDate||'1526-01-01', date, L);
+      // Roger: his commission, his rent and board, his tithe, his land
+      var comm=Math.round(1440*ROGER_SPLIT[ps]*pm); E.roger.cur+=comm; E.roger.yearIncome+=comm;
+      L.push({who:'Roger',kind:'charge',text:'commission on wool brokered, '+SEAS[ps].toLowerCase()+' quarter',d:comm});
+      if(E.roger.acres){ var landIn=Math.round(E.roger.acres*21*pm), landRent=Math.round(E.roger.acres*10.5); E.roger.cur+=landIn; L.push({who:'Roger',kind:'charge',text:'the profit of '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' of pasture',d:landIn}); var pr=pay(E.roger,landRent,date); L.push({who:'Roger',kind:'discharge',text:'rent to the manor, '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' at 10½d',d:pr}); if(pr<landRent) E.roger.arrears+=landRent-pr; }
+      var rent=Math.round(15*pm), pr2=pay(E.roger,rent,date); L.push({who:'Roger',kind:'discharge',text:'a quarter\'s rent of his chamber',d:pr2}); if(pr2<rent) E.roger.arrears+=rent-pr2;
+      var board=Math.round(91*1.25*foodMult), pb=pay(E.roger,board,date); L.push({who:'Roger',kind:'discharge',text:'bread, ale and pottage for the quarter (bread '+(gm>1.3?'dear':gm<0.85?'cheap':'at a fair price')+')',d:pb}); if(pb<board) E.roger.arrears+=board-pb;
+      if(s===1){ var tithe=Math.round(E.roger.yearIncome*0.1); if(tithe>0){ var pt=pay(E.roger,tithe,date); L.push({who:'Roger',kind:'discharge',text:'personal tithe on a year\'s gains, paid at Easter',d:pt}); if(pt<tithe) E.roger.arrears+=tithe-pt; } E.roger.yearIncome=0; L.push({who:'Roger',kind:'discharge',text:'Easter offering at the altar',d:pay(E.roger,2,date)}); }
+      if(s===0){ L.push({who:'Roger',kind:'discharge',text:'a candle at Candlemas',d:pay(E.roger,1,date)}); }
+      if(E.roger.arrears>0){ var ar=pay(E.roger,E.roger.arrears,date); if(ar>0){ E.roger.arrears-=ar; L.push({who:'Roger',kind:'discharge',text:'arrears paid off',d:ar}); } }
+      var q=E.chest.quarterage||2, rq=pay(E.roger,q,date); chestIn+=rq; L.push({who:'Roger',kind:'discharge',text:'quarterage to the chest',d:rq});
+      // Taxes
+      if(s===2){ TAXES.forEach(function(t){ if(t.year!==y) return; var g=rogerGoodsValue(E,date); if(g>=t.goodsFrom){ var due=Math.max(4,Math.round(g/240*t.rate)), pd=pay(E.roger,due,date); L.push({who:'Roger',kind:'discharge',text:t.name+' — assessed at '+lsd(g)+' in goods',d:pd}); if(pd<due) E.roger.arrears+=due-pd; } else Q.notes.push('The subsidy men came for '+t.name+'; Roger, at under '+lsd(t.goodsFrom)+' in goods, was not assessed.'); }); }
+      // The men
+      var fights=[]; try{ var cs=JSON.parse(localStorage.getItem('timewar_companions_v1')||'{}'); fights=(cs.events||[]).filter(function(e){ return e.kind==='loss' && e.date>(E.lastDate||'0') && e.date<=date; }); }catch(e){}
+      men().forEach(function(m){
+        var p=E.men[m.id]; if(!p) return;
+        if(m.dead){ return; }
+        var w=quarterWork(m.id, ps, py);
+        p.cur+=w.cash;
+        L.push({who:m.name,kind:'charge',text:w.name+', '+w.days+' days: '+lsd(w.gross)+' earned, '+lsd(w.keep)+' of it as keep at his father\'s table',d:w.cash, kind2:w.keep});
+        if(s===1){ L.push({who:m.name,kind:'discharge',text:'Easter offering',d:pay(p,2,date)}); L.push({who:m.name,kind:'discharge',text:'the Whitsun church-ale',d:pay(p,2,date)}); }
+        if(s===0){ L.push({who:m.name,kind:'discharge',text:'a candle at Candlemas',d:pay(p,1,date)}); }
+        if(s===2 && fights.length){ L.push({who:m.name,kind:'discharge',text:'amerced in the court leet for affray',d:pay(p,2,date)}); }
+        if(s===3){ L.push({who:m.name,kind:'discharge',text:'his share of the Christmas feast',d:pay(p,4,date)}); }
+        var rq2=pay(p,q,date); chestIn+=rq2; L.push({who:m.name,kind:'discharge',text:'quarterage to the chest',d:rq2}); if(rq2<q) p.arrears=(p.arrears||0)+q-rq2;
+      });
+      E.chest.cur+=chestIn; E.chest.log.push({date:date,text:'quarterage paid in',d:chestIn});
+      L.push({who:'the chest',kind:'charge',text:'quarterage from every man',d:chestIn});
+      if(s===2 && fights.length) Q.notes.push('The court leet sat at Michaelmas and amerced the men 2d apiece for the affray'+(fights.length>1?'s':'')+' this quarter.');
+      Q.notes.push('The harvest of '+hy+' was '+Q.harvest+': wheat '+(hv(hy)>=0?'':'−')+Math.abs(hv(hy)).toFixed(0)+'% against its trend, so bread '+(gm>1.3?'is dear and the penny loaf small':gm<0.85?'is cheap and the penny loaf heavy':'sells at a fair price')+'. Prices stand at '+Q.index+' on the old scale (the story opened at '+Math.round(BASE)+').');
+      E.quarters.push(Q); if(E.quarters.length>120) E.quarters=E.quarters.slice(-120);
+      E.lastDate=date;
+      Q.pendingSpend=!initial;
+      return Q;
+    }
+
+    // ── The men spend as they like ───────────────────────────────────────
+    async function spend(E, Q){
+      var alive=men().filter(function(m){ return !m.dead && E.men[m.id]; });
+      if(!alive.length) return;
+      var list=SHOP.filter(function(it){ return it.k!=='save'; }).map(function(it){ return it.k+' — '+it.n+' ('+lsd(shopPrice(it,Q.pm))+(it.unlawful?', unlawful for a servant or labourer':'')+(it.degree?', above a labourer\'s degree':'')+')'; }).join('\n');
+      var brief=alive.map(function(m){ var b=''; try{ b=window.twcPersonaBrief(m.id)||''; }catch(e){} var p=E.men[m.id]; return m.name+' — degree '+({1:'labourer',2:'craftsman',3:'merchant\'s son'})[DEGREE[m.id]||1]+'. In his purse: '+lsd(p.cur+(p.old||[]).reduce(function(t,o){return t+o.d;},0))+'; put by: '+lsd(p.sock)+'. '+b; }).join('\n');
+      var sys='You decide how young men of Whittlesey in the Isle of Ely spend their money at '+Q.qday+' '+Q.year+', in character. Each is a real person with his own temperament, hopes and fears; some are careful, some are not. They may buy nothing, one thing or a few, and may put money by. A man does not spend what he has not got, and rarely more than half his purse in a quarter unless he has a reason. The 1515 Act of Apparel keeps a labourer or craftsman out of broadcloth; the 1512 act forbids dice and cards to servants and labourers except at Christmas — but men break laws. Bread is '+(Q.gm>1.3?'dear this year, so poor men buy less of everything else':Q.gm<0.85?'cheap this year':'at a fair price')+'. Reply with JSON only.';
+      var user='THE MEN:\n'+brief+'\n\nWHAT CAN BE BOUGHT (key — thing (price)):\n'+list+'\nsave — put money by in his sock (give the amount)\n\nReturn JSON: {"men": {"<exact full name>": {"buys": [{"key": "shop key", "why": "a few words"}], "save": pence to put by or 0, "remark": "one short thing he says about his money this quarter, in his own voice"}}}';
+      try{
+        var res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:900,system:sys,messages:[{role:'user',content:user}]})});
+        var data=await res.json(); if(data.error) throw new Error(data.error.message||'error');
+        var txt=(data.content||[]).map(function(b){ return b.text||''; }).join('\n'); var a=txt.indexOf('{'), z=txt.lastIndexOf('}'); var j=JSON.parse(txt.slice(a,z+1));
+        E=ensure(load()); var q=E.quarters.filter(function(x){ return x.id===Q.id; })[0]; if(!q) return; var d=q.date;
+        alive.forEach(function(m){
+          var r=j.men&&(j.men[m.name]||j.men[first(m.name)]); if(!r) return; var p=E.men[m.id]; q.bought[m.name]=[];
+          (r.buys||[]).slice(0,4).forEach(function(b){ var it=SHOP.filter(function(x){ return x.k===b.key; })[0]; if(!it||it.k==='save') return; var price=shopPrice(it,q.pm); var have=p.cur+(p.old||[]).reduce(function(t,o){return t+o.d;},0); if(price>have) return; pay(p,price,d); q.bought[m.name].push({n:it.n,d:price,why:String(b.why||'').slice(0,80),unlawful:!!it.unlawful}); p.bought=(p.bought||[]).concat([{date:d,n:it.n,d:price}]).slice(-20); q.lines.push({who:m.name,kind:'discharge',text:it.n+(b.why?' — '+String(b.why).slice(0,80):''),d:price}); });
+          var sv=Math.max(0,Math.min(p.cur, parseInt(r.save,10)||0)); if(sv>0){ p.cur-=sv; p.sock+=sv; q.lines.push({who:m.name,kind:'discharge',text:'put by in his sock',d:sv}); }
+          if(r.remark) q.remarks[m.name]=String(r.remark).slice(0,160);
+        });
+        q.pendingSpend=false; store(E);
+        var out=[]; alive.forEach(function(m){ var b=q.bought[m.name]||[]; if(!b.length && !q.remarks[m.name]) return; out.push({ico:'🪙',text:first(m.name)+(b.length?' has bought '+b.map(function(x){ return x.n+' ('+lsd(x.d)+')'; }).join(', ')+'.':' has spent nothing this quarter.')+(q.remarks[m.name]?' "'+q.remarks[m.name]+'"':''), note:'The men spend their own money as they like.'}); });
+        try{ if(window.twcEcoLines) window.twcEcoLines(out); }catch(e){}
+        render();
+      }catch(e){ console.warn('[economy] spending', e); }
+    }
+
+    // ── Turning the season ───────────────────────────────────────────────
+    function setSeason(i){
+      S.currentSeason=idxLabel(i); try{ save(); }catch(e){}
+      ['h-season','briefer-season-label','save-season-display'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=S.currentSeason; });
+      var ns=document.getElementById('ns-current-season'); if(ns) ns.textContent='Current: '+S.currentSeason;
+      var fs=document.getElementById('f-season'); if(fs) fs.value=S.currentSeason;
+      try{ if(typeof render==='function') render(); }catch(e){}
+    }
+    function quarterLines(Q){
+      var byMan={}; Q.lines.forEach(function(l){ if(l.kind==='charge'&&l.who!=='the chest') byMan[l.who]=(byMan[l.who]||0)+l.d; });
+      var inc=Object.keys(byMan).map(function(k){ return first(k)+' '+lsd(byMan[k]); }).join(', ');
+      var chest=Q.lines.filter(function(l){ return l.who==='the chest'; })[0];
+      var out=[{ico:'📜',text:Q.qday+' — the quarter\'s reckoning for '+Q.reckoned.replace(' AD','')+'. Paid in cash: '+inc+'. Quarterage into the chest '+lsd(chest?chest.d:0)+'. Roger has paid his rent and his board.', note:'Wages at the customary rate; a son at home is paid mostly in keep.'}];
+      Q.notes.forEach(function(n){ out.push({ico:'🌾',text:n,note:'From the real harvest and price record of the year.'}); });
+      Q.lines.filter(function(l){ return l.kind==='note'; }).forEach(function(l){ out.push({ico:'🪙',text:l.text,note:'The King\'s coin.'}); });
+      return out;
+    }
+    // Without the clerk's help the men spend as men do: a little ale, and the rest kept
+    function plainSpend(E, Q){
+      men().forEach(function(m){ var p=E.men[m.id]; if(!p||m.dead) return; var have=p.cur+(p.old||[]).reduce(function(t,o){return t+o.d;},0); var ale=Math.min(have, Math.round(have*0.12)); if(ale>0){ pay(p,ale,Q.date); Q.lines.push({who:m.name,kind:'discharge',text:'evenings at the alehouse',d:ale}); Q.bought[m.name]=[{n:'evenings at the alehouse',d:ale,why:''}]; } });
+      Q.pendingSpend=false;
+    }
+    async function afterTurn(E, turned){
+      var qs=turned.map(function(i){ return E.quarters.filter(function(q){ return q.idx===i; })[0]; }).filter(Boolean);
+      qs.forEach(function(Q, n){ if(Q.pendingSpend && n<qs.length-4) plainSpend(E,Q); });
+      store(E);
+      for(var n=0;n<qs.length;n++){ var Q=qs[n];
+        try{ if(window.twcSeasonTurn) window.twcSeasonTurn({label:idxLabel(Q.idx), date:Q.date, qday:Q.qday, flavour:QFLAVOUR[Q.qday]||'', lines:quarterLines(Q), seasons:qs.length}); }catch(e){ console.warn(e); }
+        if(Q.pendingSpend){ await spend(E, Q); E=ensure(load()); }
+      }
+      var last=qs[qs.length-1];
+      try{ if(last && typeof showToast==='function') showToast('⚖ '+last.qday+' '+last.year, (qs.length>1?qs.length+' seasons have turned':'The season has turned')+' — now '+S.currentSeason+'. The quarter is reckoned: the men are paid and the chest is fuller.', false); }catch(e){}
+      window.renderReckoning();
+    }
+    function sync(){
+      if(typeof S==='undefined'||!Array.isArray(S.men)) return;
+      var E=ensure(load()), cur=seasonIdx(S.currentSeason);
+      if(!E.anchor){ E.anchor={date:todayLocal(), idx:cur}; var Q0=reckon(E, cur, true); store(E); try{ if(window.twcEcoLines) window.twcEcoLines(quarterLines(Q0)); }catch(e){} render(); return; }
+      var expected=E.anchor.idx+Math.max(0, daysBetween(E.anchor.date, todayLocal()));
+      if(cur>expected){ E.anchor={date:todayLocal(), idx:cur}; store(E); render(); return; }   // moved on by hand: the clock follows
+      var turned=[];
+      while(cur<expected && turned.length<40){ cur++; setSeason(cur); reckon(E, cur, false); turned.push(cur); }
+      if(turned.length){ store(E); afterTurn(E, turned); }
+      window.renderReckoning();
+    }
+    window.twEcoManualTurn=function(){ var E=ensure(load()), cur=seasonIdx(S.currentSeason); E.anchor={date:todayLocal(), idx:cur}; reckon(E, cur, false); store(E); afterTurn(E,[cur]); render(); };
+
+    // ── Roger's dealings (the player's) ──────────────────────────────────
+    function askPence(msg){ var v=prompt(msg+'\n\nEnter pence (12d = 1s, 240d = £1).'); var n=parseInt(v,10); return isFinite(n)&&n>0?n:0; }
+    function today(E){ return E.lastDate||'1526-05-01'; }
+    function storyDate(){ try{ var st=JSON.parse(localStorage.getItem('timewar_companions_v1')||'{}'); return st.storyDate||'1526-05-01'; }catch(e){ return '1526-05-01'; } }
+    function tell(lines){ try{ if(window.twcEcoLines) window.twcEcoLines(lines); }catch(e){} }
+    window.twEco={
+      putInChest:function(){ var E=ensure(load()), d=storyDate(), n=askPence('Put how much into the chest? Roger has '+lsd(purseTotal(E.roger,d))+'.'); if(!n) return; var got=pay(E.roger,n,d); E.chest.cur+=got; E.chest.log.push({date:d,text:'Roger put in',d:got}); store(E); tell([{ico:'🗝',text:'Roger has put '+lsd(got)+' into the band\'s chest.',note:'Three keys: Roger, '+keyNames(E)+'.'}]); render(); },
+      takeFromChest:function(){ var E=ensure(load()), d=storyDate(); var why=prompt('Take money from the chest — for what? The keyholders must be told.'); if(!why) return; var n=askPence('How much? The chest holds '+lsd(purseTotal(E.chest,d))+'.'); if(!n) return;
+        var loy=keyLoyalty(E); var half=purseTotal(E.chest,d)/2;
+        if(n>half && loy<45){ tell([{ico:'🗝',text:keyNames(E)+' will not open the chest for that: "'+why.slice(0,60)+'" — not for '+lsd(n)+', not with the band as it stands.',note:'A keyholder refuses when he does not trust Roger and the sum is more than half the chest.',grave:true}]); render(); return; }
+        var got=pay(E.chest,n,d); E.roger.cur+=got; E.chest.log.push({date:d,text:'Roger took out, for '+why.slice(0,60),d:-got}); store(E); tell([{ico:'🗝',text:'The chest was opened before '+keyNames(E)+' and Roger took out '+lsd(got)+' for '+why.slice(0,60)+'.',note:'Every opening of the chest is written in its log.'}]); render(); },
+      give:function(){ var E=ensure(load()), d=storyDate(); var who=prompt('Give money to which man? '+men().filter(function(m){return !m.dead;}).map(function(m){ return first(m.name); }).join(', ')); if(!who) return; var m=men().filter(function(x){ return !x.dead && first(x.name).toLowerCase()===who.trim().toLowerCase(); })[0]; if(!m) return alert('No such man.'); var n=askPence('How much for '+first(m.name)+'? Roger has '+lsd(purseTotal(E.roger,d))+'.'); if(!n) return; var got=pay(E.roger,n,d); E.men[m.id].cur+=got; store(E); tell([{ico:'🪙',text:'Roger has given '+first(m.name)+' '+lsd(got)+' from his own purse.',note:'A gift, not a loan; the men remember such things.'}]); try{ if(window.twcRemember) window.twcRemember(m.id,'Roger gave me '+lsd(got)+' from his own purse.',2); }catch(e){} render(); },
+      buy:function(k){ var E=ensure(load()), d=storyDate(), it=ROGER_SHOP.filter(function(x){ return x[0]===k; })[0]; if(!it) return; var pm=priceMult(nowHY()), price=(k==='acre'||k==='mass'||k==='candle')?it[2]:Math.max(1,Math.round(it[2]*pm)); if(purseTotal(E.roger,d)<price) return alert('Roger has not got '+lsd(price)+'.'); pay(E.roger,price,d); if(k==='acre'){ E.roger.acres++; } else if(['mass','candle','pilgrimage'].indexOf(k)<0){ E.roger.goods.push({n:it[1],d:price,date:d}); } store(E); tell([{ico:'🪙',text:'Roger has bought '+it[1]+' for '+lsd(price)+(k==='acre'?', admitted tenant at the manor court: he has rights of common on the fen now':'')+'.',note:'Priced at this year\'s rates.'}]); render(); },
+      changeAngel:function(){ var E=ensure(load()), d=storyDate(); if(E.roger.angels<1) return alert('Roger has no angel to change.'); E.roger.angels--; E.roger.cur+=angelAt(d); store(E); render(); },
+      buyAngel:function(){ var E=ensure(load()), d=storyDate(), v=angelAt(d); if(E.roger.cur+E.roger.sock<v) return alert('An angel is '+lsd(v)+' today; Roger has not got it in silver.'); pay(E.roger,v,d); E.roger.angels++; store(E); render(); },
+      sellOld:function(){ var E=ensure(load()), d=storyDate(), offer=goldsmithOffer(E.roger,d), have=(E.roger.old||[]).reduce(function(t,o){return t+o.d;},0); if(!have) return alert('Roger holds no old coin.'); if(!confirm('The goldsmith at Peterborough offers '+lsd(offer)+' in new coin for '+lsd(have)+' of old pennies (bullion value less his fee). Sell?')) return; E.roger.old=[]; E.roger.cur+=offer; store(E); tell([{ico:'🪙',text:'Roger has sold '+lsd(have)+' of old pennies to the goldsmith for '+lsd(offer)+' in new coin.',note:'Old coin carries more silver than new; the goldsmith pays by weight.'}]); render(); },
+      setQuarterage:function(){ var E=ensure(load()); var n=parseInt(prompt('Quarterage: what does each man put into the chest each quarter day? Now '+E.chest.quarterage+'d.'),10); if(isFinite(n)&&n>=0){ E.chest.quarterage=n; store(E); tell([{ico:'🗝',text:'The band agrees a quarterage of '+lsd(n)+' a man into the chest at every quarter day.',note:'A fraternity\'s quarterage.'}]); render(); } },
+      remark:function(){ /* reserved */ },
+    };
+    function keyNames(E){ return (E.chest.keys||[]).map(function(id){ var m=manById(id); return m?first(m.name):''; }).filter(Boolean).join(' and '); }
+    function keyLoyalty(E){ var best=0; try{ var st=JSON.parse(localStorage.getItem('timewar_companions_v1')||'{}'); (E.chest.keys||[]).forEach(function(id){ var s=st.men&&st.men[id]; if(s&&s.loyalty>best) best=s.loyalty; }); }catch(e){} return best; }
+
+    // ── For the men's own words ──────────────────────────────────────────
+    window.twEconomy={
+      purseText:function(id){ var E=ensure(load()), d=storyDate(); if(String(id)==='1'){ var p=E.roger; return 'Roger\'s purse holds about '+lsd(purseTotal(p,d))+(p.angels?' ('+p.angels+' in gold)':'')+(E.roger.arrears?'; he is '+lsd(E.roger.arrears)+' in arrears':'')+(E.roger.acres?'; he holds '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' by copy':''); } var m=E.men[id]; if(!m) return ''; var b=(m.bought||[]).slice(-2).map(function(x){ return x.n; }).join(' and '); return 'His purse holds about '+lsd(m.cur+(m.old||[]).reduce(function(t,o){return t+o.d;},0))+(m.sock?', and '+lsd(m.sock)+' put by':'')+(b?'; lately he bought '+b:'')+'.'; },
+      chestText:function(){ var E=ensure(load()), d=storyDate(); return 'The band\'s chest holds '+lsd(purseTotal(E.chest,d))+' (keys: Roger, '+keyNames(E)+'; quarterage '+lsd(E.chest.quarterage)+' a man).'; },
+      pricesText:function(){ var hy=nowHY(), gm=grainMult(hy), y=idxYear(seasonIdx(S.currentSeason)); return 'The harvest of '+hy+' was '+harvestClass(hy)+'; bread is '+(gm>1.3?'dear':gm<0.85?'cheap':'at a fair price')+'. A labourer\'s day is '+labRate(y)+'d, a craftsman\'s '+craftRate(y)+'d.'; },
+      rogerItems:function(){ var E=ensure(load()), d=storyDate(), out=[['Money in his purse'+(E.roger.angels?' ('+E.roger.angels+' angel'+(E.roger.angels===1?'':'s')+' and silver)':''), purseTotal(E.roger,d)]]; E.roger.goods.forEach(function(g){ out.push([g.n+' (bought '+shortDay(g.date)+')', g.d]); }); if(E.roger.acres) out.push([E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' of copyhold pasture', E.roger.acres*210]); if(E.roger.arrears) out.push(['Owed: arrears of rent and board', -E.roger.arrears]); return out; },
+      state:function(){ return ensure(load()); },
+    };
+
+    // ── The panel ────────────────────────────────────────────────────────
+    function purseHtml(p,d){ var parts=[]; if(p.cur) parts.push(lsd(p.cur)+' in new coin'); (p.old||[]).forEach(function(o){ parts.push(lsd(o.d)+' in old coin'+(o.sock?' (put by)':'')); }); if(p.sock) parts.push(lsd(p.sock)+' put by'); if(p.angels) parts.push(p.angels+' angel'+(p.angels===1?'':'s')+' ('+lsd(p.angels*angelAt(d))+')'); return parts.length?parts.join(' · '):'empty'; }
+    function acctTable(Q){
+      var who={}; Q.lines.forEach(function(l){ if(l.kind==='note') return; who[l.who]=who[l.who]||{c:[],dch:[]}; (l.kind==='charge'?who[l.who].c:who[l.who].dch).push(l); });
+      var h='<div class="won-scroll"><table class="acct" style="min-width:560px"><thead><tr><th>The account</th><th class="n">Charge (received)</th><th class="n">Discharge (paid)</th></tr></thead><tbody>';
+      var tc=0,td=0;
+      Object.keys(who).forEach(function(k){ var w=who[k]; var sc=w.c.reduce(function(t,l){return t+l.d;},0), sd=w.dch.reduce(function(t,l){return t+l.d;},0); tc+=sc; td+=sd;
+        h+='<tr><td colspan="3" style="font-family:var(--fellsc);color:var(--gold);padding-top:8px">'+esc(k)+'</td></tr>';
+        w.c.forEach(function(l){ h+='<tr><td>'+esc(l.text)+'</td><td class="n">'+lsd(l.d)+'</td><td class="n"></td></tr>'; });
+        w.dch.forEach(function(l){ h+='<tr><td>'+esc(l.text)+'</td><td class="n"></td><td class="n">'+lsd(l.d)+'</td></tr>'; });
+        h+='<tr class="tot"><td>'+(k==='the chest'?'Remaineth in the chest':'Remaineth to '+esc(first(k)))+'</td><td class="n" colspan="2">'+lsd(sc-sd)+'</td></tr>';
+      });
+      h+='<tr class="tot"><td>Sum total</td><td class="n">'+lsd(tc)+'</td><td class="n">'+lsd(td)+'</td></tr></tbody></table></div>';
+      return h;
+    }
+    function render(){
+      var el=document.getElementById('rk-body'); if(!el||typeof S==='undefined') return;
+      var E=ensure(load()), d=storyDate(), Q=E.quarters[E.quarters.length-1], cur=seasonIdx(S.currentSeason);
+      var ms=msToMidnight(), hh=Math.floor(ms/36e5), mm=Math.floor(ms%36e5/6e4);
+      var h='<div class="won-intro">A season of the campaign is one real day; at midnight it turns, whether you trade or not, and the quarter day is reckoned — every man paid, every due taken, the chest filled. <strong>Roger\'s purse is yours</strong>; the men\'s are their own, and they spend as they like.</div>';
+      h+='<div class="rk-clock"><div><b>The season</b><span class="big">'+esc(S.currentSeason.replace(' AD',''))+'</span>'+esc(qname(cur))+' '+esc(shortDay(qdate(cur)))+' · turns at midnight, in '+hh+'h '+mm+'m</div>'+
+        (function(){ var hy=nowHY(), gm=grainMult(hy), y=idxYear(cur); return '<div><b>Prices this season</b><span class="big">'+Math.round(priceIndex(hy))+' <span style="font-size:11px;font-family:var(--mono);color:var(--ink4)">on the 1451–75 scale (the story opened at '+Math.round(BASE)+')</span></span>Harvest of '+hy+' <strong>'+esc(harvestClass(hy))+'</strong> (wheat '+(hv(hy)>=0?'+':'−')+Math.abs(hv(hy)).toFixed(0)+'% on trend) · bread '+(gm>1.3?'dear':gm<0.85?'cheap':'fair')+' · the penny loaf about '+(2/gm).toFixed(1)+' lb</div>'+
+        '<div><b>Wages of the year</b><span class="big">'+labRate(y)+'d · '+craftRate(y)+'d</span>a labourer\'s day · a craftsman\'s day, without meat and drink</div>'; })()+
+        '<div><b>Last reckoned</b><span class="big">'+(Q?esc(Q.qday+' '+Q.year):'—')+'</span>'+(Q?'for '+esc(Q.reckoned.replace(' AD',''))+(Q.pendingSpend?' · <span class="warn">the men are at market…</span>':''):'')+'</div></div>';
+      // Roger
+      h+='<div class="rk-cards"><div class="rk-card"><h5><span>'+(typeof charAvatar==='function'?charAvatar(1,26)+' ':'')+'Roger\'s purse</span><span class="sum">'+lsd(purseTotal(E.roger,d))+' · '+usd(purseTotal(E.roger,d))+'</span></h5>'+
+        '<ul><li>'+purseHtml(E.roger,d)+'</li>'+(E.roger.arrears?'<li class="warn">In arrears '+lsd(E.roger.arrears)+' to his landlord and the inn</li>':'')+(E.roger.acres?'<li>Holds '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' of copyhold pasture (rent 10½d an acre; common of the fen)</li>':'<li>Holds no land, so no rights of common — a leader who owns a chest and a sword</li>')+(E.roger.goods.length?'<li>Goods: '+esc(E.roger.goods.map(function(g){ return g.n; }).join(', '))+'</li>':'')+'</ul>'+
+        '<div class="rk-act"><button onclick="twEco.putInChest()">Put in the chest</button><button onclick="twEco.takeFromChest()">Take from the chest</button><button onclick="twEco.give()">Give to a man</button>'+(E.roger.angels?'<button onclick="twEco.changeAngel()">Change an angel ('+lsd(angelAt(d))+')</button>':'')+'<button onclick="twEco.buyAngel()">Buy an angel ('+lsd(angelAt(d))+')</button>'+((E.roger.old||[]).length?'<button class="gold" onclick="twEco.sellOld()">Sell old pennies to the goldsmith (offer '+lsd(goldsmithOffer(E.roger,d))+')</button>':'')+'</div>'+
+        '<div class="rk-act" style="margin-top:4px">'+ROGER_SHOP.map(function(it){ var pm=priceMult(nowHY()), price=(it[0]==='acre'||it[0]==='mass'||it[0]==='candle')?it[2]:Math.max(1,Math.round(it[2]*pm)); return '<button onclick="twEco.buy(\''+it[0]+'\')" title="'+esc(it[1])+'">'+esc(it[1].split(',')[0])+' '+lsd(price)+'</button>'; }).join('')+'</div></div>';
+      // Chest
+      h+='<div class="rk-card"><h5><span>🗝 The band\'s chest</span><span class="sum">'+lsd(purseTotal(E.chest,d))+' · '+usd(purseTotal(E.chest,d))+'</span></h5><ul><li>'+purseHtml(E.chest,d)+'</li><li>Three keys: Roger, '+esc(keyNames(E))+' — two must be present to open it</li><li>Quarterage '+lsd(E.chest.quarterage)+' a man at every quarter day</li></ul>'+
+        '<div class="rk-log">'+(E.chest.log.slice(-6).reverse().map(function(l){ return esc(shortDay(l.date))+' · '+esc(l.text)+' '+lsd(Math.abs(l.d)); }).join('<br>')||'Nothing in the log yet.')+'</div><div class="rk-act"><button onclick="twEco.setQuarterage()">Set the quarterage</button></div></div></div>';
+      // The men
+      h+='<h4>The men\'s purses</h4><div class="won-scroll"><table style="min-width:640px"><thead><tr><th>Man</th><th>Purse</th><th class="n">Total</th><th>This quarter</th><th>Lately bought</th></tr></thead><tbody>';
+      men().forEach(function(m){ var p=E.men[m.id]; if(!p) return; var b=Q&&Q.bought[m.name]||[]; var rem=Q&&Q.remarks[m.name];
+        h+='<tr><td>'+(typeof charAvatar==='function'?charAvatar(m.id,22)+' ':'')+esc(m.name)+(m.dead?' ✝':'')+'</td><td>'+esc(purseHtml(p,d))+'</td><td class="n">'+lsd(purseTotal(p,d))+'<br><span style="color:var(--ink4);font-size:9px">'+usd(purseTotal(p,d))+'</span></td><td>'+(Q?esc(Q.lines.filter(function(l){ return l.who===m.name&&l.kind==='charge'; }).map(function(l){ return '+'+lsd(l.d); }).join(' ')+' '+Q.lines.filter(function(l){ return l.who===m.name&&l.kind==='discharge'; }).map(function(l){ return '−'+lsd(l.d); }).join(' ')):'')+'</td><td>'+(b.length?esc(b.map(function(x){ return x.n+' '+lsd(x.d); }).join('; ')):'—')+(rem?'<div class="rk-quote">“'+esc(rem)+'”</div>':'')+'</td></tr>'; });
+      h+='</tbody></table></div><div class="note">A son living at home earns at the customary rate but takes most of it as keep at his father\'s table; the cash is what he can carry to the alehouse or the fair. What he buys is his own choice, in character, at this year\'s prices, within his degree — or outside it.</div>';
+      // The account
+      if(Q){ h+='<h4>The account of '+esc(Q.qday+' '+Q.year)+' — charge and discharge</h4>'+acctTable(Q)+(E.quarters.length>1?'<details class="won-more"><summary>Earlier reckonings</summary>'+E.quarters.slice(0,-1).reverse().slice(0,8).map(function(q){ return '<div style="margin:8px 0"><div style="font-family:var(--fellsc);color:var(--ink)">'+esc(q.qday+' '+q.year)+' — for '+esc(q.reckoned.replace(' AD',''))+'</div>'+acctTable(q)+'</div>'; }).join('')+'</details>':''); }
+      h+='<div class="note" style="margin-top:8px"><strong>How it is reckoned.</strong> Prices follow the Phelps Brown &amp; Hopkins basket of consumables (Munro\'s five-year means), moved year by year by Hoskins\' record of every harvest 1523–1619; bread and drink take the harvest in full. Wages follow the customary daily rates in the same tables — 4d and 6d until the 1530s, rising through the century. Coin follows the real indentures: Wolsey\'s lighter penny of November 1526, the Great Debasement of 1544–51 and the restoration of 1551; the angel\'s value by proclamation. Dues: quarterage to the chest, Easter offering, the Whitsun ale, a Candlemas candle, the Christmas feast, Roger\'s rent, board and personal tithe, amercements in the court leet after an affray, and the subsidies that reached men of small goods. Simplifications are marked in the source.</div>';
+      el.innerHTML=h;
+    }
+    window.renderReckoning=function(){ render(); try{ if(window.renderWealthOfNations) window.renderWealthOfNations(); }catch(e){} };
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(sync, 300); setInterval(function(){ try{ sync(); }catch(e){} }, 60000); });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden){ try{ sync(); }catch(e){} } });
+  })();
+  </script>
+
   <!-- ═════════ THE WEALTH OF NATIONS, 1526 — money, realms and what the band earns ═════════ -->
   <style>
   .won details>summary{cursor:pointer;list-style:none;}
@@ -3436,7 +3867,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     // Values are reasoned estimates for Whittlesey c.1526; see the notes under the table.
     var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
     var HOUSEHOLDS = [
-      // Roger's net worth is set to match Lee's own: about $2,000 (≈ £1 7s 3d in 1526 money at this page's rate)
+      // Roger's net worth started at Lee's own: about $2,000 (≈ £1 7s 3d in 1526 money). His purse, goods and land now come live from The Reckoning.
       {id:1, who:'what he owns himself', band:'wool merchant\'s son, fallen on lean times',
        home:'A rented upper chamber in a house near the market place: one room under the thatch, a bed, a chest and a shuttered window over the street. He pays his rent by the quarter.',
        tenure:'Holds no land. When his father died, the house, the flock and the wool stock went to pay his father\'s debts; Roger kept his name, his father\'s trade connections and little else.',
@@ -3580,13 +4011,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       h+='<h4>Homes, land and net worth</h4><div class="note">What each household owned, valued the way a 1520s probate inventory or tax assessor would value it. Roger, as heir, owns his household outright. The other four are young unmarried sons: they live in their fathers\' houses and own little themselves, which was normal at eighteen. Everything here is an <span class="est">estimate</span> built from the sources below. The 1524–25 subsidy rates are shown so you can see which tax band each household fell in.</div>';
       var bandTotal=0;
       HOUSEHOLDS.forEach(function(x){
-        var fam=sumItems(x.items), own=sumItems(x.own), sb=subsidyBand(fam), mine=x.own?own:fam; bandTotal+=mine;
+        var items=(x.id===1 && window.twEconomy) ? x.items.filter(function(it){ return it[0]!=='Money in his purse'; }).concat(window.twEconomy.rogerItems()) : x.items;
+        var fam=sumItems(items), own=sumItems(x.own), sb=subsidyBand(fam), mine=x.own?own:fam; bandTotal+=mine;
         h+='<div style="border:1px solid var(--border2);border-radius:3px;background:var(--parch2);padding:10px 12px;margin:8px 0;">'+
           '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><div style="font-family:var(--fellsc);font-size:15px;color:var(--ink)">'+(typeof charAvatar==='function'?charAvatar(x.id,28)+' ':'')+nameOf(x.id)+' <span style="font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em">'+x.band+'</span></div>'+
           '<div style="font-family:var(--mono);font-size:11px;color:var(--ink2)">'+(x.own?'Household: <strong>'+lsd(fam)+'</strong> · <span style="color:var(--blood)">His own: <strong>'+lsd(own)+'</strong></span>':'Net worth: <strong>'+lsd(fam)+'</strong>')+'</div></div>'+
           '<div class="note" style="margin-top:4px"><strong>Home:</strong> '+x.home+'</div><div class="note"><strong>Tenure:</strong> '+x.tenure+'</div>'+
           '<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>'+(x.own?'The household ('+x.who+')':'What he owns')+'</th><th class="n">1526</th><th class="n">2026 US $</th></tr></thead><tbody>'+
-          x.items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
+          items.map(function(it){ return '<tr><td>'+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
           '<tr><td><strong>'+(x.own?'Household total':'Net worth')+'</strong></td><td class="n"><strong>'+lsd(fam)+'</strong></td><td class="n"><strong>'+usd(fam*USD_PER_D_GOODS)+'</strong></td></tr>'+
           (x.own?x.own.map(function(it){ return '<tr style="background:#fff8e0"><td>His own: '+it[0]+'</td><td class="n">'+lsd(it[1])+'</td><td class="n">'+usd(it[1]*USD_PER_D_GOODS)+'</td></tr>'; }).join('')+
             '<tr style="background:#fff8e0"><td><strong>His own net worth</strong></td><td class="n"><strong>'+lsd(own)+'</strong></td><td class="n"><strong>'+usd(own*USD_PER_D_GOODS)+'</strong></td></tr>':'')+
@@ -5975,7 +6407,6 @@ function logBattle(){
   S.treasury+=outcome==='WIN'?pnl:-pnl;S.seasons++;
   if(outcome==='WIN')S.wins++;else S.losses++;
   if(outcome==='WIN') awardRP(pnl, enemy, season);
-  advanceSeason();
   // Auto-refresh world conflicts via AI each turn (user requested automation)
   try { if(typeof aiRefreshConflicts === 'function') aiRefreshConflicts(); } catch(e){ console.warn('[auto-refresh] aiRefreshConflicts failed:', e); }
   S.battles.unshift({id:Date.now(),season,outcome,pnl:outcome==='WIN'?pnl:-pnl,contract,setup,enemy,notes,men:results});
@@ -5994,7 +6425,7 @@ function logBattle(){
   clearForm();render();
   try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:outcome, pnl:pnl, enemy:enemy, setup:setup, contract:contract, results:results}); }catch(e){}
   // Auto-prompt to refresh world after each battle
-  setTimeout(()=>{showToast('New Season','Season advanced to '+S.currentSeason+'. Update your briefing and quests.',false);},600);
+  setTimeout(()=>{showToast('Fight logged','The men have heard of it in the gathering.',false);},600);
 }
 
 function showToast(title,msg,isDeath){
@@ -7349,6 +7780,7 @@ function confirmSeasonAdvance(){
   advanceSeason();
   S.seasons = (S.seasons||0); // seasons already incremented by battles, this is just a manual advance
   save();
+  try{ if(typeof window.twEcoManualTurn==='function') window.twEcoManualTurn(); }catch(e){ console.warn('[economy]', e); }
 
   // Update all season labels
   const season = S.currentSeason;
@@ -8759,7 +9191,7 @@ Render your verdict now.`;
         S.seasons++;
         if(draft.outcome === 'WIN'){ S.wins++; if(typeof awardRP === 'function') awardRP(draft.pnl, draft.enemy, draft.season); }
         else S.losses++;
-        if(typeof advanceSeason === 'function') advanceSeason();
+        // The season no longer turns with a trade: one real day is one season (see The Reckoning)
         // Auto-refresh world conflicts via AI each turn (preserved from original logBattle)
         try{ if(typeof aiRefreshConflicts === 'function') aiRefreshConflicts(); }catch(e){}
         S.battles.unshift({
