@@ -1250,7 +1250,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         </div>
         <div class="band-slots" id="band-slots"></div>
         <div style="font-family:var(--mono);font-size:7px;color:var(--ink4);text-align:center;">
-          Click: open dossier &nbsp;·&nbsp; Double-click: deploy/remove from battle
+          Click: open dossier &nbsp;·&nbsp; The watch is set by lot — one man at a time, by the town's contract
         </div>
       </div>
 
@@ -1389,8 +1389,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
         <!-- DEPLOYED-MEN SUB-PANEL — visible roster of who's been sent to this battle -->
         <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;margin-top:12px;">
-          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">⚔ DEPLOYED FOR THIS BATTLE</div>
-          <div id="t1-deployed-list" style="font-size:12.5px;color:#3a2818;line-height:1.55;font-style:italic;color:var(--ink4);">No men deployed yet — double-click any soldier card below to send him into battle.</div>
+          <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;">🕯 THE WATCH — ONE MAN, BY LOT, BY THE TOWN'S CONTRACT</div>
+          <div id="t1-deployed-list" style="font-size:12.5px;color:#3a2818;line-height:1.55;font-style:italic;color:var(--ink4);">The lot is being cast…</div>
         </div>
 
         <!-- RIGHT: BATTLE LOG INPUT (merged with Log a Battle) -->
@@ -1446,7 +1446,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <!-- BAND / ROSTER — double-click cards to deploy soldiers to this battle -->
       <div style="background:#f3e9d2;border:1.5px solid var(--border2);padding:10px 14px;border-radius:2px;margin-bottom:12px;">
         <div style="font-family:var(--fellsc);font-size:12px;letter-spacing:0.08em;color:var(--ink2);margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px;">⚔ DEPLOY THE BAND — double-click any soldier card to send him into battle</div>
-        <div class="sel-bar" id="sel-bar">No men deployed — double-click soldier cards to send them into battle</div>
+        <div class="sel-bar" id="sel-bar">The lot is being cast for the watch…</div>
         <div class="roster-grid" id="roster-grid"></div>
         <div class="split-box" id="split-preview">Deploy men and enter a P&amp;L to preview the split...</div>
       </div>
@@ -2588,6 +2588,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     '- Speech: readable modern English with period flavour and vocabulary — not mock-Shakespearean thee/thou overload.\n'+
     '- Each man has his own mind, opinions and agenda. They disagree with Roger and with each other, joke, grumble, grieve, change the subject, and ask questions back. Never flatter Roger.\n'+
     '- The game\'s ledger (dollar figures and ranks) measures each man\'s strength and standing; it is not money anyone holds. The men never mention dollars or modern rank titles. Their real money is the pence in each man\'s purse and the band\'s chest, as given; their means are their households, in pounds, shillings and pence.\n'+
+    '- The band keeps the town\'s watch under a contract: one man on guard at a time, chosen by lot, and that man takes the next fight alone. Men talk about whose turn it is, who was lucky, who was not.\n'+
     '- Never write lines for Roger.';
 
   function worldCtx(st, dateStr, place){
@@ -2598,6 +2599,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     return 'STORY DATE: '+di.long+' (Julian).'+osNote(dateStr)+(di.feasts.length?' Church calendar: '+di.feasts.join('; ')+'.':'')+(di.fast?' '+di.fast+'.':'')+' Season: '+di.season+'.\n'+
       'PLACE: '+(place||'Whittlesey')+', in Whittlesey — a fen market town on the edge of the Isle of Ely, Cambridgeshire, with its two parishes of St Mary and St Andrew, near Whittlesey Mere.\n'+
       (window.twTownText?'THE TOWN: '+window.twTownText(parseD(dateStr).y)+'\n':'')+
+      (function(){ try{ var w=(S.watch&&S.men.filter(function(m){ return m.id===S.watch.id&&!m.dead; })[0]); return w?'THE WATCH: by the band\'s contract with the town one man stands guard at a time, chosen by lot; '+w.name+' has the watch now and will meet the next trouble alone. The men know whose turn is coming.\n':''; }catch(e){ return ''; } })()+
       'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a wool merchant\'s son. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
@@ -3149,23 +3151,23 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     try{
       var st=ensure(load()), sc=curScene(st), date=st.storyDate, res=rep.results||[];
       var hurt=res.filter(function(r){ return r.type==='loss'; }), won=res.filter(function(r){ return r.type==='win'; });
-      var text, ico='⚔️', grave=false;
+      var text, ico='⚔️', grave=false, solo=(rep.watch && res.length===1)?res[0]:null;
       if(rep.outcome==='WIN'){
-        text='The band drove off '+enemyName(rep.enemy)+'.'+(won.length?' '+won.map(function(r){ return firstName(r.name); }).join(', ')+' came through it and '+(won.length===1?'is':'are')+' the harder for it.':'');
+        text=solo ? firstName(solo.name)+', standing the watch, drove off '+enemyName(rep.enemy)+' alone and is the harder for it.' : 'The band drove off '+enemyName(rep.enemy)+'.'+(won.length?' '+won.map(function(r){ return firstName(r.name); }).join(', ')+' came through it and '+(won.length===1?'is':'are')+' the harder for it.':'');
         var promos=won.filter(function(r){ return r.promoted; });
         if(promos.length) text+=' '+promos.map(function(r){ var m=manByName(r.name); return firstName(r.name)+' has risen in the band\'s esteem: '+(m?standing(m):'a better man')+' now'; }).join('; ')+'.';
       } else {
-        text='The band was set upon by '+enemyName(rep.enemy)+' and came off the worse: '+hurt.map(function(r){ var w=Math.round(r.share); return firstName(r.name)+' took '+w+' wound'+(w===1?'':'s'); }).join(', ')+'.';
+        text=solo ? firstName(solo.name)+', standing the watch alone, was set upon by '+enemyName(rep.enemy)+' and took '+Math.round(solo.share)+' wound'+(Math.round(solo.share)===1?'':'s')+'.' : 'The band was set upon by '+enemyName(rep.enemy)+' and came off the worse: '+hurt.map(function(r){ var w=Math.round(r.share); return firstName(r.name)+' took '+w+' wound'+(w===1?'':'s'); }).join(', ')+'.';
         var dead=hurt.filter(function(r){ return r.dead; });
         if(dead.length){ text+=' '+dead.map(function(r){ return r.name+' died of his wounds.'; }).join(' '); grave=true; ico='✝️'; }
       }
-      var note=(rep.outcome==='WIN'?'Won $':'Lost $')+Number(rep.pnl||0).toFixed(2)+(rep.setup?' · '+rep.setup:'')+(rep.contract?' '+rep.contract:'')+' · logged '+new Date().toLocaleDateString();
+      var note=(rep.outcome==='WIN'?'Won $':'Lost $')+Number(rep.pnl||0).toFixed(2)+(rep.setup?' · '+rep.setup:'')+(rep.contract?' '+rep.contract:'')+' · logged '+new Date().toLocaleDateString()+(rep.next?' · the watch passes to '+firstName(rep.next):'');
       st.events=st.events||[]; st.events.push({ts:Date.now(), date:date, kind:rep.outcome==='WIN'?'win':'loss', text:text, note:note, grave:grave});
       if(st.events.length>60) st.events=st.events.slice(-60);
       sc.lines.push({who:'event', ico:ico, text:text, note:note, grave:grave, ts:Date.now()});
       res.forEach(function(r){
         var m=manByName(r.name); if(!m) return; var s=stateFor(st,m.id), w=Math.round(r.share);
-        s.memories.push(dayInfo(date).short+': '+(r.type==='win'?'fought beside Roger against '+enemyName(rep.enemy)+' and won':'took '+w+' wounds fighting '+enemyName(rep.enemy)+' under Roger'));
+        s.memories.push(dayInfo(date).short+': '+(rep.watch&&res.length===1?(r.type==='win'?'stood the watch alone, drove off '+enemyName(rep.enemy)+' and won Roger\'s praise':'stood the watch alone against '+enemyName(rep.enemy)+' and took '+w+' wounds for it'):(r.type==='win'?'fought beside Roger against '+enemyName(rep.enemy)+' and won':'took '+w+' wounds fighting '+enemyName(rep.enemy)+' under Roger')));
         if(s.memories.length>24) s.memories=s.memories.slice(-24);
         if(r.type==='win') s.loyalty=Math.min(100, s.loyalty+1);
         else if(!r.dead) s.mood = w>=40?'in pain':'sore';
@@ -4126,7 +4128,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       var ms=msToMidnight(), hh=Math.floor(ms/36e5), mm=Math.floor(ms%36e5/6e4), Lf=ensureLife(E);
       var osy=null; try{ osy=window.twcOsYear(d); }catch(e){}
       var h='<div class="td-head"><div><div class="td-date">'+esc(dayText(d))+'</div><div class="td-sub">'+esc(S.currentSeason.replace(' AD',''))+' · '+esc(qname(cur))+(osy&&osy!==+d.slice(0,4)?' · the year is still '+osy+' to the men':'')+' · the season turns at midnight, in '+hh+'h '+mm+'m</div></div>'+
-        '<div class="td-money"><span>Roger\'s purse <b>'+lsd(purseTotal(E.roger,d))+'</b></span><span>The chest <b>'+lsd(purseTotal(E.chest,d))+'</b></span>'+(owedTo(E,'Roger')?'<span>Owed to him <b>'+lsd(owedTo(E,'Roger'))+'</b></span>':'')+(owed(E,'Roger')?'<span class="warn">He owes <b>'+lsd(owed(E,'Roger'))+'</b></span>':'')+'</div></div>';
+        '<div class="td-money">'+(function(){ try{ var w=(typeof ensureWatch==='function')?ensureWatch():null; return w?'<span>🕯 The watch <b>'+esc(w.name)+'</b></span>':''; }catch(e){ return ''; } })()+'<span>Roger\'s purse <b>'+lsd(purseTotal(E.roger,d))+'</b></span><span>The chest <b>'+lsd(purseTotal(E.chest,d))+'</b></span>'+(owedTo(E,'Roger')?'<span>Owed to him <b>'+lsd(owedTo(E,'Roger'))+'</b></span>':'')+(owed(E,'Roger')?'<span class="warn">He owes <b>'+lsd(owed(E,'Roger'))+'</b></span>':'')+'</div></div>';
       // since the last turn
       var since=[];
       if(Q){ since.push('⚖️ '+Q.qday+' '+Q.year+' reckoned for '+Q.reckoned.replace(' AD','')+': the men paid, quarterage into the chest.'); (Q.notes||[]).forEach(function(n){ since.push('🌾 '+n); }); Q.lines.filter(function(l){ return l.kind==='note'; }).slice(0,4).forEach(function(l){ since.push('🪙 '+l.text); }); (Q.life||[]).forEach(function(l){ since.push((l.ico||'•')+' '+l.text); }); }
@@ -4142,6 +4144,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       if((E.roger.old||[]).length) needs.push({t:'He holds '+lsd((E.roger.old||[]).reduce(function(t,o){return t+o.d;},0))+' in old coin; the goldsmith offers '+lsd(goldsmithOffer(E.roger,d))+' in new for it.', btn:'<button onclick="twEco.sellOld()">Sell to the goldsmith</button>'});
       if(!Lf.roger.dead && !Lf.roger.wife && ageOf(Lf.roger.born,y)>=22) needs.push({t:'Roger is '+ageOf(Lf.roger.born,y)+' and unmarried. A wife brings a dowry, and an heir.', btn:'<button onclick="twEcoLife.seekWife()">Seek a wife</button>'});
       if(y>=1540 && !Lf.lease && purseTotal(E.roger,d)>=1440) needs.push({t:'The abbey pasture is to be let at Augmentations: 60 acres, £6 down and £3 a year.', btn:'<button onclick="twEcoLife.takeLease()">Take the King\'s lease</button>'});
+      try{ var wm=(typeof ensureWatch==='function')?ensureWatch():null; if(wm) needs.push({t:'<strong>'+esc(wm.name)+' has the watch</strong>, by lot — the next fight is his alone'+(wm.hp<wm.maxHp*0.5?', <span class="warn">and he is badly hurt ('+Math.round(wm.hp)+' of '+wm.maxHp+')</span>':'')+'. '+esc(typeof watchRollText==='function'?watchRollText():'')}); }catch(e){}
       men().forEach(function(m){ if(!m.dead && m.hp<m.maxHp*0.5) needs.push({t:first(m.name)+' is badly hurt ('+Math.round(m.hp)+' of '+m.maxHp+'). Wounds heal with a won fight.'}); if(!m.dead && owedTo(E,'Roger')&&(E.debts||[]).some(function(b){ return b.from===String(m.id)&&b.to==='Roger'&&b.overdue>0; })) needs.push({t:first(m.name)+' is behind on what he owes Roger.'}); });
       if(TAXES.some(function(t){ return t.year===y; }) && s<2) needs.push({t:'A subsidy is assessed this Michaelmas ('+TAXES.filter(function(t){ return t.year===y; })[0].name+'); Roger\'s goods will be reckoned.'});
       if(s===2 && y>=1528) needs.push({t:'The court leet sits at Michaelmas: affrays are amerced, and the jury names the year\'s officers.'});
@@ -6582,7 +6585,7 @@ const SEED_CONFLICTS=[
 function defaultState(){
   return {treasury:500,seasons:0,wins:0,losses:0,
     campaign:'Defense of Whittlesey — Bandit Raids',
-    currentSeason:'Spring, 1526 AD',selectedMen:[],battles:[],chronicle:[],
+    currentSeason:'Spring, 1526 AD',selectedMen:[],battles:[],chronicle:[],watch:null,watchRoll:[],watchRoger:false,
     aiConflicts:null,
     territories:{'isle_ely':5},
     rpPool:0,
@@ -6724,6 +6727,7 @@ function openConflict(id){
 // ── AI: Refresh Conflicts ──
 async function aiRefreshConflicts(){
   const btn=document.getElementById('refresh-conflicts-btn');
+  if(!btn) return;   // the conflicts panel is not on this page; nothing to refresh
   btn.disabled=true;btn.textContent='⟳ Fetching world intelligence...';
   const system=`You are a historical world-events generator for a 1526 AD early-modern period military RPG. The player commands a small English militia band based in Whittlesey, Cambridgeshire. Generate a JSON array of 7-9 conflict/event objects relevant to the current game season. Each object must be historically accurate and include:
 - id: short snake_case identifier
@@ -6999,23 +7003,53 @@ function renderRoster(){
   if(activeBioId)showBio(activeBioId);
 }
 
-function toggleDeploy(id){
-  const m=S.men.find(x=>x.id===id);if(!m||m.dead)return;
-  const i=S.selectedMen.indexOf(id);
-  if(i===-1)S.selectedMen.push(id);else S.selectedMen.splice(i,1);
-  renderRoster();updatePreview();
+// ── THE WATCH ────────────────────────────────────────────────────────────
+// By the band's contract with the town of Whittlesey one watchman stands guard at a time, so one man
+// meets the next fight alone. He is chosen by lot: the roll is every living man of the band in a random
+// order, each standing once before the lot is cast again — equal exposure, random order. With more men
+// or more units the same roll would run through them in turn.
+function watchPool(){ return S.men.filter(m=>!m.dead && (S.watchRoger || !m.isCmd)); }
+function drawWatch(why){
+  const pool=watchPool(); if(!pool.length){ S.watch=null; S.selectedMen=[]; save(); return null; }
+  if(!Array.isArray(S.watchRoll)) S.watchRoll=[];
+  S.watchRoll=S.watchRoll.filter(id=>pool.some(m=>m.id===id));
+  if(!S.watchRoll.length){
+    S.watchRoll=pool.map(m=>m.id);
+    for(let i=S.watchRoll.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=S.watchRoll[i]; S.watchRoll[i]=S.watchRoll[j]; S.watchRoll[j]=t; }
+    S.watchRound=(S.watchRound||0)+1;
+  }
+  const id=S.watchRoll.shift();
+  S.watch={id:id, drawn:Date.now(), season:S.currentSeason, why:why||'the lot'};
+  S.selectedMen=[id]; save();
+  return S.men.find(m=>m.id===id)||null;
 }
+function ensureWatch(){
+  const ok=S.watch && S.men.some(m=>m.id===S.watch.id && !m.dead && (S.watchRoger||!m.isCmd));
+  if(!ok) drawWatch('the lot');
+  S.selectedMen=S.watch?[S.watch.id]:[];
+  return S.watch?(S.men.find(m=>m.id===S.watch.id)||null):null;
+}
+function watchRollText(){
+  const left=(S.watchRoll||[]).map(id=>S.men.find(m=>m.id===id)).filter(m=>m&&!m.dead);
+  return left.length ? 'Still to stand this round: '+left.map(m=>m.name.split(' ')[0]).join(', ')+'.' : 'He is the last of this round; the lot is cast again after him.';
+}
+window.twToggleWatchRoger=function(v){ S.watchRoger=!!v; save(); ensureWatch(); render(); try{ updatePreview(); }catch(e){} };
+function watchNotice(){ const w=ensureWatch(); if(typeof showToast==='function') showToast('🕯 The watch', w?('By the town\'s contract one man stands guard at a time, chosen by lot. Tonight it is '+w.name+'.'):'No living man can stand the watch.', false); }
+
+function toggleDeploy(id){ watchNotice(); renderRoster(); updatePreview(); }
 
 function updateSelBar(){
+  if(typeof ensureWatch==='function') ensureWatch();
   const sel=S.selectedMen.map(id=>S.men.find(m=>m.id===id)).filter(Boolean);
   {const _el_sel_bar=document.getElementById('sel-bar');if(_el_sel_bar)_el_sel_bar.textContent=sel.length===0
-    ?'No men deployed — double-click soldier cards above to send them into battle'
-    :'⚔ Deployed: '+sel.map(m=>m.name+' (HP:'+m.hp.toFixed(0)+')').join(' · ')}
+    ?'No living man to stand the watch'
+    :'🕯 On the watch, by lot: '+sel.map(m=>m.name+' (HP '+m.hp.toFixed(0)+')').join(' · ')+' — the next fight is his alone. '+(typeof watchRollText==='function'?watchRollText():'')}
   // Also render the deployed-men sub-panel inside the Tier 1 Discipline Console
   const dep = document.getElementById('t1-deployed-list');
   if(dep){
+    const rogerBox='<label style="display:block;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--ink4);cursor:pointer;"><input type="checkbox" onchange="twToggleWatchRoger(this.checked)"'+(S.watchRoger?' checked':'')+'> Roger stands his turn in the roll too</label>';
     if(sel.length === 0){
-      dep.innerHTML = 'No men deployed yet — double-click any soldier card below to send him into battle.';
+      dep.innerHTML = 'No living man to stand the watch.'+rogerBox;
       dep.style.fontStyle = 'italic';
       dep.style.color = 'var(--ink4)';
     } else {
@@ -7024,7 +7058,7 @@ function updateSelBar(){
       const totalHp = sel.reduce((s,m)=>s+m.hp, 0) || 1;
       dep.style.fontStyle = 'normal';
       dep.style.color = '#3a2818';
-      dep.innerHTML = sel.map(m => {
+      dep.innerHTML = '<div style="font-style:italic;color:var(--ink4);font-size:11.5px;margin-bottom:4px;">By the contract with the town one watchman stands guard at a time. The lot has fallen on him for the next fight; the roll gives every man his turn before it is cast again. '+(typeof watchRollText==='function'?watchRollText():'')+'</div>'+sel.map(m => {
         const pct = (m.hp/totalHp*100).toFixed(0);
         const rank = (typeof rankId === 'function') ? rankId(m) : '';
         let shareTxt = '';
@@ -7038,8 +7072,8 @@ function updateSelBar(){
             shareTxt = ' · <span style="color:#8a2a20;font-weight:600;">−$'+share.toFixed(2)+' HP</span> '+m.hp.toFixed(0)+'→'+nh.toFixed(0)+(nh<=0?' <strong style="color:#b03030;">⚠ FALLS</strong>':'');
           }
         }
-        return '<div style="padding:4px 0;border-bottom:1px dotted var(--border);display:flex;align-items:baseline;gap:6px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:10px;">'+rank+'</span> <strong>'+m.name+'</strong> <span style="color:var(--ink4);font-size:11px;">('+pct+'%)</span> '+shareTxt+'</div>';
-      }).join('');
+        return '<div style="padding:4px 0;border-bottom:1px dotted var(--border);display:flex;align-items:baseline;gap:6px;"><span style="font-family:var(--fellsc);color:var(--gold);font-size:10px;">'+rank+'</span> <strong>🕯 '+m.name+'</strong> <span style="color:var(--ink4);font-size:11px;">('+pct+'%)</span> '+shareTxt+'</div>';
+      }).join('')+rogerBox;
     }
   }
 }
@@ -7051,7 +7085,7 @@ function updatePreview(){
   const outcome=document.getElementById('f-outcome').value;
   const pnl=parseFloat(document.getElementById('f-pnl').value);
   const sel=S.selectedMen.map(id=>S.men.find(m=>m.id===id)).filter(Boolean);
-  if(!sel.length||!pnl||pnl<=0||!outcome){box.innerHTML='Deploy men and enter a P&amp;L to preview the split...';return;}
+  if(!sel.length||!pnl||pnl<=0||!outcome){box.innerHTML='Enter the outcome and the P&amp;L to see what the watchman wins or suffers…';return;}
   const totalHp=sel.reduce((s,m)=>s+m.hp,0);
   box.innerHTML=sel.map(m=>{
     const share=(m.hp/totalHp)*pnl;
@@ -7068,9 +7102,9 @@ function logBattle(){
   const setup=document.getElementById('f-setup').value;
   const enemy=document.getElementById('f-enemy').value.trim()||'Unknown Adversary';
   const notes=document.getElementById('f-notes').value.trim();
-  const sel=S.selectedMen.map(id=>S.men.find(m=>m.id===id)).filter(Boolean);
+  const wm0=(typeof ensureWatch==='function')?ensureWatch():null; const sel=wm0?[wm0]:[];
   if(!outcome||!pnl||pnl<=0){alert('Please select an outcome and enter a positive P&L.');return;}
-  if(!sel.length){alert('Double-click soldiers to deploy them first.');return;}
+  if(!sel.length){alert('No living man can stand the watch.');return;}
   const totalHp=sel.reduce((s,m)=>s+m.hp,0);
   const promos=[],deaths=[],results=[];
   sel.forEach(m=>{
@@ -7089,7 +7123,7 @@ function logBattle(){
     const summary = outcome+' · '+contract+' '+setup+' vs '+enemy+' · $'+pnl.toFixed(2)+(notes?(' — '+notes):'');
     chronicleAdd('log','trade','Log a Battle',season,summary);
   }catch(_){}
-  S.selectedMen=[];save();
+  const nextWatch0=(typeof drawWatch==='function')?drawWatch('after the fight'):null; save();
   // Update season labels
   {const _el_briefer_season_label=document.getElementById('briefer-season-label');if(_el_briefer_season_label)_el_briefer_season_label.textContent=S.currentSeason}
   {const _el_save_season_display=document.getElementById('save-season-display');if(_el_save_season_display)_el_save_season_display.textContent=S.currentSeason}
@@ -7098,7 +7132,7 @@ function logBattle(){
   promos.forEach(m=>showToast('⬆ Promotion!',m.name+' promoted to '+rankId(m)+' — '+rankName(m)+'!',false));
   deaths.forEach(m=>showToast('☩ Fallen',m.name+' has fallen in battle.',true));
   clearForm();render();
-  try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:outcome, pnl:pnl, enemy:enemy, setup:setup, contract:contract, results:results}); }catch(e){}
+  try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:outcome, pnl:pnl, enemy:enemy, setup:setup, contract:contract, results:results, watch:true, next:nextWatch0?nextWatch0.name:''}); }catch(e){}
   // Auto-prompt to refresh world after each battle
   setTimeout(()=>{showToast('Fight logged','The men have heard of it in the gathering.',false);},600);
 }
@@ -8525,7 +8559,7 @@ function renderBandSlots(){
         <div class="bs-name">${m.name.split(' ')[0]}</div>
         <div class="bs-rank">${rankId(m)}</div>
         ${!m.dead?`<div class="bs-hp" style="color:${hpCol}">${m.hp.toFixed(0)}/${m.maxHp}</div>`:''}
-        ${sel?'<div style="font-family:var(--mono);font-size:7px;color:var(--forest-m);margin-top:2px;">DEPLOYED</div>':''}
+        ${sel?'<div style="font-family:var(--mono);font-size:7px;color:var(--forest-m);margin-top:2px;">🕯 ON THE WATCH</div>':''}
       </div>`;
     } else {
       html += `<div class="band-slot empty">
@@ -8555,11 +8589,7 @@ function handleSlotClick(id, e){
 function handleSlotDbl(id, e){
   e.stopPropagation();
   e.preventDefault();
-  const m = S.men.find(x=>x.id===id);
-  if(!m||m.dead) return;
-  const i = S.selectedMen.indexOf(id);
-  if(i===-1) S.selectedMen.push(id);
-  else S.selectedMen.splice(i,1);
+  watchNotice();
   renderBandSlots();
   updateSelBar();
   updatePreview();
@@ -9625,8 +9655,9 @@ document.addEventListener('DOMContentLoaded', ()=>{ renderQuestList(); renderQue
     // Game-state validation (merged from old logBattle)
     if(!outcome){ alert('Choose an outcome (Victory or Defeat) before committing the trade.'); return null; }
     if(!pnl || pnl <= 0){ alert('Enter a positive P&L (the dollar amount won or lost on this trade).'); return null; }
-    const selMen = (typeof S!=='undefined' && Array.isArray(S.selectedMen)) ? S.selectedMen.map(id=>S.men.find(m=>m.id===id)).filter(Boolean) : [];
-    if(!selMen.length){ alert('Double-click at least one soldier to deploy him into this battle before committing.'); return null; }
+    const wm = (typeof ensureWatch==='function') ? ensureWatch() : null;
+    const selMen = wm ? [wm] : [];
+    if(!selMen.length){ alert('No living man can stand the watch; the band has no one to send.'); return null; }
     return {
       id: Date.now(),
       date: t1Today(),
@@ -9881,8 +9912,10 @@ Render your verdict now.`;
           men: results,
           riskOfficer: reviewState
         });
-        S.selectedMen = [];
+        // The watch passes: the lot falls on the next man of the roll
+        const nextWatch = (typeof drawWatch==='function') ? drawWatch('after the fight') : null;
         if(typeof save === 'function') save();
+        if(nextWatch && typeof showToast==='function') setTimeout(()=>showToast('🕯 The watch passes', nextWatch.name+' stands the next watch, by lot.'+(typeof watchRollText==='function'?' '+watchRollText():''), false), 900);
         // Refresh season labels in header
         const lbl = document.getElementById('briefer-season-label'); if(lbl) lbl.textContent = S.currentSeason;
         const sav = document.getElementById('save-season-display'); if(sav) sav.textContent = S.currentSeason;
@@ -9893,7 +9926,7 @@ Render your verdict now.`;
           deaths.forEach(m=>showToast('☩ Fallen', m.name+' has fallen in battle.', true));
         }
         if(typeof render === 'function') render();
-        try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:draft.outcome, pnl:draft.pnl, enemy:draft.enemy, setup:draft.setup, contract:draft.contract, results:results}); }catch(e){}
+        try{ if(typeof window.twcBattle==='function') window.twcBattle({outcome:draft.outcome, pnl:draft.pnl, enemy:draft.enemy, setup:draft.setup, contract:draft.contract, results:results, watch:true, next:nextWatch?nextWatch.name:''}); }catch(e){}
       }
     }catch(e){ console.warn('[t1Commit] game-state update failed:', e.message); }
 
