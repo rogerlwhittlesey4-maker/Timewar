@@ -1,0 +1,37 @@
+/* The Road — 1526 over the old engine. Dark wood, parchment ink, gold leaf; Fell types. */
+:root{
+  --gold:#c9a227; --gold-bright:#f4ead5; --gold-dim:#7a5c28;
+  --stone:#1a1208; --stone2:#241a0c; --stone3:#2e2410; --ink:#0f0b05;
+  --parch:#f4ead5; --text:#e5d5ad; --text-dim:#a88a52;
+  --q-gray:#9a8f7a; --q-white:#fdf6e0; --q-green:#7fc26b; --q-blue:#5f93d8; --q-purple:#b48ee6; --q-orange:#e8933a;
+  --hp:#8e2318; --hp2:#5c160f; --mana:#2f4e8c; --mana2:#1d3160; --energy:#b98f1f; --xp:#5e3a7a; --xp2:#3f2554;
+  --con-red:#d8372a; --con-orange:#e8933a; --con-yellow:#e2c447; --con-green:#7fc26b; --con-gray:#8a8370;
+  --ok:#7fc26b; --bad:#d8372a;
+  --font-head:"IM Fell English SC","Cinzel",Georgia,serif;
+  --font-ui:"IM Fell English","Marcellus",Georgia,serif;
+  --font-body:"IM Fell English","Roboto Condensed",Georgia,serif;
+  --icon:#d8c6a0;
+}
+html,body{background-color:#140e06}
+body{
+  font-family:var(--font-ui);
+  background:
+    radial-gradient(1100px 520px at 50% -8%, #3a2a12 0%, rgba(58,42,18,0) 62%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg,#1f160a 0%, #140e06 100%);
+  color:var(--text); font-size:15.5px;
+}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:400;letter-spacing:.04em;color:var(--gold-bright)}
+.portrait{background:radial-gradient(circle at 35% 30%,#8a6a2a,#2a1a08)!important;box-shadow:0 0 12px rgba(201,162,39,.35)!important;border-color:var(--gold)!important}
+.who .name{font-family:var(--font-head);letter-spacing:.03em}
+.tab{font-family:var(--font-head);letter-spacing:.05em}
+.tab.active::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.panel{border-color:#5a4420}
+.bar{box-shadow:0 0 0 1px rgba(201,162,39,.25) inset}
+.bar>span{font-family:var(--font-body);letter-spacing:.03em}
+.btn{font-family:var(--font-ui)}
+#footer{font-family:var(--font-ui);font-style:italic}
+.q-green{color:#7fc26b} .q-blue{color:#6fa0e0}
+.gold-rule{border-color:var(--gold-dim)}
+#road-banner{font-family:var(--font-head);text-align:center;color:var(--gold);letter-spacing:.12em;font-size:12px;padding:6px 0 2px;opacity:.85}
+#road-banner b{color:var(--gold-bright);font-weight:400}

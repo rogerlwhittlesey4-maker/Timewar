@@ -64,6 +64,8 @@
     rawRemove.call(this, k);
     if(had) markDirty();
   };
+  // The Road runs in a frame of its own; its saves reach this script only as storage events.
+  window.addEventListener('storage', function(ev){ if(ev && ev.key && tracked(ev.key) && !applying) markDirty(); });
 
   function parseJson(res){ return res.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return null; } }); }
 
@@ -809,6 +811,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 /* ── Pages ── */
 .page{display:none;}
 .page.active{display:block;}
+#page-road.page{background:#140e06;min-height:calc(100vh - 50px);}
+#road-frame{width:100%;height:calc(100vh - 50px);border:0;display:block;background:#140e06;}
+#road-wait{font-family:var(--fellsc);color:#c9a227;text-align:center;padding:60px 20px;letter-spacing:.1em;font-size:14px;}
 
 /* ── Character screen ── */
 
@@ -2007,7 +2012,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
                   try{ showToast && showToast('Saved', 'Reflection saved for today.', false); }catch(e){}
                 };
                 document.querySelectorAll('.cal-habit').forEach(function(cb){
-                  cb.addEventListener('change', function(){ localStorage.setItem('cal-habit-'+todayKey+'-'+cb.dataset.habit, cb.checked?'1':'0'); });
+                  cb.addEventListener('change', function(){ localStorage.setItem('cal-habit-'+todayKey+'-'+cb.dataset.habit, cb.checked?'1':'0'); try{ if(cb.checked && window.roadLogHabit) window.roadLogHabit(todayKey, cb.dataset.habit); }catch(e){} });
                 });
 
                 renderCalendar(); loadDay();
@@ -3665,8 +3670,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     // season, at the real rates: day-labour on the fen at the labourer's wage (more in harvest, less in winter),
     // carrying for the staplers, fowling and eeling if he has rights of common, evenings at the pen writing for
     // the unlettered. It is bounded by what a man could add to his living in a quarter beside his trade.
-    function habitOn(realDate,k){ try{ return localStorage.getItem('cal-habit-'+realDate+'-'+k)==='1'; }catch(e){ return false; } }
-    function workoutExp(realDate){ try{ var c=JSON.parse(localStorage.getItem('timewar_char_exp_v1')||'{}'), t=0; (c.workouts||[]).forEach(function(w){ var d=new Date(w.ts); if(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())===realDate) t+=(+w.xp||0); }); return t; }catch(e){ return 0; } }
+    function habitOn(realDate,k){ try{ if(localStorage.getItem('cal-habit-'+realDate+'-'+k)==='1') return true; if(k==='read'){ var rd=window.roadDay&&window.roadDay(realDate); if(rd&&rd.s>=30) return true; } return false; }catch(e){ return false; } }
+    function workoutExp(realDate){ try{ var c=JSON.parse(localStorage.getItem('timewar_char_exp_v1')||'{}'), t=0; (c.workouts||[]).forEach(function(w){ var d=new Date(w.ts); if(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())===realDate) t+=(+w.xp||0); }); var rd=window.roadDay&&window.roadDay(realDate); if(rd&&rd.e>t) t=rd.e; return t; }catch(e){ return 0; } }
     function realDateFor(E, idx){ if(!E.anchor) return null; var d=new Date(E.anchor.date+'T12:00:00'); d.setDate(d.getDate()+(idx-E.anchor.idx)); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     var SEASON_LAB=[1,1.25,1,0.75], SEASON_WORK=['the spring work: ditching, turf-cutting and the shearing','the harvest and the sedge-cutting','the autumn ploughing and the reed-cutting','winter work on the dykes and the banks'];
     function grindFor(E, realDate, y, s, pm){
@@ -8804,8 +8809,61 @@ function switchPage(name){
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
   if(name==='character'){ updateCharacterPage(); try{ if(window.twcRender) window.twcRender(); }catch(e){} try{ if(window.renderReckoning) window.renderReckoning(); }catch(e){} }
+  if(name==='road'){ try{ roadOpen(); }catch(e){} }
   window.scrollTo(0,0);
 }
+
+/* ═══════════ THE ROAD — the self-improvement journey in its own frame ═══════════
+   The engine is the whole old-world tracker, untouched in its rules, re-skinned to 1526
+   (public/road/index.html). It keeps its own save (timewar_road_v1, mirrored to the cloud
+   like everything else). What is logged here — workouts, the day's habits — is handed to it
+   through an inbox; what is logged there counts for the season's grind. */
+const ROAD_INBOX_KEY = 'timewar_road_inbox_v1';
+function roadOpen(){
+  const page = document.getElementById('page-road'); if(!page) return;
+  if(document.getElementById('road-frame')) return;
+  const f = document.createElement('iframe'); f.id = 'road-frame'; f.title = 'The Road'; f.src = '/road/index.html';
+  f.addEventListener('load', ()=>{ const w = document.getElementById('road-wait'); if(w) w.remove(); });
+  page.appendChild(f);
+}
+// Timewar's exercises in the Road's measure (energy per unit; m = miles per unit)
+const ROAD_EXERCISES = {
+  pushups:{name:'Push-ups'}, squats:{name:'Squats'}, situps:{name:'Sit-ups / Crunches'}, crunches:{name:'Sit-ups / Crunches', mult:0.8},
+  lunges:{name:'Lunges (each leg)'}, pullups:{name:'Pull-ups'}, chinups:{name:'Chin-ups', e:2.8}, dips:{name:'Dips', e:2.2},
+  burpees:{name:'Burpees'}, jumpingjacks:{name:'Jumping jacks (×10)', mult:0.1}, mountainclimbers:{name:'Mountain climbers (×10)', e:4, mult:0.1},
+  diamondpushups:{name:'Diamond push-ups', e:1.4}, plank:{name:'Plank (30 sec)', mult:2}, wallsit:{name:'Wall sit (per min)', e:6},
+  jumprope:{name:'Jump rope (per min)', e:11}, sprint:{name:'Sprint (per mile)', e:230, m:1}, run:{name:'Run (per mile)'}, jog:{name:'Jog (per mile)', e:160, m:1},
+  briskwalk:{name:'Walk (per mile)'}, walk:{name:'Walk (per mile)'}, cycling:{name:'Bike (per mile)'}, hike:{name:'Hike (per mile)', e:150, m:1},
+  swim:{name:'Swim (per lap)'}, stairs:{name:'Stair flights', e:2.5},
+};
+function roadInboxPush(entries){
+  if(!entries || !entries.length) return;
+  let list = []; try{ list = JSON.parse(localStorage.getItem(ROAD_INBOX_KEY)||'[]')||[]; }catch(e){ list = []; }
+  const cutoff = Date.now() - 10*864e5; list = list.filter(x => x && x.ts > cutoff);
+  const have = new Set(list.map(x=>x.id));
+  entries.forEach(e => { if(!have.has(e.id)) list.push(e); });
+  try{ localStorage.setItem(ROAD_INBOX_KEY, JSON.stringify(list.slice(-400))); }catch(e){}
+  // same window: the frame hears a storage event only from another window, so poke it directly when it is open
+  try{ const f = document.getElementById('road-frame'); if(f && f.contentWindow && f.contentWindow.roadDrainInbox) f.contentWindow.roadDrainInbox('parent'); }catch(e){}
+}
+window.roadLogWorkout = function(draft, ts){
+  const out = [];
+  Object.keys(draft||{}).forEach(id => {
+    const v = +draft[id]||0, m = ROAD_EXERCISES[id]; if(!(v>0) || !m) return;
+    const units = +(v * (m.mult||1)).toFixed(2); if(!(units>0)) return;
+    out.push({ id:'wk-'+ts+'-'+id, ts:ts, kind:'ex', name:m.name, units:units, e:m.e, m:m.m||0 });
+  });
+  roadInboxPush(out);
+};
+const ROAD_HABITS = { read:{cat:'Reading', min:30}, meditation:{cat:'Prayer', min:10}, journal:{cat:'Journaling', min:10} };
+window.roadLogHabit = function(day, habit){
+  const h = ROAD_HABITS[habit]; if(!h) return;
+  roadInboxPush([{ id:'hb-'+day+'-'+habit, ts:Date.now(), kind:'study', cat:h.cat, min:h.min }]);
+};
+// what the Road recorded for a real day: energy (push-up equivalents) and minutes of devotion
+window.roadDay = function(realDate){
+  try{ const r = JSON.parse(localStorage.getItem('timewar_road_v1')||'null'); const row = r && r.chronicle && r.chronicle[realDate]; return row ? { e:+row.e||0, s:+row.s||0, mi:+row.mi||0 } : null; }catch(e){ return null; }
+};
 
 function updateCharacterPage(){
   const wins=S.wins||0, losses=S.losses||0, total=wins+losses;
@@ -8967,6 +9025,11 @@ _addKbd('scout-input', ()=>sendGenericAI('scout'));
 _addKbd('debrief-input', ()=>sendGenericAI('debrief'));
 </script>
 
+<!-- PAGE 4: THE ROAD — the whole self-improvement engine, in a frame, skinned to 1526 -->
+<div id="page-road" class="page">
+  <div id="road-wait">THE ROAD — Europe, 1526 · loading…</div>
+</div>
+
 <!-- UNIFIED BOTTOM RIBBON — always visible on ALL pages -->
 <div class="save-bar" id="save-bar">
 
@@ -8993,6 +9056,10 @@ _addKbd('debrief-input', ()=>sendGenericAI('debrief'));
     <div class="nav-tab" id="nav-family" onclick="switchPage('family')">
       <span style="font-size:20px;line-height:1;color:#C9A227;font-weight:900;text-shadow:0 0 8px #C9A227;">⚜</span>
       <span style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.09em;color:inherit;">Family</span>
+    </div>
+    <div class="nav-tab" id="nav-road" onclick="switchPage('road')" title="The Road — the self-improvement journey through the Europe of 1526: England to level 10, then the world">
+      <span style="font-size:18px;line-height:1;">🛡</span>
+      <span style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.09em;color:inherit;">The Road</span>
     </div>
   </div>
 
@@ -9543,9 +9610,11 @@ window.submitWorkout = function(){
     if(v > 0) parts.push(v + ' ' + it.name);
   }));
   const summary = parts.join(', ');
-  CHAR_EXP.workouts.unshift({ ts: Date.now(), xp: total, detail: summary });
+  const wts = Date.now();
+  CHAR_EXP.workouts.unshift({ ts: wts, xp: total, detail: summary });
   if(CHAR_EXP.workouts.length > 500) CHAR_EXP.workouts.length = 500;
   addCharEXP(total, 'Workout: ' + summary);
+  try{ if(window.roadLogWorkout) window.roadLogWorkout(Object.assign({}, WORKOUT_DRAFT), wts); }catch(e){}
   closeWorkoutModal();
 };
 
