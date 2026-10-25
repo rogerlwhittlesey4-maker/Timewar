@@ -812,6 +812,22 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 .page{display:none;}
 .page.active{display:block;}
 #page-road.page{background:#140e06;min-height:calc(100vh - 50px);}
+.dl{background:#fdf6e0;border:1.5px solid var(--border2);border-radius:3px;padding:10px 12px;margin:0 0 12px;}
+.dl-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;margin-bottom:8px;}
+.dl-title{font-family:var(--fellsc);font-size:15px;color:var(--ink);letter-spacing:0.04em;}
+.dl-sub{font-family:var(--mono);font-size:9px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;}
+.dl-sub b{color:var(--blood);}
+.dl-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}
+.dl-t{font-family:var(--fell);font-size:12.5px;padding:7px 11px;border-radius:3px;cursor:pointer;border:1.5px solid var(--border2);background:var(--parch);color:var(--ink2);line-height:1.1;}
+.dl-t:hover{background:#fff8e8;border-color:var(--border3);}
+.dl-t.on{background:#e4efd6;border-color:#4a6a30;color:#1f4a14;font-weight:600;}
+.dl-hrs{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-left:3px;}
+.dl-t.on .dl-hrs{color:#2a5a1a;}
+.dl-in{width:52px;font-family:var(--mono);font-size:11px;padding:5px 6px;border:1px solid var(--border2);border-radius:3px;background:#fff;color:var(--ink);}
+.dl-earn{font-size:11.5px;color:var(--ink2);line-height:1.55;border-top:1px dashed var(--border);padding-top:6px;}
+.dl-earn b{color:var(--ink);}
+#daylog-modal .modal-box{max-width:720px;}
+.save-btn.day{background:#2a2010;color:#f4ead5;border-color:var(--gold-m);}
 #road-frame{width:100%;height:calc(100vh - 50px);border:0;display:block;background:#140e06;}
 #road-wait{font-family:var(--fellsc);color:#c9a227;text-align:center;padding:60px 20px;letter-spacing:.1em;font-size:14px;}
 
@@ -2013,7 +2029,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
                   try{ showToast && showToast('Saved', 'Reflection saved for today.', false); }catch(e){}
                 };
                 document.querySelectorAll('.cal-habit').forEach(function(cb){
-                  cb.addEventListener('change', function(){ localStorage.setItem('cal-habit-'+todayKey+'-'+cb.dataset.habit, cb.checked?'1':'0'); try{ if(cb.checked && window.roadLogHabit) window.roadLogHabit(todayKey, cb.dataset.habit); }catch(e){} });
+                  cb.addEventListener('change', function(){ localStorage.setItem('cal-habit-'+todayKey+'-'+cb.dataset.habit, cb.checked?'1':'0'); try{ if(cb.checked && window.roadLogHabit) window.roadLogHabit(todayKey, cb.dataset.habit); }catch(e){} try{ if(window.twDayRender) window.twDayRender(); }catch(e){} });
                 });
 
                 renderCalendar(); loadDay();
@@ -2367,7 +2383,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
   var STORE_KEY = 'timewar_companions_v1';
   var START_DATE = '1526-05-01';
-  var PLACES = ['The inn','Around the campfire','The market place','The forge','St Andrew\'s churchyard','The edge of the mere','On the road'];
+  var PLACES = ['The inn','Around the campfire','Ralph\'s father\'s cottage by the mere','The market place','The forge','St Andrew\'s churchyard','The edge of the mere','On the road'];
   var PACES = [[30,'Every 30s'],[60,'Every 60s'],[90,'Every 90s'],[120,'Every 2 min']];
   // Hours as a fen town kept them in 1526: by the church bells (and a town clock, where there was one)
   var TIMES = [
@@ -2595,6 +2611,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     '- Each man has his own mind, opinions and agenda. They disagree with Roger and with each other, joke, grumble, grieve, change the subject, and ask questions back. Never flatter Roger.\n'+
     '- The game\'s ledger (dollar figures and ranks) measures each man\'s strength and standing; it is not money anyone holds. The men never mention dollars or modern rank titles. Their real money is the pence in each man\'s purse and the band\'s chest, as given; their means are their households, in pounds, shillings and pence.\n'+
     '- The band keeps the town\'s watch under a contract: one man on guard at a time, chosen by lot, and that man takes the next fight alone. Men talk about whose turn it is, who was lucky, who was not.\n'+
+    '- ROGER\'S SECRET, which no man in the story knows or may ever guess: he is a man of our own time, fallen into 1526. The men know him only as Ralph\'s distant cousin, lately come, kinless. If he says or does something strange or out of its time, they hear it as a cousin\'s oddity, foreign manners, book-learning or a jest — never as the truth, never as witchcraft they would act on. They never speak of a father, mother or family of his in the town, because he has none here.\n'+
     '- Never write lines for Roger.';
 
   function worldCtx(st, dateStr, place){
@@ -2606,7 +2623,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'PLACE: '+(place||'Whittlesey')+', in Whittlesey — a fen market town on the edge of the Isle of Ely, Cambridgeshire, with its two parishes of St Mary and St Andrew, near Whittlesey Mere.\n'+
       (window.twTownText?'THE TOWN: '+window.twTownText(parseD(dateStr).y)+'\n':'')+
       (function(){ try{ var w=(S.watch&&S.men.filter(function(m){ return m.id===S.watch.id&&!m.dead; })[0]); return w?'THE WATCH: by the band\'s contract with the town one man stands guard at a time, chosen by lot; '+w.name+' has the watch now and will meet the next trouble alone. The men know whose turn is coming.\n':''; }catch(e){ return ''; } })()+
-      'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a wool merchant\'s son. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
+      'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a distant cousin of Ralph\'s on the Whittlesey side who came to the town alone this spring: no father, no mother, no kin here but Ralph, no house to go back to. Ralph\'s family took him in: he sleeps in the hall of their cottage by the mere and works the holding with Ralph for his keep. He does not say where he was before; the men take him for a cousin come from some other part of England and have not pressed him. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
       (window.twEconomy?'MONEY NOW (real pence, not the ledger): '+window.twEconomy.chestText()+' '+window.twEconomy.purseText(1)+'. '+window.twEconomy.pricesText()+'\n'+(window.twEconomy.familyText?'ROGER\'S HOUSE: '+window.twEconomy.familyText(1)+'\n':''):'')+
@@ -3608,6 +3625,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       if(!E.roger) E.roger=newPurse(83,0);                         // the 83d in his purse of the household table
       if(!E.roger.goods) E.roger.goods=[]; if(!E.roger.acres) E.roger.acres=0; if(!E.roger.arrears) E.roger.arrears=0; if(!E.roger.yearIncome) E.roger.yearIncome=0;
       if(!E.roger.home) E.roger.home=0; if(!E.roger.improvements) E.roger.improvements=[]; if(!E.roger.repute) E.roger.repute=0;
+      if(E.roger.lodging===undefined && !(E.roger.home>0)) E.roger.lodging='ralph';   // he came to the town alone: his cousin's family took him in
       if(!E.chest) E.chest={cur:0, old:[], angels:0, sock:0, keys:[2,4], quarterage:2, log:[]};
       if(!E.men) E.men={};
       var seed={2:[8,0],3:[0,160],4:[4,0],5:[0,40]};                 // Ralph's pennies; Thomas's hoard since he was twelve; John; Edmund's book money
@@ -3660,7 +3678,11 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       {k:'glass', name:'glass in the parlour window', d:120, min:3, note:'rare in a fen house before 1570'},
       {k:'chimney', name:'a brick chimney built against the hall', d:600, min:3, note:'the great rebuilding: a smoke-free hall, warmer and healthier', health:0.9},
     ];
-    function homeOf(E){ return HOMES[Math.max(0,Math.min(HOMES.length-1, (E.roger&&E.roger.home)||0))]; }
+    // Lodging at his cousin Ralph's: the fen farmer's cottage by the mere. No rent and his keep at the family's table,
+    // in return for his work on the holding — and the family's rights of common on the fen are his to use.
+    var RALPHS={t:0, lodging:true, name:'a pallet at his cousin Ralph\'s, in the fen farmer\'s cottage by the mere', desc:'the hall by the hearth, his chest under the pallet, the family at the table and the cow-house against the gable; he works the holding — twelve acres by copy, the cows, the sheep, the punt and the eel-traps — for his keep', rentQ:0, cost:0, fine:0, value:0, common:true, degree:1, rented:false};
+    function atRalphs(E){ return !!(E.roger && E.roger.lodging==='ralph' && !(E.roger.home>0)); }
+    function homeOf(E){ if(atRalphs(E)) return RALPHS; return HOMES[Math.max(0,Math.min(HOMES.length-1, (E.roger&&E.roger.home)||0))]; }
     function hasImp(E,k){ return ((E.roger&&E.roger.improvements)||[]).some(function(i){ return i.k===k; }); }
     function commonRights(E){ return (E.roger.acres>0) || homeOf(E).common || !!(E.dec&&E.dec.fishery) || !!(E.life&&E.life.lease); }
     function boardMult(E){ var m=1; if(homeOf(E).t>=1) m*=0.9; if(commonRights(E)) m*=0.85; if(hasImp(E,'cow')) m*=0.9; return m; }
@@ -3685,9 +3707,42 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       if(labourDays){ var rate=labRate(y)*SEASON_LAB[s], d=Math.round(labourDays*rate); out.labourDays=labourDays; out.lines.push({text:'his own labour, '+labourDays+' days at '+SEASON_WORK[s]+' at '+pd1(rate), d:d}); out.total+=d; }
       if(habitOn(realDate,'cardio')){ if(commonRights(E)){ var d2=Math.round(8*labRate(y)); out.carryDays=8; out.lines.push({text:'8 days fowling and eeling on the mere by his right of common, the take sold at market', d:d2}); out.total+=d2; } else { var d3=Math.round(8*labRate(y)/2); out.carryDays=8; out.lines.push({text:'8 days carrying for the staplers on the Peterborough road (no right of common to fowl)', d:d3}); out.total+=d3; } }
       if(habitOn(realDate,'read')){ var d4=Math.round(12*2*wageScale('craft',y)); out.penEvenings=12; out.lines.push({text:'12 evenings at the pen: letters, bonds and accounts written for the unlettered', d:d4}); out.total+=d4; }
+      var wh=workHours(realDate); if(wh>0){ var wd=Math.min(2, +(wh/12).toFixed(2)); out.workHours=wh; out.workDays=wd;
+        if(atRalphs(E)){ var fr=labRate(y)*SEASON_LAB[s]/2, d5=Math.max(1,Math.round(wd*fr)); out.lines.push({text:'a day\'s work on Ralph\'s father\'s holding with meat and drink, at the statute\'s rate with board — '+wh+' hours at '+SEASON_WORK[s]+', '+(wd===1?'a full day':wd+' days')+' at '+pd1(fr)+', and his keep besides', d:d5}); out.total+=d5; }
+        else { var wr=craftRate(y)*(s===1?1.1:1), d6=Math.round(wd*wr); out.lines.push({text:'a day\'s work for hire at the craftsman\'s rate — '+wh+' hours, which is '+(wd===1?'a full day':wd+' days')+' at '+pd1(wr), d:d6}); out.total+=d6; } }
       out.journal=habitOn(realDate,'journal'); out.meditation=habitOn(realDate,'meditation');
       return out;
     }
+    function workHours(realDate){ try{ if(localStorage.getItem('cal-habit-'+realDate+'-work')!=='1') return 0; var h=+(localStorage.getItem('cal-work-'+realDate)||12); return (h>0&&h<=24)?h:12; }catch(e){ return 0; } }
+    // ── The Day's Work: one card to log the day ──
+    var DAY_XP={work:12, strength:30, cardio:30, read:25, journal:15, meditation:15, hydrate:10};
+    var DAY_ITEMS=[['strength','💪','Strength'],['cardio','🏃','Cardio'],['read','📖','Read'],['journal','✒','Journal'],['meditation','🧘','Meditation'],['hydrate','💧','Water']];
+    function dayAward(date,k,amount){ try{ if(typeof CHAR_EXP==='undefined'||!amount) return 0; CHAR_EXP.dayXP=CHAR_EXP.dayXP||{}; var dd=CHAR_EXP.dayXP[date]=CHAR_EXP.dayXP[date]||{}; if(dd[k]) return 0; dd[k]=amount; addCharEXP(amount, ({work:'A shift worked',strength:'Strength',cardio:'Cardio',read:'Reading',journal:'Journal',meditation:'Meditation',hydrate:'Water'})[k]||k); return amount; }catch(e){ return 0; } }
+    function dayXpToday(date){ try{ var dd=(CHAR_EXP.dayXP||{})[date]||{}, t=0; Object.keys(dd).forEach(function(k){ t+=dd[k]; }); return t+workoutExp(date); }catch(e){ return 0; } }
+    window.twDay={
+      toggle:function(k){ var d=todayLocal(), key='cal-habit-'+d+'-'+k, on=localStorage.getItem(key)==='1'; localStorage.setItem(key, on?'0':'1');
+        if(!on){ dayAward(d,k, k==='work'?Math.round(DAY_XP.work*workHours(d)):DAY_XP[k]); try{ if(window.roadLogHabit) window.roadLogHabit(d,k); }catch(e){} }
+        try{ var cb=document.querySelector('.cal-habit[data-habit="'+k+'"]'); if(cb) cb.checked=!on; }catch(e){}
+        window.twDayRender(); try{ render(); }catch(e){} },
+      hours:function(v){ var d=todayLocal(), h=Math.max(1,Math.min(24,Math.round(+v||12))); localStorage.setItem('cal-work-'+d, String(h)); if(localStorage.getItem('cal-habit-'+d+'-work')!=='1'){ localStorage.setItem('cal-habit-'+d+'-work','1'); dayAward(d,'work',Math.round(DAY_XP.work*h)); } window.twDayRender(); try{ render(); }catch(e){} },
+      workout:function(){ try{ openWorkoutModal(); }catch(e){} },
+    };
+    window.twDayLogHtml=function(){
+      var E=ensure(load()), d=todayLocal(), cur=seasonIdx(S.currentSeason), y=idxYear(cur), s=idxS(cur), g=grindFor(E, d, y, s, priceMult(nowHY()));
+      var ms=msToMidnight(), hh=Math.floor(ms/36e5), mm=Math.floor(ms%36e5/6e4);
+      var work=localStorage.getItem('cal-habit-'+d+'-work')==='1', wh=workHours(d)||(+(localStorage.getItem('cal-work-'+d)||12));
+      var t=function(on,k,ico,label,extra){ return '<button class="dl-t'+(on?' on':'')+'" onclick="twDay.toggle(\''+k+'\')">'+(on?'✓ ':'')+ico+' '+label+(extra||'')+'</button>'; };
+      var xp=dayXpToday(d);
+      return '<div class="dl"><div class="dl-head"><span class="dl-title">📝 The day\'s work</span><span class="dl-sub">'+esc(new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}))+' is <b>'+esc(S.currentSeason.replace(' AD',''))+'</b> · the season turns at midnight, in '+hh+'h '+mm+'m</span></div>'+
+        '<div class="dl-row">'+t(work,'work','⚒','Worked a shift',' <span class="dl-hrs">'+wh+'h</span>')+'<input class="dl-in" type="number" min="1" max="24" step="1" value="'+wh+'" title="Hours worked" onchange="twDay.hours(this.value)">'+
+        '<button class="dl-t" onclick="twDay.workout()">🏋 Log a workout'+(g.exp?' <span class="dl-hrs">'+g.exp+' XP</span>':'')+'</button></div>'+
+        '<div class="dl-row">'+DAY_ITEMS.map(function(it){ return t(habitOn(d,it[0]),it[0],it[1],it[2]); }).join('')+'</div>'+
+        '<div class="dl-earn">'+(g.lines.length?'<b>At the turn Roger earns '+lsd(g.total)+':</b> '+g.lines.map(function(l){ return esc(l.text)+' — '+lsd(l.d); }).join(' · '):'<b>Nothing earned yet today.</b> A shift worked is a day on Ralph\'s father\'s holding (with meat and drink, at the statute\'s rate) or, once he has a house of his own, a day for hire at the craftsman\'s rate; a workout or strength is labour hired out on the fen; cardio is fowling on the mere; reading is evenings at the pen.')+
+        ' &nbsp;·&nbsp; <b>XP today: +'+xp+'</b>'+(g.journal||g.meditation?' · journal and meditation are the staplers\' trust and the men\'s regard':'')+'</div></div>';
+    };
+    window.twDayRender=function(){ try{ document.querySelectorAll('.dl-slot').forEach(function(el){ el.innerHTML=window.twDayLogHtml(); }); }catch(e){} };
+    window.twDayLogOpen=function(){ var m=document.getElementById('daylog-modal'); if(!m) return; m.classList.add('open'); window.twDayRender(); };
+    window.twDayLogClose=function(){ var m=document.getElementById('daylog-modal'); if(m) m.classList.remove('open'); };
     window.twGrindPreview=function(){ var E=ensure(load()), cur=seasonIdx(S.currentSeason), y=idxYear(cur), s=idxS(cur); var g=grindFor(E, todayLocal(), y, s, priceMult(nowHY())); g.habits={strength:habitOn(todayLocal(),'strength'),cardio:habitOn(todayLocal(),'cardio'),read:habitOn(todayLocal(),'read'),journal:g.journal,meditation:g.meditation}; return g; };
     function wageScale(base,y){ var l=labRate(y)/4, c=craftRate(y)/6; return base==='lab'?l:base==='craft'?c:(l+c)/2; }
     function quarterWork(id, s, y){
@@ -3923,12 +3978,16 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       settleDebts(E,'Roger',date,L,'Roger');
       // The grind: the real day's training and study, as the season's work
       var G=initial?null:grindFor(E, realDateFor(E,prev), py, ps, pm);
-      if(G && G.lines.length){ G.lines.forEach(function(g){ E.roger.cur+=g.d; E.roger.yearIncome+=g.d; L.push({who:'Roger',kind:'charge',text:g.text,d:g.d}); }); Q.grind=G; E.grind=(E.grind||[]).concat([{date:date, season:idxLabel(prev), total:G.total, labourDays:G.labourDays, carryDays:G.carryDays, penEvenings:G.penEvenings}]).slice(-16); }
+      if(G && G.lines.length){ G.lines.forEach(function(g){ E.roger.cur+=g.d; E.roger.yearIncome+=g.d; L.push({who:'Roger',kind:'charge',text:g.text,d:g.d}); }); Q.grind=G; E.grind=(E.grind||[]).concat([{date:date, season:idxLabel(prev), total:G.total, labourDays:G.labourDays, carryDays:G.carryDays, penEvenings:G.penEvenings, workDays:G.workDays||0, workHours:G.workHours||0}]).slice(-16); }
       if(G && G.journal){ E.roger.repute=(E.roger.repute||0)+1; L.push({who:'Roger',kind:'note',text:'Roger kept his book this season; the staplers trust him with more wool next year.',d:0}); }
       if(G && G.meditation){ try{ men().forEach(function(m){ if(!m.dead && window.twcLoyalty) window.twcLoyalty(m.id, 1); }); }catch(e){} }
       if(G && G.labourDays>=10){ try{ men().forEach(function(m){ if(!m.dead && window.twcRemember) window.twcRemember(m.id, 'Roger worked the season beside us — '+G.labourDays+' days at '+SEASON_WORK[ps]+'.', 1, date); }); }catch(e){} }
-      var hm=homeOf(E), rent=homeRent(E,pm), pr2=pay(E.roger,rent,date); L.push({who:'Roger',kind:'discharge',text:(hm.rented?'a quarter\'s rent of '+(hm.t?'his cottage':'his chamber'):'rent to the manor for his house by copy'),d:pr2}); if(pr2<rent) owe(E,'Roger',hm.rented?'his landlord':'the manor\'s bailiff',rent-pr2,'rent of his '+(hm.t?'house':'chamber'),qdate(i+1));
+      var hm=homeOf(E);
+      if(hm.lodging){ L.push({who:'Roger',kind:'note',text:'lodges at his cousin Ralph\'s for his work on the holding: no rent, and his bread, ale and pottage at the family\'s table (bread '+breadWord(hy)+')'}); }
+      else {
+      var rent=homeRent(E,pm), pr2=pay(E.roger,rent,date); L.push({who:'Roger',kind:'discharge',text:(hm.rented?'a quarter\'s rent of '+(hm.t?'his cottage':'his chamber'):'rent to the manor for his house by copy'),d:pr2}); if(pr2<rent) owe(E,'Roger',hm.rented?'his landlord':'the manor\'s bailiff',rent-pr2,'rent of his '+(hm.t?'house':'chamber'),qdate(i+1));
       var board=Math.round(91*1.25*foodMult*boardMult(E)), pb=pay(E.roger,board,date); L.push({who:'Roger',kind:'discharge',text:'bread, ale and pottage for the quarter (bread '+breadWord(hy)+')',d:pb}); if(pb<board) owe(E,'Roger','the innkeeper',board-pb,'his board',qdate(i+1));
+      }
       var sund=Math.round(15*pm), ps2=pay(E.roger,sund,date); L.push({who:'Roger',kind:'discharge',text:'shoes, shirts, washing and sundries',d:ps2}); if(ps2<sund) owe(E,'Roger','the draper and the cobbler',sund-ps2,'shoes and shirts',qdate(i+1));
       if(s===1){ var tithe=Math.round(E.roger.yearIncome*0.1); if(tithe>0){ var pt=pay(E.roger,tithe,date); L.push({who:'Roger',kind:'discharge',text:'personal tithe on a year\'s gains, paid at Easter',d:pt}); if(pt<tithe) E.roger.arrears+=tithe-pt; } E.roger.yearIncome=0; L.push({who:'Roger',kind:'discharge',text:'Easter offering at the altar',d:pay(E.roger,2,date)}); }
       if(s===0 && (y<1548||(y>=1553&&y<=1558))){ L.push({who:'Roger',kind:'discharge',text:'a candle at Candlemas',d:pay(E.roger,1,date)}); }
@@ -4025,10 +4084,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       var byMan={}; Q.lines.forEach(function(l){ if(l.kind==='charge'&&l.who!=='the chest') byMan[l.who]=(byMan[l.who]||0)+l.d; });
       var inc=Object.keys(byMan).map(function(k){ return first(k)+' '+lsd(byMan[k]); }).join(', ');
       var chest=Q.lines.filter(function(l){ return l.who==='the chest'; })[0];
-      var out=[{ico:'📜',text:Q.qday+' — the quarter\'s reckoning for '+Q.reckoned.replace(' AD','')+'. Paid in cash: '+inc+'. Quarterage into the chest '+lsd(chest?chest.d:0)+'. Roger has paid his rent and his board.', note:'Wages at the customary rate; a son at home is paid mostly in keep.'}];
+      var out=[{ico:'📜',text:Q.qday+' — the quarter\'s reckoning for '+Q.reckoned.replace(' AD','')+'. Paid in cash: '+inc+'. Quarterage into the chest '+lsd(chest?chest.d:0)+'.'+(atRalphs(E)?' Roger keeps his place at Ralph\'s table for his work on the holding.':' Roger has paid his rent and his board.'), note:'Wages at the customary rate; a son at home is paid mostly in keep.'}];
       Q.notes.forEach(function(n){ out.push({ico:'🌾',text:n,note:'From the real harvest and price record of the year.'}); });
       Q.lines.filter(function(l){ return l.kind==='note' && l.who!=='Roger'; }).forEach(function(l){ out.push({ico:'🪙',text:l.text,note:'The King\'s coin.'}); });
-      if(Q.grind && Q.grind.total){ var g=Q.grind; out.push({ico:'🛠️',text:'Roger worked the season himself: '+[g.labourDays?g.labourDays+' days at labour':'', g.carryDays?g.carryDays+' days '+(g.lines.some(function(l){ return /fowling/.test(l.text); })?'fowling on the mere':'carrying for the staplers'):'', g.penEvenings?g.penEvenings+' evenings at the pen':''].filter(Boolean).join(', ')+' — '+lsd(g.total)+' earned.', note:'From the day\'s training and study: a real day is a season.'}); }
+      if(Q.grind && Q.grind.total){ var g=Q.grind; out.push({ico:'🛠️',text:'Roger worked the season himself: '+[g.workDays?(g.workDays===1?'a day':g.workDays+' days')+(atRalphs(E)?' on Ralph\'s father\'s holding':' for hire at the craftsman\'s rate'):'', g.labourDays?g.labourDays+' days at labour':'', g.carryDays?g.carryDays+' days '+(g.lines.some(function(l){ return /fowling/.test(l.text); })?'fowling on the mere':'carrying for the staplers'):'', g.penEvenings?g.penEvenings+' evenings at the pen':''].filter(Boolean).join(', ')+' — '+lsd(g.total)+' earned.', note:'From the day\'s work, training and study: a real day is a season.'}); }
       (Q.life||[]).forEach(function(l){ out.push(l); });
       return out;
     }
@@ -4152,9 +4211,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         var cost=n*(wp+2), have=purseTotal(E.roger,d), tick=false; if(cost>have){ if(!confirm('That is '+lsd(cost)+'; Roger has '+lsd(have)+'. Take the rest on tick from the graziers, due at Michaelmas?')) return; tick=true; }
         var paid=pay(E.roger,Math.min(cost,have),d); if(cost>paid) owe(E,'Roger','the graziers of the fen',cost-paid,n+' tods of wool',qdate(cur+1)); E.roger.wool={tods:n,cost:cost,year:y};
         store(E); tell([{ico:'🐑',text:'Roger has bought '+n+' tods of fen wool at the clip for '+lsd(cost)+(cost>paid?', '+lsd(cost-paid)+' of it on tick':'')+'. It goes to Stourbridge fair at Michaelmas.',note:'Wool prices follow Bowden\'s index; the fair sets the price.'}]); render(); },
-      moveHome:function(t){ var E=ensure(load()), d=storyDate(), h=HOMES[t]; if(!h||t<=homeOf(E).t) return; var cost=h.cost+h.fine, have=purseTotal(E.roger,d); if(have<cost) return alert(h.name.charAt(0).toUpperCase()+h.name.slice(1)+' is '+lsd(cost)+(h.fine?' ('+lsd(h.cost)+' and '+lsd(h.fine)+' entry fine at the court)':'')+'; Roger has '+lsd(have)+'.');
+      moveHome:function(t){ var E=ensure(load()), d=storyDate(), h=HOMES[t]; if(!h||(t<=homeOf(E).t && !atRalphs(E))) return; var cost=h.cost+h.fine, have=purseTotal(E.roger,d); if(have<cost) return alert(h.name.charAt(0).toUpperCase()+h.name.slice(1)+' is '+lsd(cost)+(h.fine?' ('+lsd(h.cost)+' and '+lsd(h.fine)+' entry fine at the court)':'')+'; Roger has '+lsd(have)+'.');
         if(!confirm('Take '+h.name+'?\n\n'+h.desc+'.\n\n'+(h.rented?'Furnishing: '+lsd(h.cost)+'. Rent '+lsd(h.rentQ)+' a quarter.':'Price '+lsd(h.cost)+' and '+lsd(h.fine)+' entry fine at the manor court. Rent to the lord '+lsd(h.rentQ)+' a quarter.')+(h.common&&!commonRights(E)?'\nWith it come rights of common on the fen.':''))) return;
-        pay(E.roger,cost,d); var old=homeOf(E); E.roger.home=t; if(old.value>0){ E.roger.cur+=Math.round(old.value*0.9); } store(E);
+        pay(E.roger,cost,d); var old=homeOf(E); E.roger.home=t; E.roger.lodging=null; if(old.value>0){ E.roger.cur+=Math.round(old.value*0.9); } store(E);
         tell([{ico:'🏠',text:'Roger has taken '+h.name+' — '+h.desc+'.'+(old.value?' The old house went for '+lsd(Math.round(old.value*0.9))+'.':''),note:(h.rented?'Rented at '+lsd(h.rentQ)+' a quarter.':'Admitted at the manor court; the entry fine paid.')+(h.common?' He has rights of common on the fen now.':'')}]);
         try{ men().forEach(function(m){ if(!m.dead) window.twcRemember(m.id,'Roger has '+h.name+' now.',1); }); if(t>=3 && window.twcAddPlace) window.twcAddPlace('Roger\'s hall'); }catch(e){} render(); },
       improve:function(k){ var E=ensure(load()), d=storyDate(), it=IMPROVEMENTS.filter(function(x){ return x.k===k; })[0]; if(!it||hasImp(E,k)) return; if(homeOf(E).t<it.min) return alert('Not in '+homeOf(E).name+'.'); var pm=priceMult(nowHY()), price=Math.max(1,Math.round(it.d*pm)); if(purseTotal(E.roger,d)<price) return alert(it.name.charAt(0).toUpperCase()+it.name.slice(1)+' is '+lsd(price)+'; Roger has not got it.'); if(!confirm('Buy '+it.name+' for '+lsd(price)+'? '+it.note+'.')) return; pay(E.roger,price,d); E.roger.improvements.push({k:k,n:it.name,d:price,date:d}); store(E); tell([{ico:'🏠',text:'Roger has bought '+it.name+' for '+lsd(price)+'.',note:it.note+'.'}]); render(); },
@@ -4171,13 +4230,13 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
 
     // ── For the men's own words ──────────────────────────────────────────
     window.twEconomy={
-      familyText:function(id){ var E=ensure(load()), L=ensureLife(E), yr=idxYear(seasonIdx(S.currentSeason)); if(String(id)==='1'){ var r=L.roger; return 'Roger is '+ageOf(r.born,yr)+(r.wife?(r.wife.dead?', a widower':', married to '+r.wife.name):', unmarried')+'; children: '+kidsText(r.children)+'.'; } var x=L.men[id]; if(!x) return ''; return 'He is '+ageOf(x.born,yr)+(x.holding?', holds '+((HOLDINGS[id]||{what:'the cottage'}).what.split(':')[0])+' since his father died':(x.wife&&!x.wife.dead?', in a rented cottage of his own':', lives at his father\'s')) +(x.wife?(x.wife.dead?', a widower':', married to '+x.wife.name+' since '+x.wife.married):', unmarried')+'; children: '+kidsText(x.children||[])+'.'; },
+      familyText:function(id){ var E=ensure(load()), L=ensureLife(E), yr=idxYear(seasonIdx(S.currentSeason)); if(String(id)==='1'){ var r=L.roger; return 'Roger is '+ageOf(r.born,yr)+(r.wife?(r.wife.dead?', a widower':', married to '+r.wife.name):', unmarried')+'; children: '+kidsText(r.children)+'. No father, no mother, no kin in the town but his distant cousin Ralph; he came alone this spring'+(atRalphs(E)?', and lodges with Ralph\'s family at the holding by the mere, working the farm for his keep':'')+'.'; } var x=L.men[id]; if(!x) return ''; return 'He is '+ageOf(x.born,yr)+(x.holding?', holds '+((HOLDINGS[id]||{what:'the cottage'}).what.split(':')[0])+' since his father died':(x.wife&&!x.wife.dead?', in a rented cottage of his own':', lives at his father\'s')) +(x.wife?(x.wife.dead?', a widower':', married to '+x.wife.name+' since '+x.wife.married):', unmarried')+'; children: '+kidsText(x.children||[])+'.'; },
       purseText:function(id){ var E=ensure(load()), d=storyDate(); if(String(id)==='1'){ var p=E.roger; return 'Roger\'s purse holds about '+lsd(purseTotal(p,d))+(p.angels?' ('+p.angels+' in gold)':'')+'; he lives in '+homeOf(E).name+(commonRights(E)?', with rights of common':'')+(owed(E,'Roger')?'; he owes '+lsd(owed(E,'Roger'))+' on tick':'')+(owedTo(E,'Roger')?'; '+lsd(owedTo(E,'Roger'))+' is owed to him':'')+(E.roger.acres?'; he holds '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' by copy':''); } var m=E.men[id]; if(!m) return ''; var b=(m.bought||[]).slice(-2).map(function(x){ return x.n; }).join(' and '); return 'His purse holds about '+lsd(m.cur+(m.old||[]).reduce(function(t,o){return t+o.d;},0))+(m.sock?', and '+lsd(m.sock)+' put by':'')+(b?'; lately he bought '+b:'')+(owed(E,String(id))?'; he owes '+lsd(owed(E,String(id)))+' on tick'+((E.debts||[]).some(function(x){ return x.from===String(id)&&x.to==='Roger'; })?', some of it to Roger':''):'')+'.'; },
       chestText:function(){ var E=ensure(load()), d=storyDate(); return 'The band\'s chest holds '+lsd(purseTotal(E.chest,d))+' (keys: Roger, '+keyNames(E)+'; quarterage '+lsd(E.chest.quarterage)+' a man).'; },
       pricesText:function(){ var hy=nowHY(), y=idxYear(seasonIdx(S.currentSeason)); return 'The harvest of '+hy+' was '+harvestClass(hy)+'; bread is '+breadWord(hy)+(priceMult(hy)>1.25?', and all prices are '+Math.round((priceMult(hy)-1)*100)+'% above what they were in 1526':'')+'. A labourer\'s day is '+pd1(labRate(y))+', a craftsman\'s '+pd1(craftRate(y))+'.'; },
       rogerItems:function(){ var E=ensure(load()), d=storyDate(), out=[['Money in his purse'+(E.roger.angels?' ('+E.roger.angels+' angel'+(E.roger.angels===1?'':'s')+' and silver)':''), purseTotal(E.roger,d)]]; E.roger.goods.forEach(function(g){ out.push([g.n+' (bought '+shortDay(g.date)+')', g.d]); }); (function(){ var h=homeOf(E); if(h.value) out.push([h.name.charAt(0).toUpperCase()+h.name.slice(1)+', by copy', h.value]); (E.roger.improvements||[]).forEach(function(i){ out.push([i.n.charAt(0).toUpperCase()+i.n.slice(1), i.d]); }); })(); if(E.roger.acres) out.push([E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' of copyhold pasture', E.roger.acres*210]); if(E.roger.wool&&E.roger.wool.tods) out.push([E.roger.wool.tods+' tods of wool awaiting the fair', E.roger.wool.cost]); var ow=owedTo(E,'Roger'); if(ow) out.push(['Owed to him in the book of debts', ow]); var od=owed(E,'Roger'); if(od) out.push(['Owed by him in the book of debts', -od]); return out; },
       state:function(){ return ensure(load()); },
-      rogerHome:function(){ var E=ensure(load()), h=homeOf(E), imps=(E.roger.improvements||[]).map(function(i){ return i.n; }); return {t:h.t, name:h.name, desc:h.desc, rented:h.rented, common:commonRights(E), value:homeValue(E), items:(h.value?[[h.name.charAt(0).toUpperCase()+h.name.slice(1), h.value]]:[]).concat((E.roger.improvements||[]).map(function(i){ return [i.n.charAt(0).toUpperCase()+i.n.slice(1)+' (bought '+shortDay(i.date)+')', i.d]; })), text:h.name.charAt(0).toUpperCase()+h.name.slice(1)+': '+h.desc+'.'+(imps.length?' In it, '+imps.join(', ')+'.':''), tenure:h.rented?'Holds no land of his own'+(E.roger.acres?' but the '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' by copy':'')+'; pays a landlord by the quarter.':'Held by copy of the court roll of the manor of Whittlesey St Mary\'s, with rights of common on the fen.'}; },
+      rogerHome:function(){ var E=ensure(load()), h=homeOf(E), imps=(E.roger.improvements||[]).map(function(i){ return i.n; }); return {t:h.t, name:h.name, desc:h.desc, rented:h.rented, common:commonRights(E), value:homeValue(E), items:(h.value?[[h.name.charAt(0).toUpperCase()+h.name.slice(1), h.value]]:[]).concat((E.roger.improvements||[]).map(function(i){ return [i.n.charAt(0).toUpperCase()+i.n.slice(1)+' (bought '+shortDay(i.date)+')', i.d]; })), text:h.name.charAt(0).toUpperCase()+h.name.slice(1)+': '+h.desc+'.'+(imps.length?' In it, '+imps.join(', ')+'.':''), tenure:h.lodging?'Holds no land of his own; lodges with his cousin Ralph\'s family and works their holding for his keep, with the family\'s rights of common — pasture, fishing and fowling — to use.':h.rented?'Holds no land of his own'+(E.roger.acres?' but the '+E.roger.acres+' acre'+(E.roger.acres===1?'':'s')+' by copy':'')+'; pays a landlord by the quarter.':'Held by copy of the court roll of the manor of Whittlesey St Mary\'s, with rights of common on the fen.'}; },
       // The year's prices, wages and harvest for any year — the same tables the reckoning runs on
       series:function(y,hy){ hy=hy||(y-1); return {index:Math.round(priceIndex(hy)), pm:priceMult(hy), gm:grainMult(hy), lab:labRate(y), craft:craftRate(y), harvest:harvestClass(hy), hv:hv(hy), wool:woolPrice(y)}; },
     };
@@ -4204,6 +4263,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       var osy=null; try{ osy=window.twcOsYear(d); }catch(e){}
       var h='<div class="td-head"><div><div class="td-date">'+esc(dayText(d))+'</div><div class="td-sub">'+esc(S.currentSeason.replace(' AD',''))+' · '+esc(qname(cur))+(osy&&osy!==+d.slice(0,4)?' · the year is still '+osy+' to the men':'')+' · the season turns at midnight, in '+hh+'h '+mm+'m</div></div>'+
         '<div class="td-money">'+(function(){ try{ var w=(typeof ensureWatch==='function')?ensureWatch():null; return w?'<span>🕯 The watch <b>'+esc(w.name)+'</b></span>':''; }catch(e){ return ''; } })()+'<span>Roger\'s purse <b>'+lsd(purseTotal(E.roger,d))+'</b></span><span>The chest <b>'+lsd(purseTotal(E.chest,d))+'</b></span>'+(owedTo(E,'Roger')?'<span>Owed to him <b>'+lsd(owedTo(E,'Roger'))+'</b></span>':'')+(owed(E,'Roger')?'<span class="warn">He owes <b>'+lsd(owed(E,'Roger'))+'</b></span>':'')+'</div></div>';
+      h+='<div class="dl-slot">'+window.twDayLogHtml()+'</div>';
       // since the last turn
       var since=[];
       if(Q){ since.push('⚖️ '+Q.qday+' '+Q.year+' reckoned for '+Q.reckoned.replace(' AD','')+': the men paid, quarterage into the chest.'); (Q.notes||[]).forEach(function(n){ since.push('🌾 '+n); }); Q.lines.filter(function(l){ return l.kind==='note'; }).slice(0,4).forEach(function(l){ since.push('🪙 '+l.text); }); (Q.life||[]).forEach(function(l){ since.push((l.ico||'•')+' '+l.text); }); }
@@ -4219,7 +4279,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       if((E.roger.old||[]).length) needs.push({t:'He holds '+lsd((E.roger.old||[]).reduce(function(t,o){return t+o.d;},0))+' in old coin; the goldsmith offers '+lsd(goldsmithOffer(E.roger,d))+' in new for it.', btn:'<button onclick="twEco.sellOld()">Sell to the goldsmith</button>'});
       if(!Lf.roger.dead && !Lf.roger.wife && ageOf(Lf.roger.born,y)>=22) needs.push({t:'Roger is '+ageOf(Lf.roger.born,y)+' and unmarried. A wife brings a dowry, and an heir.', btn:'<button onclick="twEcoLife.seekWife()">Seek a wife</button>'});
       if(y>=1540 && !Lf.lease && purseTotal(E.roger,d)>=1440) needs.push({t:'The abbey pasture is to be let at Augmentations: 60 acres, £6 down and £3 a year.', btn:'<button onclick="twEcoLife.takeLease()">Take the King\'s lease</button>'});
-      try{ var gp=window.twGrindPreview(); needs.push({t:'<strong>Today\'s grind:</strong> '+(gp.habits.strength||gp.exp>0?'💪':'·')+' '+(gp.habits.cardio?'🏃':'·')+' '+(gp.habits.read?'📖':'·')+' '+(gp.habits.journal?'✒':'·')+' '+(gp.habits.meditation?'🧘':'·')+' — '+(gp.total?'about '+lsd(gp.total)+' of Roger\'s own earning at the turn ('+[gp.labourDays?gp.labourDays+' days\' labour':'', gp.carryDays?gp.carryDays+' days '+(commonRights(E)?'fowling':'carrying'):'', gp.penEvenings?gp.penEvenings+' evenings at the pen':''].filter(Boolean).join(', ')+')':'nothing earned yet; tick the habits or log a workout before midnight')+'.', btn:'<button onclick="document.getElementById(\'cal-daily-reflection\')&&document.getElementById(\'cal-daily-reflection\').scrollIntoView({behavior:\'smooth\',block:\'center\'})">The habits</button><button onclick="try{openWorkoutModal()}catch(e){}">Log a workout</button>'}); }catch(e){}
+
       try{ var wm=(typeof ensureWatch==='function')?ensureWatch():null; if(wm) needs.push({t:'<strong>'+esc(wm.name)+' has the watch</strong>, by lot — the next fight is his alone'+(wm.hp<wm.maxHp*0.5?', <span class="warn">and he is badly hurt ('+Math.round(wm.hp)+' of '+wm.maxHp+')</span>':'')+'. '+esc(typeof watchRollText==='function'?watchRollText():'')}); }catch(e){}
       men().forEach(function(m){ if(!m.dead && m.hp<m.maxHp*0.5) needs.push({t:first(m.name)+' is badly hurt ('+Math.round(m.hp)+' of '+m.maxHp+'). Wounds heal with a won fight.'}); if(!m.dead && owedTo(E,'Roger')&&(E.debts||[]).some(function(b){ return b.from===String(m.id)&&b.to==='Roger'&&b.overdue>0; })) needs.push({t:first(m.name)+' is behind on what he owes Roger.'}); });
       if(TAXES.some(function(t){ return t.year===y; }) && s<2) needs.push({t:'A subsidy is assessed this Michaelmas ('+TAXES.filter(function(t){ return t.year===y; })[0].name+'); Roger\'s goods will be reckoned.'});
@@ -4258,9 +4318,9 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
         '<li>'+(rg.wife?(rg.wife.dead?'Widower of '+esc(rg.wife.name):'Married to '+esc(rg.wife.name)+' of '+esc(rg.wife.of)+' since '+rg.wife.married):'Unmarried — a wife brings a dowry, and an heir')+'</li>'+
         '<li>Children: '+esc(kidsText(rg.children))+(rg.children.some(function(k){ return k.alive&&k.boy; })?' — the eldest son is his heir':'')+'</li>'+
         (Lf.lease?'<li>Holds the King\'s lease of '+Lf.lease.acres+' acres of the old abbey pasture ('+lsd(Lf.lease.rent)+' a year) since '+Lf.lease.from+'</li>':'')+
-        '<li><strong>Home:</strong> '+esc(homeOf(E).name)+' — '+esc(homeOf(E).desc)+'. Rent '+lsd(homeRent(E,priceMult(nowHY())))+' a quarter'+(commonRights(E)?' · <strong>rights of common on the fen</strong>':' · no rights of common')+((E.roger.improvements||[]).length?' · in it: '+esc((E.roger.improvements||[]).map(function(i){ return i.n; }).join(', ')):'')+'</li>'+
+        '<li><strong>Home:</strong> '+esc(homeOf(E).name)+' — '+esc(homeOf(E).desc)+'. '+(atRalphs(E)?'No rent and his keep, for his work':'Rent '+lsd(homeRent(E,priceMult(nowHY())))+' a quarter')+(commonRights(E)?' · <strong>rights of common on the fen'+(atRalphs(E)?' by the family\'s right':'')+'</strong>':' · no rights of common')+((E.roger.improvements||[]).length?' · in it: '+esc((E.roger.improvements||[]).map(function(i){ return i.n; }).join(', ')):'')+'</li>'+
         '<li>Each Lady Day the year is told: who married, who was born, who died. Roger\'s own risk is half a common man\'s'+(hasImp(E,'chimney')?', and less with a chimney':'')+'.</li>')+'</ul>'+
-        (rg.dead?'':'<div class="rk-act">'+HOMES.filter(function(h){ return h.t>homeOf(E).t; }).map(function(h){ return '<button class="gold" onclick="twEco.moveHome('+h.t+')" title="'+esc(h.desc)+'">'+esc(h.buy||'take')+': '+esc(h.name.replace(/^a /,''))+' · '+lsd(h.cost+h.fine)+'</button>'; }).join('')+
+        (rg.dead?'':'<div class="rk-act">'+HOMES.filter(function(h){ return h.t>homeOf(E).t || (atRalphs(E)&&h.t===0); }).map(function(h){ return '<button class="gold" onclick="twEco.moveHome('+h.t+')" title="'+esc(h.desc)+'">'+esc(h.buy||'take')+': '+esc(h.name.replace(/^a /,''))+' · '+lsd(h.cost+h.fine)+'</button>'; }).join('')+
         IMPROVEMENTS.filter(function(it){ return !hasImp(E,it.k) && homeOf(E).t>=it.min; }).map(function(it){ return '<button onclick="twEco.improve(\''+it.k+'\')" title="'+esc(it.note)+'">'+esc(it.name)+' · '+lsd(Math.max(1,Math.round(it.d*priceMult(nowHY()))))+'</button>'; }).join('')+'</div>')+
         '<div class="rk-act">'+(rg.dead?'':'<button onclick="twEcoLife.seekWife()">Seek a wife</button>'+(yr>=1540&&!Lf.lease?'<button class="gold" onclick="twEcoLife.takeLease()">Take the King\'s lease of the abbey pasture</button>':''))+'</div></div>';
       // The grind
@@ -4620,10 +4680,10 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     var ACRE = 210;   // one acre held by copy: rent c.10.5d a year (Clark) × 20 years' purchase = 17s 6d
     var HOUSEHOLDS = [
       // Roger's net worth started at Lee's own: about $2,000 (≈ £1 7s 3d in 1526 money). His purse, goods and land now come live from The Reckoning.
-      {id:1, who:'what he owns himself', band:'wool merchant\'s son, fallen on lean times',
-       home:'A rented upper chamber in a house near the market place: one room under the thatch, a bed, a chest and a shuttered window over the street. He pays his rent by the quarter.',
-       tenure:'Holds no land. When his father died, the house, the flock and the wool stock went to pay his father\'s debts; Roger kept his name, his father\'s trade connections and little else.',
-       items:[['His clothes: a good doublet, hose, two shirts, shoes and a cap',96],['A sword and buckler',60],['A few fleeces kept back from his father\'s trade',48],['Bed, blanket and a locking chest',40],['Money in his purse',83]],
+      {id:1, who:'what he owns himself', band:'a distant cousin of the Whittleseys, lately come to the town',
+       home:'A pallet by the hearth in his cousin Ralph\'s family cottage by the mere — the hall, the chest under the pallet, the family at the table. He works the holding for his keep.',
+       tenure:'Holds no land and has no kin in the town but Ralph, a distant cousin on the Whittlesey side: no father, no mother, no house to go back to. Where he was before Whittlesey he does not say, and no one has asked twice.',
+       items:[['His clothes: a good doublet, hose, two shirts, shoes and a cap',96],['A sword and buckler',60],['A few fleeces, the beginning of a wool trade',48],['Bed, blanket and a locking chest',40],['Money in his purse',83]],
        own:null},
       {id:2, who:'his father\'s holding by the mere', band:'husbandman',
        home:'A one-and-a-half-room cottage of timber and daub under fen reed: one hearth room with an open fire, a sleeping chamber, a cow-house against the gable. Earth floor strewn with rushes; shutters, no glass.',
@@ -6299,7 +6359,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <div class="timeline-entry"><div class="timeline-year">1362</div><div class="timeline-content"><div class="timeline-name">William de Whittlesey appointed Bishop of Rochester</div><div class="timeline-desc">A fen town boy becomes a bishop. The first step to the highest office in the English Church.</div></div></div>
       <div class="timeline-entry"><div class="timeline-year">1368</div><div class="timeline-content"><div class="timeline-name">William de Whittlesey becomes Archbishop of Canterbury</div><div class="timeline-desc">The family's greatest historical achievement. Born in Whittlesey. Died as Primate of All England.</div></div></div>
       <div class="timeline-entry"><div class="timeline-year">1374</div><div class="timeline-content"><div class="timeline-name">William de Whittlesey dies — January 5th</div><div class="timeline-desc">The archbishopric passes. The Whittlesey name returns to the fens. The family continues — farmers, merchants, fen workers.</div></div></div>
-      <div class="timeline-entry"><div class="timeline-year">1508</div><div class="timeline-content"><div class="timeline-name">Roger Lee Whittlesey IV born · Whittlesey, Cambridgeshire</div><div class="timeline-desc">Son of a wool merchant. Future commander of the Defense Band. Fourth to bear the name.</div></div></div>
+      <div class="timeline-entry"><div class="timeline-year">1526</div><div class="timeline-content"><div class="timeline-name">Roger Lee Whittlesey IV comes to Whittlesey · Spring, 1526 AD</div><div class="timeline-desc">A distant cousin of Ralph's, alone — no father, no mother, no kin in the town. Where he came from he does not say; what he is, no one in 1526 knows yet.</div></div></div>
       <div class="timeline-entry"><div class="timeline-year">1526</div><div class="timeline-content"><div class="timeline-name">The Whittlesey Defense Band forms — Spring, 1526 AD</div><div class="timeline-desc">Five men. One fen town. The game begins. Roger, Ralph, Thomas, John, and Edmund against Black Tom of the Mere.</div></div></div>
       <div class="timeline-entry"><div class="timeline-year">~1648</div><div class="timeline-content"><div class="timeline-name">John Whittlesey emigrates England → America</div><div class="timeline-desc">The English Civil War. The Puritan emigration. One man from Cambridgeshire crosses the Atlantic and the American line begins.</div></div></div>
       <div class="timeline-entry"><div class="timeline-year">Present</div><div class="timeline-content"><div class="timeline-name">Roger Lee Whittlesey IV · Douglas, Arizona</div><div class="timeline-desc">Descendant of John. 4.5 acres under the Chiricahua Mountains. Trading MES futures in the evening session. The fen farmer's line in the high desert.</div></div></div>
@@ -6503,7 +6563,7 @@ const CHAR_PORTRAITS={
 };
 const BIOS={
   1:{origin:'Whittlesey, Cambridgeshire',birth:'1508 AD',
-    background:`Roger Lee Whittlesey IV is the fourth generation of his line to bear the name in Whittlesey. Son of a wool merchant who died of fever when Roger was fourteen, his father's debts took the house and the flock, and Roger was left with little but the family name, his father's trade connections and a reputation for clear-headedness beyond his years. He speaks with quiet authority — men defer to him not from rank but from the sense that he sees further ahead than they do.`,
+    background:`Roger Lee Whittlesey IV came to Whittlesey alone in the spring of 1526 — a distant cousin of Ralph's on the Whittlesey side, with no father, no mother, no kin in the town and no house to go back to. Where he was before, he does not say, and the town has stopped asking. Ralph's family took him in; he sleeps by their hearth and works their holding by the mere. The truth, which no one in 1526 knows: he is a man of our own time, fallen into theirs, carrying his own name four generations deep. He speaks with quiet authority — men defer to him not from rank but from the sense that he sees further ahead than they do, and he does.`,
     personality:`Calm under pressure, calculating in risk, deeply loyal to those who earn his trust. He carries the weight of command without complaint and never asks his men to go where he will not lead.`,
     traits:['Commander','Strategist','Cool-headed','Loyal','Merchant\'s mind'],
     quote:`"We do not fight for glory. We fight so that Whittlesey stands when tomorrow comes."`},
@@ -6911,7 +6971,7 @@ function buildCouncilCtx(){
   const desc=alive.map(m=>`${m.name} (${rankId(m)}, HP:${m.hp.toFixed(0)}/${m.maxHp}, XP:${m.xp.toFixed(0)}, scars:${m.scars})`).join('; ');
   return `You are the narrator and character engine for "Time War," a historical RPG set in 1526 AD England. Player is Roger Lee Whittlesey IV, commander of the Whittlesey Defense Band, Cambridgeshire.
 Season: ${S.currentSeason}. Campaign: ${S.campaign}. Treasury: $${S.treasury.toFixed(0)}. Record: ${S.wins}W/${S.losses}L. Living men: ${desc}.
-Characters: Roger (Commander — calm, strategic, merchant's son); Ralph Whittlesey (taciturn, stubborn, fen farmer's son, man of few words); Thomas Fenne (sharp, observant, quick wit, tanner's son); John Cobbes (large, protective, devout, blacksmith's son, moral conscience); Edmund Sayer (curious, impulsive, book-learned, cloth merchant's son).
+Characters: Roger (Commander — calm, strategic; Ralph's distant cousin, come to the town alone this spring with no kin here; the men know nothing of where he was before and never guess); Ralph Whittlesey (taciturn, stubborn, fen farmer's son, man of few words); Thomas Fenne (sharp, observant, quick wit, tanner's son); John Cobbes (large, protective, devout, blacksmith's son, moral conscience); Edmund Sayer (curious, impulsive, book-learned, cloth merchant's son).
 Historical context: 1526. Henry VIII rules England (Catholic, pre-Reformation). Suleiman marching on Hungary. Italian Wars. Mughal Empire just founded. League of Cognac forming.
 Write vivid, historically grounded roleplay. Characters speak with distinct voices. Period-appropriate but readable. Bold named dialogue as **Name:** "speech". Under 320 words.`;
 }
@@ -9104,6 +9164,16 @@ _addKbd('scout-input', ()=>sendGenericAI('scout'));
 _addKbd('debrief-input', ()=>sendGenericAI('debrief'));
 </script>
 
+<div class="modal-overlay" id="daylog-modal" onclick="if(event.target===this) twDayLogClose()">
+  <div class="modal-box"><div class="modal-inner">
+    <span class="modal-close" onclick="twDayLogClose()">✕ close</span>
+    <div class="modal-title">The Day's Work</div>
+    <div class="modal-sub">A real day is a season. What you log today is the work Roger does this season — paid at the turn, at the rates of the year — and experience now.</div>
+    <div class="dl-slot"></div>
+    <div class="modal-body"><p>⚒ <strong>Worked a shift</strong> — your hours, which are Roger's day on Ralph's father's holding: ploughing, ditching, the sheep and the eel-traps, paid with meat and drink at the statute's rate for a man fed at the table (a 12-hour shift is a full day; set the hours). With a house of his own it becomes a day for hire at the craftsman's rate. 🏋 <strong>A workout</strong> — every 25 XP is a day's labour on the fen, to ten days; 💪 strength is ten days of its own. 🏃 cardio is fowling on the mere by right of common, or carrying for the staplers without it. 📖 reading is twelve evenings at the pen. ✒ journal and 🧘 meditation are the staplers' trust and the men's regard. Each counts once a day.</p></div>
+  </div></div>
+</div>
+
 <!-- PAGE 4: THE ROAD — the whole self-improvement engine, in a frame, skinned to 1526 -->
 <div id="page-road" class="page">
   <div id="road-wait">THE ROAD — Europe, 1526 · loading…</div>
@@ -9118,6 +9188,7 @@ _addKbd('debrief-input', ()=>sendGenericAI('debrief'));
     <button class="save-btn" onclick="saveToFile()">💾 Save</button>
     <button class="save-btn load-btn" onclick="document.getElementById('save-file-input').click()">📂 Load</button>
     <button class="save-btn load-btn" onclick="clearAll()" title="Wipe the band, treasury, Chronicle and trade log and start a fresh $500 campaign">⚔ New Campaign</button>
+    <button class="save-btn day" onclick="twDayLogOpen()" title="Log the day's work — a shift, a workout, the habits — for XP now and Roger's pence at the turn">📝 Log the day</button>
     <input type="file" id="save-file-input" accept=".html" onchange="loadFromFile(event)">
     <span class="save-status" id="save-status"></span>
   </div>
@@ -9695,6 +9766,7 @@ window.submitWorkout = function(){
   addCharEXP(total, 'Workout: ' + summary);
   try{ if(window.roadLogWorkout) window.roadLogWorkout(Object.assign({}, WORKOUT_DRAFT), wts); }catch(e){}
   closeWorkoutModal();
+  try{ if(window.twDayRender) window.twDayRender(); if(window.renderReckoning) window.renderReckoning(); }catch(e){}
 };
 
 // Replace the old simple logCharWorkout so the button now opens the modal
