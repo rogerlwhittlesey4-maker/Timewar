@@ -2626,6 +2626,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       'THE BAND: the Whittlesey Defense Band, led by Roger Lee Whittlesey IV, about 18, a distant cousin of Ralph\'s on the Whittlesey side who came to the town alone this spring: no father, no mother, no kin here but Ralph, no house to go back to. Ralph\'s family took him in: he sleeps in the hall of their cottage by the mere and works the holding with Ralph for his keep. He does not say where he was before; the men take him for a cousin come from some other part of England and have not pressed him. Campaign: '+((S&&S.campaign)||'')+' (game season '+((S&&S.currentSeason)||'')+').\n'+
       'Men of the band: '+roster+'.\n'+
       'Band record: '+((S&&S.wins)||0)+' fights won, '+((S&&S.losses)||0)+' lost.\n'+
+      (window.twContractText?'THE TOWN\'S CONTRACT: '+window.twContractText()+' Renewed every quarter day; the men know what their share comes to.\n':'')+
       (window.twEconomy?'MONEY NOW (real pence, not the ledger): '+window.twEconomy.chestText()+' '+window.twEconomy.purseText(1)+'. '+window.twEconomy.pricesText()+'\n'+(window.twEconomy.familyText?'ROGER\'S HOUSE: '+window.twEconomy.familyText(1)+'\n':''):'')+
       (recent.length?'RECENT FIGHTS (the men were there; wounds are real and slow to heal): '+recent.join(' | ')+'\n':'')+
       (past.length?'EARLIER DAYS TOGETHER (they remember these): '+past.join(' || ')+'\n':'')+
@@ -3511,6 +3512,19 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   .rk tr.tot td{font-family:var(--fellsc);border-top:1.5px solid var(--border2);}
   .rk .rk-log{font-family:var(--mono);font-size:10px;color:var(--ink3);line-height:1.6;}
   .rk .rk-quote{font-family:var(--fell);font-style:italic;color:var(--ink3);font-size:12px;}
+  .rk .rk-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 8px;}
+  .rk .rk-tab{font-family:var(--fellsc);font-size:12px;padding:5px 10px;border:1px solid var(--border2);border-radius:3px;background:var(--parch);color:var(--ink2);cursor:pointer;display:flex;align-items:center;gap:6px;}
+  .rk .rk-tab.on{background:#fff5d8;border-color:var(--gold-m);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .rk .rk-man h5 .rk-sub{font-family:var(--fell);font-size:11.5px;color:var(--ink3);font-weight:normal;}
+  .rk .rk-man-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;}
+  .rk .rk-h{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink4);margin-bottom:3px;}
+  .rk ul.rk-ledger{list-style:none;margin:0 0 4px;padding:0;font-family:var(--fell);font-size:12.5px;color:var(--ink2);line-height:1.5;}
+  .rk ul.rk-ledger li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--border);padding:2px 0;}
+  .rk ul.rk-ledger li b{font-family:var(--mono);font-size:11px;white-space:nowrap;color:var(--ink);}
+  .rk ul.rk-ledger li.in b{color:#2a5a1a;} .rk ul.rk-ledger li.out b{color:#8a2a20;} .rk ul.rk-ledger li.nt{font-style:italic;color:var(--ink3);} .rk ul.rk-ledger li.dim{color:var(--ink4);}
+  .rk ul.rk-ledger li.tot{border-bottom:none;border-top:1.5px solid var(--border2);font-family:var(--fellsc);margin-top:2px;}
+  .rk .rk-net{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:4px;} .rk .rk-net b{color:var(--ink);}
+  .rk .dim{color:var(--ink4);font-size:10px;}
   .rk .warn{color:#8a2a20;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;}
   </style>
   <div class="parch-panel won rk" id="rk-panel" style="margin-bottom:14px;">
@@ -4029,6 +4043,14 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       });
       E.chest.cur+=chestIn; E.chest.log.push({date:date,text:'quarterage paid in',d:chestIn});
       L.push({who:'the chest',kind:'charge',text:'quarterage from every man',d:chestIn});
+      // The town's contract for the watch: paid at the quarter day for the season watched, renewed at every quarter.
+      if(!initial){ try{ var C=contractFor(E, prev); Q.contract=C;
+        if(C.pay>0){ E.chest.cur+=C.tenth+C.rest; E.chest.log.push({date:date,text:'the tenth of the town\'s contract for the watch'+(C.rest?' (and the odd pence)':''),d:C.tenth+C.rest});
+          L.push({who:'the chest',kind:'charge',text:'a tenth of the town\'s contract for the watch ('+lsd(C.pay)+' for '+C.nights+' nights at '+pd1(C.rate)+')',d:C.tenth+C.rest});
+          C.members.forEach(function(id){ if(id==='Roger'){ E.roger.cur+=C.share; E.roger.yearIncome+=C.share; L.push({who:'Roger',kind:'charge',text:'his share of the town\'s contract for the watch (nine tenths shared alike among '+C.members.length+')',d:C.share}); }
+            else { var pm2=E.men[id]; if(pm2){ pm2.cur+=C.share; var mm=manById(id); L.push({who:mm?mm.name:String(id),kind:'charge',text:'his share of the town\'s contract for the watch (nine tenths shared alike among '+C.members.length+')',d:C.share}); } } });
+          Q.notes.push('The town paid the band\'s contract for the watch: '+C.nights+' nights at '+pd1(C.rate)+' — '+lsd(C.pay)+'; '+lsd(C.tenth+C.rest)+' to the chest and '+lsd(C.share)+' to each of the '+C.members.length+'.'); }
+      }catch(e){ console.warn('[contract]', e); } }
       if(s===2 && fights.length) Q.notes.push('The court leet sat at Michaelmas and amerced the men 2d apiece for the affray'+(fights.length>1?'s':'')+' this quarter.');
       Q.notes.push('The harvest of '+hy+' was '+Q.harvest+': wheat '+(hv(hy)>=0?'':'−')+Math.abs(hv(hy)).toFixed(0)+'% against its trend, so bread is '+breadWord(hy)+(hv(hy)>=25?' and the penny loaf small':hv(hy)<=-20?' and the penny loaf heavy':'')+'. Prices stand at '+Q.index+' on the old scale (the story opened at '+Math.round(BASE)+').');
       // Lady Day: the year of life — ages, marriages, births, deaths, wills and heirs
@@ -4040,6 +4062,18 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       Q.pendingSpend=!initial;
       return Q;
     }
+
+    // ── The town's contract for the watch ──
+    // An indenture between the churchwardens of St Mary's and St Andrew's and Roger Whittlesey and his company:
+    // the company keeps the town's watch, one man by lot each night, from quarter day to quarter day; the town
+    // pays for every night watched at the going rate for a night's watch (2d in 1526, rising with wages), at the
+    // quarter day; a tenth part to the company's chest, the rest shared alike among the company; renewed at every
+    // quarter day. Paid at the reckoning for the season just watched.
+    function contractMembers(E){ var L=ensureLife(E), out=[]; if(!L.roger.dead) out.push('Roger'); men().forEach(function(m){ if(!m.dead) out.push(String(m.id)); }); return out; }
+    function contractFor(E, si){ var y=idxYear(si), nights=Math.max(0, daysBetween(qdate(si), qdate(si+1))), rate=2*wageScale('lab', y), pay=Math.round(nights*rate), tenth=Math.round(pay*0.1), members=contractMembers(E), share=members.length?Math.floor((pay-tenth)/members.length):0, rest=pay-tenth-share*members.length;
+      return {season:idxLabel(si), from:qdate(si), to:qdate(si+1), nights:nights, rate:rate, pay:pay, tenth:tenth, share:share, rest:rest, members:members, year:y}; }
+    window.twContract=function(){ var E=ensure(load()), cur=seasonIdx(S.currentSeason), now=contractFor(E,cur), last=null; for(var k=E.quarters.length-1;k>=0;k--){ if(E.quarters[k].contract){ last=E.quarters[k].contract; last.paidOn=E.quarters[k].date; break; } } return {now:now, last:last}; };
+    window.twContractText=function(){ try{ var c=window.twContract().now; return 'The town\'s contract: '+c.nights+' nights this season at '+pd1(c.rate)+' a night — '+lsd(c.pay)+' at the quarter day; a tenth to the chest, '+lsd(c.share)+' to each of the '+c.members.length+'.'; }catch(e){ return ''; } };
 
     // ── The men spend as they like ───────────────────────────────────────
     async function spend(E, Q){
@@ -4289,6 +4323,38 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       el.innerHTML=h;
     }
     window.renderToday=renderToday;
+    var menTab=2;
+    window.twMenTab=function(id){ menTab=id; render(); };
+    function rogerName(){ try{ var r=(S.men||[]).filter(function(m){ return m.isCmd; })[0]; if(r) return r.name; }catch(e){} return 'Roger Lee Whittlesey IV'; }
+    function manCard(E, Q, d, yr, id){
+      var isR=(id==='1'||id==='Roger'), m=isR?null:manById(id), name=isR?'Roger':(m?m.name:''), p=isR?E.roger:E.men[id]; if(!p) return '';
+      var Lf=ensureLife(E), lf=isR?Lf.roger:(Lf.men[id]||{}), hd=(window.twHouseholdData&&window.twHouseholdData(+id))||{items:[],own:[]};
+      var who=isR?'Roger':name;
+      var ch=Q?Q.lines.filter(function(l){ return l.who===who&&l.kind==='charge'; }):[], dc=Q?Q.lines.filter(function(l){ return l.who===who&&l.kind==='discharge'; }):[], nt=Q?Q.lines.filter(function(l){ return l.who===who&&l.kind==='note'; }):[];
+      var made=ch.reduce(function(t,l){ return t+(l.d||0); },0), spent=dc.reduce(function(t,l){ return t+(l.d||0); },0), keep=ch.reduce(function(t,l){ return t+(l.kind2||0); },0);
+      var b=Q&&Q.bought[name]||[], rem=Q&&Q.remarks[name];
+      var age=isR?ageOf(Lf.roger.born,yr):(lf.born?ageOf(lf.born,yr):'');
+      var situ=isR?(homeOf(E).lodging?'lodges with Ralph\'s family, working the holding':homeOf(E).name):(lf.holding?'holds '+((HOLDINGS[id]||{what:'the cottage'}).what.split(':')[0]):(lf.wife&&!lf.wife.dead?'in a rented cottage of his own':'at his father\'s table'));
+      var fam=(lf.wife?(lf.wife.dead?'a widower':'married to '+lf.wife.name+(lf.wife.dowry?' (dowry '+lsd(lf.wife.dowry)+')':'')):'unmarried')+'; children: '+kidsText(lf.children||[]);
+      // what is his own
+      var own=[]; (hd.own||[]).forEach(function(x){ own.push([x[0],x[1]]); });
+      if(isR){ (hd.items||[]).forEach(function(x){ if(x[0].indexOf('Money in his purse')!==0) own.push([x[0],x[1]]); }); try{ window.twEconomy.rogerItems().forEach(function(x){ if(x[0].indexOf('Money in his purse')!==0) own.push(x); }); }catch(e){} }
+      else { (p.bought||[]).forEach(function(g){ own.push([g.n+' (bought '+shortDay(g.date)+')', g.d]); }); if(lf.holding){ (hd.items||[]).forEach(function(x){ own.push([x[0]+' — the holding, his since his father died', x[1]]); }); } var ow=owedTo(E,String(id)); if(ow) own.push(['Owed to him in the book of debts', ow]); }
+      var ownT=own.reduce(function(t,x){ return t+x[1]; },0), purse=purseTotal(p,d), ow2=isR?owed(E,'Roger'):owed(E,String(id));
+      var fatherT=(!isR&&!lf.holding)?(hd.items||[]).reduce(function(t,x){ return t+x[1]; },0):0;
+      var h='<div class="rk-card rk-man">'+
+        '<h5><span>'+(typeof charAvatar==='function'?charAvatar(+id,28)+' ':'')+esc(isR?rogerName():name)+(m&&m.dead?' ✝':'')+' <span class="rk-sub">'+(age!==''?age+' · ':'')+esc(situ)+' · '+esc(fam)+'</span></span><span class="sum">purse '+lsd(purse)+' · his own '+lsd(ownT+purse)+'</span></h5>'+
+        '<div class="rk-man-cols">'+
+        '<div><div class="rk-h">This season'+(Q?' — '+esc(Q.qday+' '+Q.year)+', for '+esc(Q.reckoned.replace(' AD','')):'')+'</div>'+
+          (ch.length||dc.length?'<ul class="rk-ledger">'+ch.map(function(l){ return '<li class="in">+ '+esc(l.text)+' <b>'+lsd(l.d)+'</b></li>'; }).join('')+dc.map(function(l){ return '<li class="out">− '+esc(l.text)+' <b>'+lsd(l.d)+'</b></li>'; }).join('')+nt.map(function(l){ return '<li class="nt">'+esc(l.text)+'</li>'; }).join('')+'</ul>'+
+          '<div class="rk-net">Made <b>'+lsd(made)+'</b>'+(keep?' in cash, and '+lsd(keep)+' more as his keep':'')+' · paid out <b>'+lsd(spent)+'</b> · net <b>'+(made-spent<0?'−':'')+lsd(Math.abs(made-spent))+'</b></div>':'<div class="note">No reckoning yet this season.</div>')+
+          (b.length?'<div class="rk-h" style="margin-top:6px">Bought this season</div><ul class="rk-ledger">'+b.map(function(x){ return '<li class="out">'+esc(x.n)+' <b>'+lsd(x.d)+'</b></li>'; }).join('')+'</ul>':'')+(rem?'<div class="rk-quote">“'+esc(rem)+'”</div>':'')+'</div>'+
+        '<div><div class="rk-h">His purse</div><ul class="rk-ledger"><li>'+esc(purseHtml(p,d))+'</li><li class="tot">Total <b>'+lsd(purse)+'</b> <span class="dim">≈ '+usd(purse)+'</span></li>'+(ow2?'<li class="out">He owes <b>'+lsd(ow2)+'</b> in the book of debts</li>':'')+'</ul>'+
+          '<div class="rk-h" style="margin-top:6px">His own goods</div>'+(own.length?'<ul class="rk-ledger">'+own.map(function(x){ return '<li>'+esc(x[0])+' <b>'+lsd(x[1])+'</b></li>'; }).join('')+'<li class="tot">All he owns, with his purse <b>'+lsd(ownT+purse)+'</b> <span class="dim">≈ '+usd(ownT+purse)+'</span></li></ul>':'<div class="note">Nothing but the clothes he stands in.</div>')+
+          (fatherT?'<div class="rk-h" style="margin-top:6px">His father\'s household — '+esc(hd.who||'')+' (his to inherit, not his yet)</div><ul class="rk-ledger">'+(hd.items||[]).map(function(x){ return '<li class="dim">'+esc(x[0])+' <b>'+lsd(x[1])+'</b></li>'; }).join('')+'<li class="tot dim">Worth about <b>'+lsd(fatherT)+'</b></li></ul>':'')+
+        '</div></div></div>';
+      return h;
+    }
     function render(){
       renderToday();
       var el=document.getElementById('rk-body'); if(!el||typeof S==='undefined') return;
@@ -4340,11 +4406,19 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       h+='<h4>The book of debts</h4><div class="note">Most buying and selling in the town was on tick, reckoned at the quarter days. What is owed is written here; a debt two quarters overdue goes to court, and after three the bailiff distrains.</div>'+
         (debts.length?'<div class="won-scroll"><table style="min-width:520px"><thead><tr><th>Who owes</th><th>To whom</th><th class="n">Sum</th><th>For</th><th>Since</th><th>Due</th><th>Overdue</th></tr></thead><tbody>'+debts.map(function(b){ return '<tr'+(b.overdue?' style="background:#fff1e6"':'')+'><td>'+esc(nameOfParty(b.from))+'</td><td>'+esc(nameOfParty(b.to))+'</td><td class="n">'+lsd(b.d)+'</td><td>'+esc(b.why)+'</td><td>'+esc(shortDay(b.since))+'</td><td>'+esc(shortDay(b.due))+'</td><td>'+(b.overdue?b.overdue+' quarter'+(b.overdue===1?'':'s'):'—')+'</td></tr>'; }).join('')+'</tbody></table></div>':'<div class="note">Nothing owed. The book is clean.</div>');
       // The men
-      h+='<h4>The men\'s purses and households</h4><div class="won-scroll"><table style="min-width:640px"><thead><tr><th>Man</th><th>Purse</th><th class="n">Total</th><th>This quarter</th><th>Lately bought</th></tr></thead><tbody>';
-      men().forEach(function(m){ var p=E.men[m.id]; if(!p) return; var b=Q&&Q.bought[m.name]||[]; var rem=Q&&Q.remarks[m.name]; var lf=Lf.men[m.id]||{};
-        var fam=(lf.born?'aged '+ageOf(lf.born,yr):'')+(lf.holding?' · holds '+((HOLDINGS[m.id]||{what:'the cottage'}).what.split(':')[0]):(lf.wife&&!lf.wife.dead?' · in a cottage of his own':' · at his father\'s table'))+(lf.wife?(lf.wife.dead?' · widower':' · married to '+lf.wife.name):'')+((lf.children||[]).filter(function(k){return k.alive;}).length?' · children: '+kidsText(lf.children):'');
-        h+='<tr><td>'+(typeof charAvatar==='function'?charAvatar(m.id,22)+' ':'')+esc(m.name)+(m.dead?' ✝':'')+'<div style="font-family:var(--mono);font-size:8.5px;color:var(--ink4)">'+esc(fam)+'</div></td><td>'+esc(purseHtml(p,d))+'</td><td class="n">'+lsd(purseTotal(p,d))+'<br><span style="color:var(--ink4);font-size:9px">'+usd(purseTotal(p,d))+'</span></td><td>'+(Q?esc(Q.lines.filter(function(l){ return l.who===m.name&&l.kind==='charge'; }).map(function(l){ return '+'+lsd(l.d); }).join(' ')+' '+Q.lines.filter(function(l){ return l.who===m.name&&l.kind==='discharge'; }).map(function(l){ return '−'+lsd(l.d); }).join(' ')):'')+'</td><td>'+(b.length?esc(b.map(function(x){ return x.n+' '+lsd(x.d); }).join('; ')):'—')+(rem?'<div class="rk-quote">“'+esc(rem)+'”</div>':'')+'</td></tr>'; });
-      h+='</tbody></table></div><div class="note">A son living at home earns at the customary rate but takes most of it as keep at his father\'s table; the cash is what he can carry to the alehouse or the fair. What he buys is his own choice, in character, at this year\'s prices, within his degree — or outside it.</div>';
+      // The town's contract
+      (function(){ try{ var c=window.twContract(), n=c.now, l=c.last;
+        h+='<div class="rk-card" style="margin:8px 0 12px"><h5><span>📜 The town\'s contract for the watch</span><span class="sum">'+lsd(n.pay)+' this season · '+lsd(n.share)+' a man</span></h5>'+
+          '<div class="note" style="margin:0 0 6px">An indenture between the churchwardens of St Mary\'s and St Andrew\'s and Roger Whittlesey and his company. The company keeps the town\'s watch, one man by lot each night, from quarter day to quarter day. The town pays for every night watched, at the quarter day; a tenth part goes to the company\'s chest and the rest is shared alike among the company. Renewed at every quarter day at the going rate.</div>'+
+          '<ul><li><strong>This season, '+esc(n.season.replace(' AD',''))+':</strong> '+n.nights+' nights from '+esc(shortDay(n.from))+' to '+esc(shortDay(n.to))+' at '+pd1(n.rate)+' a night — <strong>'+lsd(n.pay)+'</strong>, paid at '+esc(qname(seasonIdx(S.currentSeason)+1))+': '+lsd(n.tenth+n.rest)+' to the chest, '+lsd(n.share)+' to each of the '+n.members.length+' ('+esc(n.members.map(function(id){ return id==='Roger'?'Roger':first((manById(id)||{name:id}).name); }).join(', '))+').</li>'+
+          (l?'<li><strong>Last paid, '+esc(shortDay(l.paidOn))+' for '+esc(l.season.replace(' AD',''))+':</strong> '+l.nights+' nights at '+pd1(l.rate)+' — '+lsd(l.pay)+'; '+lsd(l.tenth+l.rest)+' to the chest, '+lsd(l.share)+' a man to '+l.members.length+'.</li>':'<li>Not yet paid: the first payment falls at the next quarter day.</li>')+'</ul></div>'; }catch(e){} })();
+      // The men, each his own card: what he made this season, his purse, and all he owns
+      h+='<h4>The men\'s purses and goods</h4>';
+      var tabs=[{id:1,name:rogerName()}].concat(men().map(function(m){ return {id:m.id,name:m.name,dead:m.dead}; }));
+      if(!tabs.some(function(t){ return String(t.id)===String(menTab); })) menTab=tabs[1]?tabs[1].id:1;
+      h+='<div class="rk-tabs">'+tabs.map(function(t){ return '<button class="rk-tab'+(String(t.id)===String(menTab)?' on':'')+'" onclick="twMenTab(\''+t.id+'\')">'+(typeof charAvatar==='function'?charAvatar(t.id,20)+' ':'')+esc(first(t.name))+(t.dead?' ✝':'')+'</button>'; }).join('')+'</div>';
+      h+=manCard(E, Q, d, yr, String(menTab));
+      h+='<div class="note">A son living at home earns at the customary rate but takes most of it as keep at his father\'s table; the cash is what he can carry to the alehouse or the fair. What he buys is his own choice, in character, at this year\'s prices, within his degree — or outside it. The household he lives in is his father\'s until he holds it; what is listed as his own is his.</div>';
       // The account
       if(Q){ h+='<h4>The account of '+esc(Q.qday+' '+Q.year)+' — charge and discharge</h4>'+acctTable(Q)+(E.quarters.length>1?'<details class="won-more"><summary>Earlier reckonings</summary>'+E.quarters.slice(0,-1).reverse().slice(0,8).map(function(q){ return '<div style="margin:8px 0"><div style="font-family:var(--fellsc);color:var(--ink)">'+esc(q.qday+' '+q.year)+' — for '+esc(q.reckoned.replace(' AD',''))+'</div>'+acctTable(q)+'</div>'; }).join('')+'</details>':''); }
       h+='<div class="note" style="margin-top:8px"><strong>How it is reckoned.</strong> Prices follow the Phelps Brown &amp; Hopkins basket of consumables (Munro\'s five-year means), moved year by year by Hoskins\' record of every harvest 1523–1619; bread and drink take the harvest in full. Wages follow the customary daily rates in the same tables — 4d and 6d until the 1530s, rising through the century. Coin follows the real indentures: Wolsey\'s lighter penny of November 1526, the Great Debasement of 1544–51 and the restoration of 1551; the angel\'s value by proclamation. Dues: quarterage to the chest, Easter offering, the Whitsun ale, a Candlemas candle, the Christmas feast, Roger\'s rent, board and personal tithe, amercements in the court leet after an affray, and the subsidies that reached men of small goods. Roger\'s trade follows Bowden\'s decennial index of wool prices with the documented breaks of 1551, 1563–64 and 1568–73, and the Act of 1552 against regrators. Credit is the town\'s: purchases on tick, settled at the quarter days, sued after two quarters, distrained after three. Goods and dues come and go with the century: Walsingham to 1538, the English Testament in secret to 1537 and the Great Bible from 1539, masses for souls and candles to the rood until 1547 and again under Mary, church-ales to 1570, the poor rate from 1572. Simplifications are marked in the source.</div>';
@@ -4709,6 +4783,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
     function sumItems(a){ return (a||[]).reduce(function(t,x){ return t+x[1]; },0); }
     function subsidyBand(d){ var L=d/240; if(L<2) return {band:'Under £2 in goods — taxed on wages instead (4d if earning £1 a year)', tax:4}; if(L<20) return {band:'£2–£20 in goods — 6d in the pound', tax:Math.floor(L)*6}; return {band:'Over £20 in goods — 1s in the pound', tax:Math.floor(L)*12}; }
     // For the companions: a one-line summary of a man's means, in period money
+    window.twHouseholdData=function(id){ var h=HOUSEHOLDS.filter(function(x){return x.id===id;})[0]; return h?{who:h.who, band:h.band, home:h.home, tenure:h.tenure, items:(h.items||[]).slice(), own:(h.own||[]).slice()}:null; };
     window.twHouseholdText=function(id){
       var h=HOUSEHOLDS.filter(function(x){return x.id===id;})[0]; if(!h) return '';
       if(id===1 && window.twEconomy && window.twEconomy.rogerHome){ var rh=window.twEconomy.rogerHome(); h=Object.assign({}, h, {home:rh.text+' '+rh.tenure, items:h.items.filter(function(it){ return it[0]!=='Money in his purse'; }).concat(window.twEconomy.rogerItems())}); }
@@ -7210,7 +7285,7 @@ function updateSelBar(){
       const totalHp = sel.reduce((s,m)=>s+m.hp, 0) || 1;
       dep.style.fontStyle = 'normal';
       dep.style.color = '#3a2818';
-      dep.innerHTML = '<div style="font-style:italic;color:var(--ink4);font-size:11.5px;margin-bottom:4px;">By the contract with the town one watchman stands guard at a time. The lot has fallen on him for the next fight; the roll gives every man his turn before it is cast again. '+(typeof watchRollText==='function'?watchRollText():'')+'</div>'+sel.map(m => {
+      dep.innerHTML = '<div style="font-style:italic;color:var(--ink4);font-size:11.5px;margin-bottom:4px;">By the contract with the town one watchman stands guard at a time. The lot has fallen on him for the next fight; the roll gives every man his turn before it is cast again. '+(typeof watchRollText==='function'?watchRollText():'')+'</div>'+(typeof window.twContractText==='function'&&window.twContractText()?'<div style="font-style:italic;color:var(--ink3);font-size:11px;margin-bottom:6px;">📜 '+window.twContractText()+'</div>':'')+sel.map(m => {
         const pct = (m.hp/totalHp*100).toFixed(0);
         const rank = (typeof rankId === 'function') ? rankId(m) : '';
         let shareTxt = '';
