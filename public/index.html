@@ -1744,6 +1744,7 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
       <button class="st-btn" onclick="confirmSeasonAdvance()">⚔ March into <span id="st-next-season-label">Summer</span></button>
       <button class="st-btn secondary" onclick="closeSeasonModal()">Not yet</button>
     </div>
+    <div style="margin-top:14px;"><button class="st-btn secondary" style="font-size:9px;opacity:.8" onclick="twTurnBackClock()" title="Set the campaign back to Spring 1526: the economy and the men's years start over; trades, treasury, wounds, experience and every conversation are kept, the conversations set in early spring 1526">⟲ Turn the clock back to Spring 1526</button></div>
   </div>
 </div>
 
@@ -3200,6 +3201,8 @@ body{font-family:var(--fell);color:var(--ink);min-height:100vh;}
   };
   window.twcLoyalty=function(id,dl){ try{ var st=ensure(load()), x=stateFor(st,id); x.loyalty=Math.max(0,Math.min(100,x.loyalty+dl)); store(st); }catch(e){} };
   window.twcAddPlace=function(p){ if(PLACES.indexOf(p)<0){ PLACES.push(p); try{ renderAll(); }catch(e){} } };
+  window.twcDayShort=function(d){ try{ return dayInfo(d).short; }catch(e){ return String(d); } };
+  window.twcAddDays=function(d,n){ try{ return addDays(d,n); }catch(e){ return d; } };
   window.twcRemember=function(id,text,dl,date){ try{ var st=ensure(load()), x=stateFor(st,id); x.memories.push(dayInfo(date||st.storyDate).short+': '+text); if(x.memories.length>24) x.memories=x.memories.slice(-24); if(dl) x.loyalty=Math.max(0,Math.min(100,x.loyalty+dl)); store(st); }catch(e){} };
   // The season has turned (one real day = one season): the story moves to the quarter day
   window.twcSeasonTurn=function(info){
@@ -7243,6 +7246,81 @@ function clearForm(){
 // Wipes: band, treasury, seasons, battles, Chronicle, Discipline Console trade log,
 //        Tier 1 account balance (back to $500).
 // Also clears companion conversations/loyalty. Keeps: Character EXP, calendar reflections/habits.
+/* ═══════════ TURN THE CLOCK BACK — Spring 1526 again ═══════════
+   One real day is a season, and the clock ran while the game was being built. This sets the
+   campaign back to Spring 1526: the economy and the men's years start over (the dead of those
+   years live, the sons recruited in them go home, ages return), while everything real is kept —
+   the trades, the treasury, the men's wounds and experience, and every conversation, which is
+   set in early spring 1526, in the order it happened. */
+const CLOCK_RESET_FLAG = 'clockReset_spring1526_v1';
+function twRewindCompanions(){
+  var KEY='timewar_companions_v1', START='1526-05-01', SPAN=45;
+  var st=null; try{ st=JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){} if(!st) return;
+  var dayShort=window.twcDayShort||function(d){ return d; }, addD=window.twcAddDays||function(d,n){ return d; };
+  var isTalk=function(l){ return l&&(l.who==='man'||l.who==='roger'); };
+  var isBattle=function(l){ return l&&l.who==='event'&&/^(Won|Lost) \$/.test(l.note||''); };
+  var keep=(st.scenes||[]).filter(function(sc){ return (sc.lines||[]).some(function(l){ return isTalk(l)||isBattle(l); }); });
+  keep.forEach(function(sc){ sc.lines=(sc.lines||[]).filter(function(l){ return isTalk(l)||isBattle(l)||l.who==='sys'||(l.who==='narr'&&!/^The season turns/.test(l.text||'')); }); sc.summary=sc.summary||''; });
+  // the days the talk fell on, in order, laid over the days from May Day 1526
+  var olds=[]; keep.forEach(function(sc){ if(olds.indexOf(sc.date)<0) olds.push(sc.date); }); olds.sort();
+  var map={}; olds.forEach(function(d,i){ map[d]=addD(START, olds.length<=SPAN?i:Math.floor(i*SPAN/olds.length)); });
+  keep.forEach(function(sc){ sc.date=map[sc.date]||START; });
+  var last=keep.length?keep[keep.length-1].date:START;
+  function nearest(d){ if(map[d]) return map[d]; var best=null; olds.forEach(function(o){ if(o<=d) best=o; }); return best?map[best]:START; }
+  var MON={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+  function remem(mem){
+    var m=/^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat) (\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}): ([\s\S]*)$/.exec(String(mem||''));
+    if(!m) return mem;
+    var iso=m[3]+'-'+(MON[m[2]]<10?'0':'')+MON[m[2]]+'-'+(+m[1]<10?'0':'')+(+m[1]);
+    if(map[iso]) return dayShort(map[iso])+': '+m[4];           // a day with talk or a fight: kept, set in the spring
+    if(iso<='1526-06-23') return mem;                            // already in the first spring
+    return null;                                                 // the years' own memories: gone with the years
+  }
+  Object.keys(st.men||{}).forEach(function(id){
+    if(+id>=6){ delete st.men[id]; return; }                    // the sons recruited in the years
+    var x=st.men[id];
+    x.memories=(x.memories||[]).map(remem).filter(function(v){ return !!v; });
+    (x.chat||[]).forEach(function(c){ if(c.date) c.date=nearest(c.date); });
+    if(x.mood==='grieving'||x.mood==='in pain') x.mood='steady';
+  });
+  st.events=(st.events||[]).filter(function(e){ return e.kind==='win'||e.kind==='loss'; }).map(function(e){ e.date=nearest(e.date); return e; });
+  (st.documents||[]).forEach(function(d){ d.date=nearest(d.date); });
+  delete st.annals; delete st.profiles;
+  st.scenes=keep; st.currentScene=null; st.storyDate=last;
+  localStorage.setItem(KEY, JSON.stringify(st));
+}
+window.twTurnBackClock=function(auto){
+  if(!auto && !confirm('TURN THE CLOCK BACK TO SPRING 1526?\n\nThe economy and the men\'s years start over; the trades, the treasury, the men\'s wounds and experience, and every conversation are kept — the conversations set in early spring 1526, in the order they happened.')) return;
+  try{
+    var E0=null; try{ E0=JSON.parse(localStorage.getItem('timewar_economy_v1')||'null'); }catch(e){}
+    var battleDead={}; (S.battles||[]).forEach(function(b){ (b.men||[]).forEach(function(r){ if(r&&r.dead) battleDead[r.name]=1; }); });
+    S.men=(S.men||[]).filter(function(m){ return !m.kin; });
+    S.men.forEach(function(m){
+      var born=E0&&E0.life?(m.isCmd?(E0.life.roger&&E0.life.roger.born):(E0.life.men&&E0.life.men[m.id]&&E0.life.men[m.id].born)):null;
+      if(born) m.age=1526-born;
+      if(m.dead&&!battleDead[m.name]){ m.dead=false; if(!(m.hp>0)) m.hp=m.maxHp||100; }
+    });
+    S.currentSeason='Spring, 1526 AD';
+    (S.battles||[]).forEach(function(b){ b.season='Spring, 1526 AD'; });
+    (S.chronicle||[]).forEach(function(e){ if(e&&e.season) e.season='Spring, 1526 AD'; });
+    S.watch=null; S.watchRoll=[]; S.watchRound=0;
+    S[CLOCK_RESET_FLAG]=new Date().toISOString().slice(0,10);
+    save();
+    try{ localStorage.removeItem('timewar_economy_v1'); }catch(e){}
+    try{ twRewindCompanions(); }catch(e){ console.warn('[rewind]', e); }
+    try{ sessionStorage.setItem('tw_clock_reset_done','1'); }catch(e){}
+  }catch(e){ console.warn('[clock]', e); }
+  location.reload();
+};
+function twClockResetOnce(){
+  try{
+    if(S[CLOCK_RESET_FLAG]) return;
+    if(sessionStorage.getItem('tw_clock_reset_done')) return;
+    if(S.currentSeason==='Spring, 1526 AD' && !localStorage.getItem('timewar_economy_v1')){ S[CLOCK_RESET_FLAG]='fresh'; save(); return; }
+    window.twTurnBackClock(true);
+  }catch(e){}
+}
+
 async function clearAll(){
   if(!confirm('BEGIN A NEW CAMPAIGN?\n\nThis wipes the band, treasury, battles, the Chronicle of Battles and the Discipline Console trade log, and resets the account to $500.\n\nYour companions\' conversations and loyalty start over with the new band.\n\nKept: Character EXP and calendar.')) return;
   if(confirm('Download a backup of the current campaign first?\n\nOK = download backup (save file + trade CSV)\nCancel = skip backup')){
@@ -9013,6 +9091,7 @@ setInterval(updateMapClock,1000);
 updateMapClock();
 
 load();
+twClockResetOnce();
 // Rename: the cloth merchant's son (id 5) is Edmund Sayer — migrate older saves
 try{ (S.men||[]).forEach(m=>{ if(m.id===5 && (m.name==='William '+'Draper' || m.name==='William '+'Thurston')){ m.name='Edmund Sayer'; save(); } }); }catch(e){}
 render();renderConflicts();initHoldings();initDayNightMap();
